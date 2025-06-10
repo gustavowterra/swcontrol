@@ -1,0 +1,479 @@
+{% extends "./modelo.html" %}
+{% load static %}
+{% block container %}
+<body>
+<style xmlns="http://www.w3.org/1999/html">
+    /* Estilos personalizados */
+
+    .custom-background1 {
+        background-color: #f2f2f2; /* Cor de fundo cinza claro */
+        padding: 10px; /* Ajuste o valor do preenchimento conforme necessário */
+    }
+
+    .form-control {
+      border: none;
+      border-radius: 0;
+      border-bottom: 1px solid black;
+      font-size: 70%;
+    }
+    .form-control2 {
+      border: none;
+      border-radius: 0;
+      border-bottom: none;
+      font-size: 70%;
+    }
+
+    .form-control::label {
+      color: #999;
+      font-size: 70%;
+      border: none;
+    }
+
+    .form-control::placeholder {
+      color: #999;
+      font-size: 70%;
+    }
+    .form-control2::placeholder {
+      color: #999;
+      font-size: 70%;
+    }
+
+    .custom-margin-top {
+      margin-top: 25px;
+    }
+
+    .gray-bg {
+      background-color: #f8f9fa;
+    }
+
+    .cliente-container {
+      background-color: #f2f2f2;
+
+      padding: 2px;
+    }
+
+    .modal-dialog {
+      max-width: 900px; /* Ajuste o valor conforme necessário */
+    }
+
+    .modal-content {
+      height: 400px; /* Ajuste o valor conforme necessário */
+    }
+    .form-wrapper {
+      border: 1px solid black;
+      padding: 10px;
+    }
+</style>
+<section class="mt-2">
+
+    <div class="container">
+        <form action="/editarpedido/{{ pedido.numero }}/">
+            {% csrf_token %}
+            <button id="edit-button" type="button" class="btn btn-dark">Editar Pedido</button>
+            {% if colaborador.funcao == 'Gerente' %}
+                <button id="delete-button"  type="button" class="btn btn-danger">Deletar Pedido</button>
+            {% endif %}
+            <div class="row">
+                <div class="col-md-6 align-items-center text-center mb-4"
+                     style="margin-left: 200px; margin-right: auto;">
+                    <h4><strong>PEDIDO Nº{{ pedido.numero }} - {{pedido.tipo_pedido}} </strong></h4>
+                </div>
+                <div class="row ">
+                    <div class="col">
+                        <div class="row mb-2 custom-background1">
+                            <div class="col-md-4">
+                                <label for="status_pedido">Status do Pedido</label>
+                                <input type="text" class="form-control2 text-center" id="status_pedido"
+                                       name="status_pedido"
+                                       value="{{ pedido.status }}" readonly>
+                            </div>
+                            <div class="col-md-4">
+                                <label for="data-pedido">Data do Pedido</label>
+                                <input type="date" class="form-control2 text-center" id="data-pedido"
+                                       placeholder="Data do Pedido"
+                                       name="data-pedido" value="{{ pedido.datapedido|date:'Y-m-d' }}" readonly>
+                            </div>
+                            <div class="col-md-4">
+                                <label for="data_entrega">Data de Entrega</label>
+                                <input type="date" class="form-control2 text-center" id="data_entrega"
+                                       placeholder="Prazo de Entrega"
+                                       name="data_entrega" value="{{ pedido.prazo_entrega|date:'Y-m-d' }}" readonly>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+                <div id="dados-cliente">
+
+
+                    <h6 class="cliente-heading">Dados do Cliente</h6>
+                    <div class="cliente-container form-wrapper" style="display">
+                        <div class="row">
+                            <div class="col">
+                                <div class="cliente-dados"
+                                >
+                                    <p>Nome: <input type="text" class="form-control" id="nome-cliente"
+                                                    name="cliente_nome" value="{{ cliente.nome }}" readonly></p>
+                                </div>
+                            </div>
+                            <div class="col">
+                                <div class="cliente-dados"
+                                >
+                                    <p>Email: <input type="text" class="form-control" value="{{ cliente.email }}"
+                                                     readonly></p>
+                                </div>
+                            </div>
+                            <div class="col">
+                                <div class="cliente-dados"
+                                >
+                                    <p>Documento: <input type="text" class="form-control"
+                                                         value="{{ cliente.documento }}" readonly></p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col">
+                                <div class="cliente-dados"
+                                >
+                                    <p>Telefone 1:<input type="text" class="form-control"
+                                                         value="{{ cliente.telefone1 }}" readonly></p>
+                                </div>
+                            </div>
+                            <div class="col">
+                                <div class="cliente-dados"
+                                >
+                                    <p>Telefone 2: <input type="text" class="form-control"
+                                                          value="{{ cliente.telefone2 }}" readonly></p>
+                                </div>
+                            </div>
+                            <div class="col">
+                                <div class="cliente-dados"
+                                >
+                                    <p>CEP: <input type="text" class="form-control" value="{{ cliente.CEP }}" readonly>
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col">
+                                <div class="cliente-dados"
+                                >
+                                    <p>Estado: <input type="text" class="form-control" value="{{ cliente.estado }}"
+                                                      readonly></p>
+                                </div>
+                            </div>
+                            <div class="col">
+                                <div class="cliente-dados"
+                                >
+                                    <p>Cidade: <input type="text" class="form-control" value="{{ cliente.cidade }}"
+                                                      readonly></p>
+                                </div>
+                            </div>
+                            <div class="col">
+                                <div class="cliente-dados"
+                                >
+                                    <p>Bairro: <input type="text" class="form-control" value="{{ cliente.bairro }}"
+                                                      readonly></p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col">
+                                <div class="cliente-dados"
+                                >
+                                    <p>Endereço: <input type="text" class="form-control" value="{{ cliente.endereco }}"
+                                                        readonly></p>
+                                </div>
+                            </div>
+                            <div class="col">
+                                <div class="cliente-dados"
+                                >
+                                    <p>Nº: <input type="text" class="form-control" value="{{ cliente.numero_endereco }}"
+                                                  readonly></p>
+                                </div>
+                            </div>
+                            <div class="col">
+                                <div class="cliente-dados"
+                                >
+                                    <p>Complemento <input type="text" class="form-control"
+                                                          value="{{ cliente.complemento }}" readonly></p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div>
+
+                </div>
+                <div>
+                    <div class="row mb-2">
+                        <h6 class="cliente-heading" style="margin-top: 30px">Endereço da Entrega</h6>
+                    </div>
+                    <div id="enderecoForm" style="display" class="form-wrapper">
+                        <div class="row">
+                            <div class="col-md-3">
+                                <label for="cep-entrega" class="form"><small>CEP</small></label>
+                                <input class="form-control" type="text" id="cep-entrega" placeholder="CEP"
+                                       name="cep-entrega-opcional" value="{{ pedido.cep_entrega }}" readonly>
+                            </div>
+                            <div class="col-md-3">
+                                <label for="uf-entrega" class="form"><small>UF</small></label>
+                                <input class="form-control" type="text" placeholder="Estado"
+                                       value="{{ pedido.uf_entrega }}" id="uf-entrega" readonly>
+                            </div>
+                            <div class="col-md-3">
+                                <label for="cidade-entrega" class="form"><small>Cidade</small></label>
+                                <input class="form-control" type="text" placeholder="Cidade"
+                                       value="{{ pedido.cidade_entrega }}" id="cidade-entrega" readonly>
+                            </div>
+                            <div class="col-md-3">
+                                <label for="bairro-entrega" class="form"><small>Bairro</small></label>
+                                <input class="form-control" type="text" placeholder="Bairro"
+                                       value="{{ pedido.bairro_entrega }}" id="bairro-entrega" readonly>
+                            </div>
+                            <div class="col-md-3">
+                                <label for="endereco-entrega" class="form"><small>Endereço</small></label>
+                                <input class="form-control" type="text" placeholder="Endereco"
+                                       value="{{ pedido.endereco_entrega }}" id="endereco-entrega" readonly>
+                            </div>
+                            <div class="col-md-3">
+                                <label for="numero-entrega" class="form"><small>Nº</small></label>
+                                <input class="form-control" type="text" placeholder="Nº"
+                                       value="{{ pedido.numero_end_entrega }}" id="numero-entrega" readonly>
+                            </div>
+
+                        </div>
+                        <div class="row">
+                            <div class="col-md-3">
+                                <label for="complemento-entrega" class="form"><small>Complemento</small></label>
+                                <input class="form-control" type="text" placeholder="Complemento"
+                                       value="{{ pedido.complemento }}" id="complemento-entrega" readonly>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row" style="margin-bottom: 30px"></div>
+                <div class="row">
+                    <h6 class="cliente-heading">Vendedor e Comissionamento</h6>
+                </div>
+
+                <div class="row mb-3 gray-bg">
+                    <div class="col-md-3">
+                        <label for="vendedor1"><small>Vendedor 1</small></label>
+                        <input type="text" class="form-control text-center"
+                               id="vendedor1" name="vendedor1" value="{{ pedido.Vendedor }}" readonly>
+
+                    </div>
+                    <div class="col-md-3">
+                        <label for="comissao-vendedor1"><small>Comissão Vendedor 1</small></label>
+                        <input type="text" class="form-control text-center"
+                               id="comissao-vendedor1" name="comissao1" value="{{ pedido.vendedor_comissao }}%" readonly>
+                    </div>
+                    <div class="col-md-3">
+                        <label for="vendedor2"><small>Vendedor 2</small></label>
+                        <input type="text" class="form-control text-center"
+                               id="vendedor2" name="vendedor2" value="{{ pedido.Vendedor2 }}" readonly>
+                    </div>
+                    <div class="col-md-3">
+                        <label for="comissao-vendedor2"><small>Comissão Vendedor 2</small></label>
+                        <input type="text" class="form-control text-center"
+                               id="comissao-vendedor2" name="comissao2" value="{{ pedido.vendedor2_comissao }}%"
+                               readonly>
+                    </div>
+                </div>
+
+
+                <div class="table-responsive custom-background1" id="tabela-itens">
+
+                    <h4><strong>Tabela de Produtos</strong></h4>
+                    <table>
+                        <thead>
+                        <tr>
+
+                            <th class="text-center" style="width: 597.094px;">PRODUTO</th>
+                            <th class="text-center" style="height: 12px;width: 77.578px;">QTD</th>
+                            <th class="text-center" style="width: 122.734px;">COMPRIMENTO</th>
+                            <th class="text-center" style="width: 122.734px;">LARGURA</th>
+                            <th class="text-center" style="width: 122.734px;">OBS ITEM</th>
+                            <th class="text-center"> VALOR UNITARIO</th>
+                            <th class="text-center"> VALOR TOTAL</th>
+                            <th class="text-center" style="width: 50px;"></th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {% for item in itens %}
+                        <tr>
+
+                            <td style="width: 431.516px;">
+                                <input type="text" class="form-control2 produto text-center"
+                                       style="width: 100%;"
+                                       required name="item"
+                                       id="produto" value="{{ item.nome }}" readonly></td>
+
+                            <td><input type="number" class="form-control2 quantity text-center" style="width: 100%;"
+                                       name="item-quantidade" value="{{ item.quantidade }}" readonly></td>
+                            <td><input type="text" class="form-control2 item-medida text-center"
+                                       style="width: 100%;"
+                                       name="item-medida" value="{{ item.comprimento }}" readonly></td>
+                            <td><input type="text" class="form-control2 item-medida text-center"
+                                       style="width: 100%;"
+                                       name="item-medida" value="{{ item.largura }}" readonly></td>
+                            <td><input type="text" class="form-control2 item-medida text-center"
+                                       style="width: 100%;"
+                                       name="item-medida" value="{{ item.observacao_item }}" readonly></td>
+                            <td><input type="text" class="form-control2 unit-price text-center" style="width: 100%;"
+                                       id="preco-base" name="preco-item" value="R$ {{ item.preco }}0" readonly></td>
+                            <td class="total">{{ item.total_item }}</td>
+                            <td class="text-center"></td>
+                        </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                <div class="row mb-3 custom-margin-top gray-bg">
+
+                    <div class="col-md-3">
+                        <h6><strong><small>Informações Adicionais NFe</small></strong></h6>
+                        <textarea rows="4" cols="50" placeholder="Informações adicionais NFE"
+                               class="form-control text-center"
+                                  id="informacoes-adicionais" name="informacoes_adicionais"  readonly>
+                            {{ pedido.informacoes_adicionais }}
+                        </textarea>
+                    </div>
+                </div>
+                <div class="row mt-4">
+                    <div class="col">
+                        <p id="pedido-repasse" class="mb-2">Valor de Bonus: R$ {{ pedido.valor_repasse }}</p>
+                        <p id="bonificado">Bonificado:  {{ pedido.bonificado.nome }}</p>
+
+                    </div>
+                </div>
+                <div class="row mt-4">
+                    <div class="col">
+                        <p id="total-sum" class="mb-2">Valor Total: R$ {{ pedido.valorTotalParcial }}</p>
+
+                        <p id="order-total">Valor Total do Pedido: R$ {{ pedido.valorTotal }}</p>
+
+                    </div>
+                </div>
+
+                <div class="row mb-3 custom-margin-top gray-bg">
+                    <h5><strong>Forma de Pagamento</strong></h5>
+                     <div class="row mb-3 custom-margin-top gray-bg">
+
+                            <table class="row mb-3 gray-bg">
+                                <thead>
+                                <tr>
+                                    <th class="col-md-2 text-center">Data de Vencimento</th>
+                                    <th class="col-md-3 text-center">Tipo de Pagamento</th>
+                                    <th class="col-md-2 text-center">Número da Parcela</th>
+                                    <th class="col-md-2 text-center">Total de Parcelas</th>
+                                    <th class="col-md-3 text-center">Valor Parcela</th>
+                                    <th class="col-md-3 text-center">Status Parcela</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                {% for parcela in parcelas %}
+                                <tr>
+                                    <td class="col-md-2 text-center">{{ parcela.data_vencimento|date:'Y-m-d' }}</td>
+                                    <td class="col-md-3 text-center">{{ parcela.tipo_pgto}}</td>
+                                    <td class="col-md-2 text-center">{{ parcela.numero_parcela }}</td>
+                                    <td class="col-md-2 text-center">{{ parcela.total_parcelas }}</td>
+                                    <td class="col-md-3 text-center valor-total">{{ parcela.valor }}</td>
+                                    <td class="col-md-3 text-center">{{ parcela.status_conta }}</td>
+                                </tr>
+                                {% endfor %}
+                                </tbody>
+                            </table>
+
+                    </div>
+
+                </div>
+
+            </div>
+            <button id="submit-button" type="submit" class="btn btn-dark">Editar Pedido</button>
+    </div>
+    </form>
+    </div>
+
+
+</section>
+<script>
+document.getElementById("edit-button").addEventListener("click", function() {
+    // Lógica para redirecionar para a página de edição do pedido
+    window.location.href = "/editarpedido/{{ pedido.numero }}/";
+});
+
+document.getElementById("delete-button").addEventListener("click", function(event) {
+    var confirmDelete = confirm("Tem certeza que deseja prosseguir com a exclusão do pedido?");
+
+    if (confirmDelete) {
+        var pedidoNumero = "{{ pedido.numero }}";
+        var url = "/delete_pedido/";
+
+        var xhr = new XMLHttpRequest();
+        xhr.open("POST", url, true);
+        xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+
+        // Obtém o token CSRF do cookie e adiciona na requisição
+        var csrfToken = getCookie('csrftoken');
+        xhr.setRequestHeader("X-CSRFToken", csrfToken);
+
+        xhr.onreadystatechange = function() {
+            if (xhr.readyState === 4 && xhr.status === 200) {
+                var response = JSON.parse(xhr.responseText);
+                alert(response.mensagem);
+                window.location.href = "/painel/";
+            } else if (xhr.readyState === 4 && xhr.status !== 200) {
+                alert("Falha ao excluir o pedido.");
+            }
+        };
+        xhr.send("pedido_numero=" + pedidoNumero);
+    } else {
+        // Exclusão do pedido cancelada
+        alert("Exclusão do pedido cancelada.");
+        event.preventDefault(); // Impede o envio do formulário
+    }
+});
+
+// Função auxiliar para obter o valor de um cookie
+function getCookie(name) {
+    var cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        var cookies = document.cookie.split(';');
+        for (var i = 0; i < cookies.length; i++) {
+            var cookie = cookies[i].trim();
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+}
+</script>
+<script>
+// Função para formatar o valor em moeda brasileira (R$)
+function formatarMoeda(valor) {
+  return valor.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+}
+
+// Seleciona todos os elementos da tabela com a classe 'valor-total'
+var elementosValorTotal = document.querySelectorAll('.valor-total');
+
+// Percorre os elementos e formata o valor em moeda brasileira
+elementosValorTotal.forEach(function(elemento) {
+  var valor = parseFloat(elemento.textContent.replace(',', '.'));
+  if (!isNaN(valor)) {
+    elemento.textContent = formatarMoeda(valor);
+  }
+});
+</script>
+</body>
+
+
+
+
+
+{% endblock %}

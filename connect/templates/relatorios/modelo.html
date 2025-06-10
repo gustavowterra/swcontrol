@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Relatório</title>
+    <style>
+        @page {
+            size: A4 portrait;
+            margin: 20mm;
+        }
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            border-bottom: 1px solid #ddd;
+            padding-bottom: 10px;
+        }
+        .header img {
+            width: 100px;
+            height: auto;
+        }
+        .header .title {
+            text-align: center;
+            flex: 1;
+            font-size: 18px;
+            font-weight: bold;
+        }
+        .header .date {
+            font-size: 10px;
+            text-align: right;
+        }
+        .table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        .table th, .table td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+            font-size: 12px;
+        }
+        .table th {
+            background-color: #f2f2f2;
+            font-weight: bold;
+        }
+        .table tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <img src="logo.png" alt="Logomarca">
+        <div class="title">Título do Relatório</div>
+        <div class="date">Data de Geração: {{ data_geracao }}</div>
+    </div>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Coluna 1</th>
+                <th>Coluna 2</th>
+                <th>Coluna 3</th>
+                <th>Coluna 4</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>Valor 1</td>
+                <td>Valor 2</td>
+                <td>Valor 3</td>
+                <td>Valor 4</td>
+            </tr>
+            <tr>
+                <td>Valor 1</td>
+                <td>Valor 2</td>
+                <td>Valor 3</td>
+                <td>Valor 4</td>
+            </tr>
+        </tbody>
+    </table>
+</body>
+</html>

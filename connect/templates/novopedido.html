@@ -1,0 +1,1152 @@
+{% extends "./modelo.html" %}
+{% load static %}
+{% block container %}
+<head xmlns="http://www.w3.org/1999/html">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Untitled</title>
+    <link rel="stylesheet" href="{% static 'PEDIDO/bootstrap.min.css' %}">
+    <link rel="stylesheet" href="{% static 'PEDIDO/fontawesome-all.min.css' %}">
+    <style>
+    /* Estilos personalizados */
+
+    .custom-background1 {
+        background-color: #f2f2f2; /* Cor de fundo cinza claro */
+        padding: 10px; /* Ajuste o valor do preenchimento conforme necessário */
+    }
+
+    .form-control {
+      border: none;
+      border-radius: 0;
+      border-bottom: 1px solid black;
+      font-size: 95%;
+    }
+    .form-control2 {
+      border: none;
+      border-radius: 0;
+      border-bottom: none;
+      font-size: 95%;
+    }
+
+    .form-control::placeholder {
+      color: #999;
+      font-size: 100%;
+    }
+    .form-control2::placeholder {
+      color: #999;
+      font-size: 100%;
+    }
+
+    .custom-margin-top {
+      margin-top: 25px;
+    }
+
+    .gray-bg {
+      background-color: #f8f9fa;
+    }
+
+    .cliente-container {
+      background-color: #000;
+      color: #fff;
+      padding: 2px;
+    }
+
+    .modal-dialog {
+      max-width: 900px; /* Ajuste o valor conforme necessário */
+    }
+
+    .modal-content {
+      height: 400px; /* Ajuste o valor conforme necessário */
+    }
+    .form-wrapper {
+      border: 1px solid black;
+      padding: 10px;
+    }
+
+
+
+
+
+
+
+
+
+
+    </style>
+</head>
+<body>
+<section class="mt-2">
+    <div class="container">
+        <form method="post">
+            {% csrf_token %}
+            <div class="row">
+                <div class="col-md-6 align-items-center text-center mb-4"
+                     style="margin-left: 200px; margin-right: auto;">
+                    <h4><strong>NOVO PEDIDO</strong></h4>
+                </div>
+                <div class="row ">
+                    <div class="col">
+                        <div class="row mb-2 custom-background1">
+                            <div class="col-md-4">
+                                <label for="numero_pedido">Numero do Pedido</label>
+                                <input type="text" class="form-control2 text-center" id="numero_pedido"
+                                       name="numero_pedido"
+                                       value="{{ novo_numero }}" readonly>
+                            </div>
+                            <div class="col-md-4">
+                                <label for="data-pedido">Data do Pedido</label>
+                                <input type="date" class="form-control2 text-center" id="data-pedido"
+                                       placeholder="Data do Pedido"
+                                       name="data-pedido">
+                            </div>
+                            <div class="col-md-4">
+                                <label for="data_entrega">Data de Entrega</label>
+                                <input type="date" class="form-control2 text-center" id="data_entrega"
+                                       placeholder="Prazo de Entrega"
+                                       name="data_entrega">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row mb-2 custom-margin-top">
+                        <div class="col-md-4">
+                            <div class="input-group">
+                                <input type="text" class="form-control" oninput="formatarDocumento()" id="documento-cliente"
+                                       placeholder="Documento do Cliente" name="documento_cliente">
+                                <button class="btn btn-dark" id="buscar-cliente" type="button">Buscar</button>
+                            </div>
+                            <div id="mensagem-cliente-nao-encontrado"
+                                 style="display: none; color: red; font-weight: bold;">CLIENTE NÃO CADASTRADO
+                            </div>
+                        </div>
+                        <!-- Modal Que Carrega o Cadastro de Cliente Caso Cliente Não Cadastrado -->
+                        <div class="modal" id="modal-cadastro-cliente" tabindex="-1" role="dialog">
+                            <div class="modal-dialog modal-lg" role="document">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title">Cadastro de Cliente</h5>
+                                        <button id="fechar-modal" class="close" data-dismiss="modal"
+                                                aria-label="Fechar">
+                                            <span aria-hidden="true">&times;</span>
+                                        </button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <!-- Aqui será exibido o formulário de cadastro do cliente -->
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+
+                    </div>
+
+                    <div id="dados-cliente" style="display: none;">
+                        <div class="cliente-container"
+                             style="background-color: #333333; color: #ffffff; padding: 10px; font-size: 90%;">
+                            <h2 class="cliente-heading" style="color: #ffffff;">Dados do Cliente</h2>
+                            <div class="row">
+                                <div class="col">
+                                    <div class="cliente-dados"
+                                         style="background-color: #777777; color: #ffffff; padding: 5px; margin-bottom: 5px; font-size: 90%;">
+                                        <p><strong>Nome:</strong> <span id="nome-cliente"></span></p>
+                                    </div>
+                                </div>
+                                <div class="col">
+                                    <div class="cliente-dados"
+                                         style="background-color: #777777; color: #ffffff; padding: 5px; margin-bottom: 5px; font-size: 90%;">
+                                        <p><strong>Email:</strong> <span id="email-cliente"></span></p>
+                                    </div>
+                                </div>
+                                <div class="col">
+                                    <div class="cliente-dados"
+                                         style="background-color: #777777; color: #ffffff; padding: 5px; margin-bottom: 5px; font-size: 90%;">
+                                        <p><strong>Documento:</strong> <span id="documento_cliente"></span></p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col">
+                                    <div class="cliente-dados"
+                                         style="background-color: #777777; color: #ffffff; padding: 5px; margin-bottom: 5px; font-size: 90%;">
+                                        <p><strong>Telefone 1:</strong> <span id="telefone1-cliente"></span></p>
+                                    </div>
+                                </div>
+                                <div class="col">
+                                    <div class="cliente-dados"
+                                         style="background-color: #777777; color: #ffffff; padding: 5px; margin-bottom: 5px; font-size: 90%;">
+                                        <p><strong>Telefone 2:</strong> <span id="telefone2-cliente"></span></p>
+                                    </div>
+                                </div>
+                                <div class="col">
+                                    <div class="cliente-dados"
+                                         style="background-color: #777777; color: #ffffff; padding: 5px; margin-bottom: 5px; font-size: 90%;">
+                                        <p><strong>CEP:</strong> <span id="cep-cliente"></span></p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col">
+                                    <div class="cliente-dados"
+                                         style="background-color: #777777; color: #ffffff; padding: 5px; margin-bottom: 5px; font-size: 90%;">
+                                        <p><strong>Estado:</strong> <span id="estado-cliente"></span></p>
+                                    </div>
+                                </div>
+                                <div class="col">
+                                    <div class="cliente-dados"
+                                         style="background-color: #777777; color: #ffffff; padding: 5px; margin-bottom: 5px; font-size: 90%;">
+                                        <p><strong>Cidade:</strong> <span id="cidade-cliente"></span></p>
+                                    </div>
+                                </div>
+                                <div class="col">
+                                    <div class="cliente-dados"
+                                         style="background-color: #777777; color: #ffffff; padding: 5px; margin-bottom: 5px; font-size: 90%;">
+                                        <p><strong>Bairro:</strong> <span id="bairro-cliente"></span></p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col">
+                                    <div class="cliente-dados"
+                                         style="background-color: #777777; color: #ffffff; padding: 5px; margin-bottom: 5px; font-size: 90%;">
+                                        <p><strong>Endereço:</strong> <span id="endereco-cliente"></span></p>
+                                    </div>
+                                </div>
+                                <div class="col">
+                                    <div class="cliente-dados"
+                                         style="background-color: #777777; color: #ffffff; padding: 5px; margin-bottom: 5px; font-size: 90%;">
+                                        <p><strong>Nº:</strong> <span id="numero-endereco-cliente"></span></p>
+                                    </div>
+                                </div>
+                                <div class="col">
+                                    <div class="cliente-dados"
+                                         style="background-color: #777777; color: #ffffff; padding: 5px; margin-bottom: 5px; font-size: 90%;">
+                                        <p><strong>Complemento:</strong> <span id="complemento-cliente"></span></p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div>
+                        <fieldset>
+                            <legend>Selecione o Endereço de Entrega</legend>
+                            <div class="custom-control custom-radio">
+                                <input type="radio" id="endereco-cadastro" class="custom-control-input"
+                                       name="endereco-opcao" value="cadastro" checked>
+                                <label class="form-label custom-control-label" for="endereco-cadastro">Endereço de
+                                    Cadastro</label>
+                            </div>
+                            <div class="custom-control custom-radio">
+                                <input type="radio" id="endereco-opcional" class="custom-control-input"
+                                       name="endereco-opcao" value="opcional">
+                                <label class="form-label custom-control-label" for="endereco-opcional">Outro
+                                    Endereço</label>
+                            </div>
+                        </fieldset>
+                    </div>
+                    <div>
+                        <div id="enderecoForm" style="display: none;" class="form-wrapper">
+                            <div class="row">
+                                <div class="col-md-3">
+                                    <input class="form-control" type="text" id="cep-entrega-opcional" placeholder="CEP"
+                                           name="cep-entrega-opcional">
+                                </div>
+                                <div class="col-md-3">
+                                    <input type="text" list="bairros" placeholder="Bairro, Cidade - UF"
+                                           name="bairro-entrega-opcional" class="form-control">
+                                    <datalist id="bairros">
+                                        {% for bairro in bairros %}
+                                        <option value="{{ bairro.nome}}, {{ bairro.cidade }}-{{ bairro.uf }}"></option>
+                                        {% endfor %}
+                                    </datalist>
+                                </div>
+                                <div class="col-md-3">
+                                    <input class="form-control" type="text" id="endereco-entrega-opcional"
+                                           placeholder="Av - Rua - Travessa" name="endereco-entrega-opcional">
+                                </div>
+                                <div class="col-md-2">
+                                    <input type="number" placeholder="Nº" class="form-control"
+                                           id="numero-endereco-opcional" name="numero-endereco-opcional">
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-9 offset-md-3">
+                                    <input type="text" placeholder="Complemento" class="form-control"
+                                           id="complemento-endereco-opcional" name="complemento-endereco-opcional">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row mb-3 custom-margin-top gray-bg">
+                        <div class="col-md-3">
+                            <input type="text" list="vendedores1" placeholder="Vendedor 1" class="form-control"
+                                   id="vendedor1" name="vendedor1" value="{{ vendedor }}" onchange="calcularPrecoBase()" required>
+                            <datalist id="vendedores1">
+                                {% for vendedor in vendedores %}
+                                <option value="{{ vendedor.nome|upper }}"></option>
+                                {% endfor %}
+                            </datalist>
+                        </div>
+                        <div class="col-md-3">
+                            <select class="form-control" id="comissao1" name="comissao1" onchange="calcularPrecoBase()">
+                                <option value="">Selecione a Comissão 1</option>
+                            </select>
+                        </div>
+                        <div class="col-md-3">
+                            <input type="text" list="vendedores2" placeholder="Vendedor 2" class="form-control"
+                                   id="vendedor2" name="vendedor2">
+                            <datalist id="vendedores2">
+                                {% for vendedor in vendedores %}
+                                <option value="{{ vendedor.nome|upper }}"></option>
+                                {% endfor %}
+                            </datalist>
+                        </div>
+                        <div class="col-md-3">
+                            <select class="form-control" id="comissao2" name="comissao2">
+                                <option value="">Selecione a Comissão 2</option>
+                            </select>
+                        </div>
+                    </div>
+
+
+                    <div class="table-responsive custom-background1" id="tabela-itens">
+
+                        <h4><strong>Tabela de Produtos</strong></h4>
+                        <div class="text-end">
+                            <button class="btn btn-dark btn-sm float-end mb-3 add-row text-white" type="button"
+                                    id="add-row-button"><strong>adicionar produto</strong></button>
+                        </div>
+
+                        <table>
+                            <thead>
+                            <tr>
+                                <th class="text-center" style="height: 12px;width: 77.578px;">ITEM</th>
+                                <th class="text-center" style="width: 597.094px;">PRODUTO</th>
+                                <th class="text-center" style="height: 12px;width: 77.578px;">QTD</th>
+                                <th class="text-center" style="width: 246.734px;">MEDIDA</th>
+                                <th class="text-center"> VALOR UNITARIO</th>
+                                <th class="text-center"> VALOR TOTAL</th>
+                                <th class="text-center" style="width: 50px;"></th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr>
+                                <td><input type="number" class="form-control2 item-id text-center" style="width: 100%;"
+                                           name="item_id" readonly></td>
+
+                                <td style="width: 431.516px;">
+                                    <input type="text" list="produtos" class="form-control2 produto text-center"
+                                           style="width: 100%;"
+                                           required name="item"
+                                           onchange="calcularPrecoBase()" id="produto">
+                                    <datalist id="produtos">
+                                        {% for produto in produtos %}
+                                        <option value="{{ produto.descricao }}" data-id="{{ produto.id }}"></option>
+                                        {% endfor %}
+                                    </datalist>
+                                </td>
+
+                                <td><input type="number" class="form-control2 quantity text-center" style="width: 100%;"
+                                           name="item-quantidade"></td>
+                                <td><input type="text" class="form-control2 item-medida text-center"
+                                           style="width: 100%;"
+                                           name="item-medida"></td>
+                                <td><input type="text" class="form-control2 unit-price text-center" style="width: 100%;"
+                                           id="preco-base" name="preco-item"></td>
+                                <td class="total"></td>
+                                <td class="text-center">
+                                    <a class="del-row" href="javascript:void(0);">
+                                        <button class="btn btn-danger btn-sm" type="button">
+                                            Del
+                                        </button>
+                                    </a></td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="row mb-3 custom-margin-top gray-bg">
+                        <div class="col-md-3">
+                            <h6><strong><small>Desconto</small></strong></h6>
+                            <input type="text"
+                                   class="form-control text-center"
+                                   id="desconto" name="desconto" onchange="updateTotalSum()">
+                        </div>
+                        <div class="col-md-2">
+                            <h6><strong><small>Valor Frete</small></strong></h6>
+                            <input type="text"
+                                   class="form-control text-center"
+                                   id="frete" name="frete">
+                        </div>
+                        <div class="col-md-3">
+                            <h6><strong><small>Empresa Frete</small></strong></h6>
+                            <select class="form-control" id="fornecedor" name="fretador">
+                                <option value="" selected></option>
+                                {% for fornecedor in fornecedores %}
+                                <option value="{{ fornecedor.nome }}">{{ fornecedor.nome }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="col-md-4">
+                            <h6><strong><small>Observacao</small></strong></h6>
+                            <input type="text" placeholder="Observacao"
+                                   class="form-control text-center"
+                                   id="observacao" name="observacao">
+                        </div>
+                    </div>
+                    <div class="row mt-4">
+                        <div class="col">
+                            <p id="total-sum" class="mb-2">Valor Total: R$ 0.00</p>
+                            <p id="pedido-desconto" class="mb-2">Desconto: R$ 0.00</p>
+                            <p id="order-total">Valor Total do Pedido: R$ 0.00</p>
+
+                        </div>
+                    </div>
+
+                    <div class="row mb-3 custom-margin-top gray-bg">
+                        <h5><strong>Forma de Pagamento</strong></h5>
+
+                        <div class="col-md-3">
+                            <input type="text" list="tipos" placeholder="Forma de Pagamento à Vista"
+                                   class="form-control text-center"
+                                   id="forma-pgto" name="forma_pgto_avista">
+                            <datalist id="tipos">
+                                {% for tipo_pagamento_avista in tipos_pagamento_avista %}
+                                <option value="{{ tipo_pagamento_avista.descricao|upper }}"></option>
+                                {% endfor %}
+                            </datalist>
+                        </div>
+                        <div class="col-md-3">
+                            <input type="text" placeholder="Total de Valor à Vista"
+                                   class="form-control text-center"
+                                   id="total-avista" name="total_avista" onchange="calculartotal()">
+                        </div>
+
+                        <div class="row mb-3 custom-margin-top gray-bg">
+                            <div class="col-md-3">
+                                <input type="text" list="tipos_p" placeholder="Forma de Pagamento Parcelado"
+                                       class="form-control text-center"
+                                       id="forma-pgto-parcelado" name="forma_pgto_parcelado">
+                                <datalist id="tipos_p">
+                                    {% for tipo_pagamento_parcelado in tipos_pagamento_parcelado %}
+                                    <option value="{{ tipo_pagamento_parcelado.descricao|upper }}"></option>
+                                    {% endfor %}
+                                </datalist>
+
+                            </div>
+                            <div class="col-md-3">
+                                <input type="text" placeholder="Total de Valor Parcelado"
+                                       class="form-control text-center"
+                                       id="total-parcelado" name="total_parcelado" onchange="calculartotal()">
+                            </div>
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+            </div>
+            <button id="submit-button" type="submit" class="btn btn-dark">Cadastrar Pedido</button>
+
+        </form>
+    </div>
+</section>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+<script src="{% static 'PEDIDO/bootstrap.min.js' %}"></script>
+<script src="{% static 'PEDIDO/script.min.js' %}"></script>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.mask/1.14.16/jquery.mask.min.js"></script>
+
+<!-- SCRIPT PARA FORMATAR DOCUMENTOS -->
+<script>
+    function formatarDocumento() {
+  var input = document.getElementById('documento-cliente');
+  var valor = input.value.replace(/\D/g, ''); // Remove caracteres não numéricos
+
+  // Verifica se é CPF (11 dígitos) ou CNPJ (14 dígitos)
+  if (valor.length <= 11) {
+    valor = valor.replace(/(\d{3})(\d)/, '$1.$2');
+    valor = valor.replace(/(\d{3})(\d)/, '$1.$2');
+    valor = valor.replace(/(\d{3})(\d{1,2})$/, '$1-$2');
+  } else {
+    valor = valor.replace(/^(\d{2})(\d)/, '$1.$2');
+    valor = valor.replace(/^(\d{2})\.(\d{3})(\d)/, '$1.$2.$3');
+    valor = valor.replace(/\.(\d{3})(\d)/, '.$1/$2');
+    valor = valor.replace(/(\d{4})(\d)/, '$1-$2');
+  }
+
+  input.value = valor;
+}
+</script>
+<!-- SCRIPT PARA BUSCAR VENDEDOR 1 E SUAS RESPECTIVAS COMISSÕES
+<script>
+    $(document).ready(function () {
+      $("#vendedor1").change(function () {
+        var selectedVendedor = $(this).val();
+        $.ajax({
+          type: "GET",
+          url: "/get-comissoes/",
+          data: {
+            vendedor: selectedVendedor
+          },
+          success: function (response) {
+            var options = response.comissoes; // Extrai as opções de comissão do objeto de resposta
+            var uniqueOptions = Array.from(new Set(options)); // Filtra os valores repetidos
+
+            var optionsHtml = ""; // String para armazenar as tags <option>
+
+            // Gera as tags <option> com base nas opções de comissão filtradas
+            for (var i = 0; i < uniqueOptions.length; i++) {
+              var optionValue = uniqueOptions[i] + "%"; // Adiciona o símbolo "%" ao valor da opção
+              optionsHtml += "<option value='" + optionValue + "'>" + optionValue + "</option>";
+            }
+
+            // Atualiza o conteúdo do campo "Comissão 1" com as opções de comissão filtradas
+            $("#comissao1").html(optionsHtml);
+          },
+          error: function (xhr, errmsg, err) {
+            console.log(xhr.status + ": " + xhr.responseText);
+          }
+        });
+      });
+    });
+
+
+
+
+
+
+
+
+
+
+
+
+
+</script>-->
+<script>
+    $(document).ready(function () {
+  // Função para buscar as comissões
+  function buscarComissoes(selectedVendedor) {
+    $.ajax({
+      type: "GET",
+      url: "/get-comissoes/",
+      data: {
+        vendedor: selectedVendedor
+      },
+      success: function (response) {
+        var options = response.comissoes;
+        var uniqueOptions = Array.from(new Set(options));
+
+        var optionsHtml = "";
+
+        for (var i = 0; i < uniqueOptions.length; i++) {
+          var optionValue = uniqueOptions[i] + "%";
+          optionsHtml += "<option value='" + optionValue + "'>" + optionValue + "</option>";
+        }
+
+        $("#comissao1").html(optionsHtml);
+      },
+      error: function (xhr, errmsg, err) {
+        console.log(xhr.status + ": " + xhr.responseText);
+      }
+    });
+  }
+
+  // Chamar a função de busca das comissões quando a página for carregada
+  buscarComissoes($("#vendedor1").val());
+
+  // Evento input do campo "vendedor1"
+  $("#vendedor1").on("input", function () {
+    var selectedVendedor = $(this).val();
+    buscarComissoes(selectedVendedor);
+  });
+});
+
+</script>
+<!-- SCRIPT PARA BUSCAR VENDEDOR 2 E SUAS RESPECTIVAS COMISSÕES -->
+<script>
+    $(document).ready(function () {
+      $("#vendedor2").change(function () {
+        var selectedVendedor = $(this).val();
+        $.ajax({
+          type: "GET",
+          url: "/get-comissoes/",
+          data: {
+            vendedor: selectedVendedor
+          },
+          success: function (response) {
+            var options = response.comissoes; // Extrai as opções de comissão do objeto de resposta
+            var uniqueOptions = Array.from(new Set(options)); // Filtra os valores repetidos
+
+            var optionsHtml = ""; // String para armazenar as tags <option>
+
+            // Gera as tags <option> com base nas opções de comissão filtradas
+            for (var i = 0; i < uniqueOptions.length; i++) {
+              var optionValue = uniqueOptions[i] + "%"; // Adiciona o símbolo "%" ao valor da opção
+              optionsHtml += "<option value='" + optionValue + "'>" + optionValue + "</option>";
+            }
+
+            // Atualiza o conteúdo do campo "Comissão 1" com as opções de comissão filtradas
+            $("#comissao2").html(optionsHtml);
+          },
+          error: function (xhr, errmsg, err) {
+            console.log(xhr.status + ": " + xhr.responseText);
+          }
+        });
+      });
+    });
+
+
+
+
+
+
+
+
+
+
+</script>
+<!-- SCRIPT PARA BUSCAR CLIENTE PELO CPF / CNPJ -->
+<script>
+$(document).ready(function () {
+  $("#buscar-cliente").click(function () {
+    var documentoCliente = $("#documento-cliente").val();
+
+    $.ajax({
+      type: "GET",
+      url: "/get-cliente/",
+      data: {
+        documento: documentoCliente
+      },
+      success: function (response) {
+        if (response.cliente) {
+          // Cliente encontrado, exiba os dados na mesma tela
+          exibirDadosCliente(response.cliente);
+          document.getElementById('mensagem-cliente-nao-encontrado').style.display = 'none';
+        } else {
+          // Cliente não encontrado, exiba o modal para cadastrar um novo cliente
+          document.getElementById('mensagem-cliente-nao-encontrado').style.display = 'block';
+          exibirFormularioCadastroCliente(documentoCliente);
+          $("#modal-cadastro-cliente").modal("show");
+        }
+      },
+      error: function (xhr, errmsg, err) {
+        console.log(xhr.status + ": " + xhr.responseText);
+      }
+    });
+  });
+
+  $("#modal-cadastro-cliente").on("click", "#salvar-cliente", function (event) {
+    event.preventDefault(); // Impede o envio do formulário tradicional
+
+    var formData = $("#form-cadastro-cliente").serialize(); // Obtém os dados do formulário
+
+    $.ajax({
+      type: "POST",
+      url: "/cadastrar_cliente/",
+      data: formData,
+      success: function (response) {
+        // Processar a resposta, se necessário
+        // Por exemplo, exibir uma mensagem de sucesso
+
+        // Fechar o modal de cadastro do cliente
+        $("#modal-cadastro-cliente").modal("hide");
+
+        // Atualizar os dados na tela de pedido com os dados do cliente cadastrado
+        exibirDadosCliente(response.cliente);
+
+        // Remover a mensagem de erro
+        document.getElementById('mensagem-cliente-nao-encontrado').style.display = 'none';
+
+        // Executar automaticamente o botão de busca
+        buscarCliente();
+      },
+      error: function (xhr, errmsg, err) {
+        console.log(xhr.status + ": " + xhr.responseText);
+      }
+    });
+  });
+
+  $("#fechar-modal").click(function () {
+    $("#modal-cadastro-cliente").modal("hide");
+  });
+});
+
+function exibirDadosCliente(cliente) {
+  // Atualizar os campos na tela de pedido com os dados do cliente
+  $("#nome-cliente").text(cliente.nome);
+  $("#email-cliente").text(cliente.email);
+  $("#documento_cliente").text(cliente.documento);
+  $("#telefone1-cliente").text(cliente.telefone1);
+  $("#telefone2-cliente").text(cliente.telefone2);
+  $("#cep-cliente").text(cliente.CEP);
+  $("#estado-cliente").text(cliente.estado);
+  $("#cidade-cliente").text(cliente.cidade);
+  $("#bairro-cliente").text(cliente.bairro);
+  $("#endereco-cliente").text(cliente.endereco);
+  $("#numero-endereco-cliente").text(cliente.numero_endereco);
+  $("#complemento-cliente").text(cliente.complemento);
+
+  $("#dados-cliente").show();
+}
+
+function exibirFormularioCadastroCliente(documento) {
+  fetch('/cadastrar_cliente/')
+    .then(response => response.text())
+    .then(data => {
+      // Exiba o formulário de cadastro de cliente na tela
+      const formulario = $(data);
+      formulario.find('#documento').val(documento); // Define o valor do campo "documento"
+      $("#modal-cadastro-cliente .modal-body").html(formulario);
+    })
+    .catch(error => {
+      console.error('Erro ao carregar o formulário de cadastro de cliente:', error);
+    });
+}
+function buscarCliente() {
+  var documentoCliente = $("#documento-cliente").val();
+
+  $.ajax({
+    type: "GET",
+    url: "/get-cliente/",
+    data: {
+      documento: documentoCliente
+    },
+    success: function (response) {
+      if (response.cliente) {
+        // Cliente encontrado, exiba os dados na mesma tela
+        exibirDadosCliente(response.cliente);
+        document.getElementById('mensagem-cliente-nao-encontrado').style.display = 'none';
+      } else {
+        // Cliente não encontrado, exiba o modal para cadastrar um novo cliente
+        document.getElementById('mensagem-cliente-nao-encontrado').style.display = 'block';
+        exibirFormularioCadastroCliente(documentoCliente);
+        $("#modal-cadastro-cliente").modal("show");
+      }
+    },
+    error: function (xhr, errmsg, err) {
+      console.log(xhr.status + ": " + xhr.responseText);
+    }
+  });
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+</script>
+<!-- SCRIPT PARA INICIALIZAR OS CAMPOS DATA DO PEDIDO  -->
+<script>
+      // Função para definir a data atual no campo de entrada
+      function definirDataAtual() {
+        var dataAtual = new Date();
+        var ano = dataAtual.getFullYear();
+        var mes = ("0" + (dataAtual.getMonth() + 1)).slice(-2);
+        var dia = ("0" + dataAtual.getDate()).slice(-2);
+        var dataFormatada = ano + "-" + mes + "-" + dia;
+        document.getElementById("data-pedido").value = dataFormatada;
+      }
+
+      // Chama a função para definir a data atual
+      definirDataAtual();
+
+
+
+
+
+
+
+
+
+
+
+
+
+</script>
+<!-- SCRIPT PARA MOSTAR OS CAMPOS DE CADASTRAR ENDEREÇO QUANDO O CLIENTE SELECIONA OUTRO ENDEREÇO -->
+<script>
+    const radio1 = document.getElementById('endereco-cadastro');
+    const radio2 = document.getElementById('endereco-opcional');
+    const enderecoForm = document.getElementById('enderecoForm');
+
+
+    radio1.addEventListener('change', () => {
+        radio2.checked = false;
+        enderecoForm.style.display = 'none';
+    });
+
+    radio2.addEventListener('change', () => {
+        radio1.checked = false;
+         enderecoForm.style.display = 'block';
+    });
+
+
+
+
+
+
+
+
+
+
+
+
+
+</script>
+
+<!-- SCRIPT PARA INICIALIZAR OS CAMPOS DATA DE ENTREGA  -->
+<script>
+    // Função para definir a data atual no campo de data prevista
+    function definirDataAtual() {
+      var dataAtual = new Date();
+      dataAtual.setDate(dataAtual.getDate() + 15);
+      var ano = dataAtual.getFullYear();
+      var mes = ("0" + (dataAtual.getMonth() + 1)).slice(-2);
+      var dia = ("0" + dataAtual.getDate()).slice(-2);
+      var dataFormatada = ano + "-" + mes + "-" + dia;
+      document.getElementById("data_entrega").value = dataFormatada;
+    }
+
+    // Chama a função para definir a data atual
+    definirDataAtual();
+
+
+
+
+
+
+
+
+
+
+
+
+
+</script>
+
+<!-- SCRIPT PARA INICIALIZAR O CAMPO DE NUMERO DO PEDIDO  -->
+<script>
+  $(document).ready(function() {
+  // Função para obter o número sequencial do pedido
+  function obterNumeroPedido() {
+    $.ajax({
+      type: "GET",
+      url: "/get-pedidos/",
+      success: function(response) {
+        var numeroPedido = response.numero_pedido;
+
+        // Define o valor do campo "numero_pedido"
+        $("#numero_pedido").val(numeroPedido);
+      },
+      error: function(xhr, errmsg, err) {
+        console.log(xhr.status + ": " + xhr.responseText);
+      }
+    });
+  }
+
+  // Chamada inicial para obter o número do pedido ao carregar a página
+  obterNumeroPedido();
+
+  $("#form-pedido").submit(function(event) {
+    event.preventDefault(); // Impede o envio do formulário tradicional
+
+    var formData = $(this).serialize(); // Obtém os dados do formulário
+
+    $.ajax({
+      type: "POST",
+      url: "/get-pedidos/",
+      data: formData,
+      success: function(response) {
+        // Processar a resposta, se necessário
+        // Por exemplo, exibir uma mensagem de sucesso
+
+        // Chamar a função para obter o próximo número do pedido
+        obterNumeroPedido();
+      },
+      error: function(xhr, errmsg, err) {
+        console.log(xhr.status + ": " + xhr.responseText);
+      }
+    });
+  });
+});
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</script>
+<!-- ATRIBUI ID A CADA LINHA DO ITEM  -->
+<script>
+  var csrfToken = '{{ csrf_token }}';
+  $(document).ready(function() {
+  atribuirNumerosItens();
+
+      $(document).on('click', '#add-row-button', function() {
+      var rowCount = $('#tabela-itens tbody tr').length + 1;
+      var row = $('tbody tr:last').clone();
+      row.find('.item-id').val(rowCount);
+      row.find('input').val('');
+      $('#tabela-itens tbody').append(row);
+      atribuirNumerosItens();
+    });
+});
+
+function atribuirNumerosItens() {
+  var rowCount = $('#tabela-itens tbody tr').length;
+  $('#tabela-itens tbody tr').each(function(index) {
+    $(this).find('.item-id').val(index + 1);
+  });
+}
+
+
+
+
+</script>
+<!-- SCRIPT PARA CRIAR UMA LISTA DE ITEMS E ACIONAR A VIEW DE SALVAR ITENS COM A LISTA DE PEDIDOS  -->
+<script>
+$(document).ready(function() {
+  $('#submit-button').click(function(e) {
+    e.preventDefault();
+
+    var items = [];
+    var pedido = $('#numero_pedido').val();
+
+    $('#tabela-itens tbody tr').each(function() {
+      var item = {
+        item_id: $(this).find('.item-id').val(),
+        quantidade: $(this).find('.quantity').val(),
+        produto: $(this).find('.produto').val(),
+        medida: $(this).find('.item-medida').val(),
+        preco: $(this).find('.unit-price').val(),
+        pedido: pedido
+      };
+
+      items.push(item);
+    });
+
+    // Verificar se a lista de itens está vazia
+    if (items.length === 0) {
+      // Lista vazia, faça o tratamento necessário
+      return;
+    }
+
+    // Converter a lista de itens em uma string JSON
+    var jsonData = JSON.stringify(items);
+
+    // Objeto de dados a ser enviado na requisição AJAX
+    var data = {
+      items: jsonData,
+      csrfmiddlewaretoken: '{{ csrf_token }}'  // Adicione o token CSRF aqui, se necessário
+    };
+
+
+    console.log(data);
+
+
+    // Fazer a requisição AJAX
+    $.ajax({
+      type: 'POST',
+      url: '/save_itens/',
+      data: data,
+      dataType: 'json',
+      success: function(response) {
+        // Lógica para manipular a resposta da view, se necessário
+        $('form').submit();
+      },
+      error: function(xhr, textStatus, errorThrown) {
+        // Trate o erro, se necessário
+      }
+    });
+  });
+});
+    // Submete o formulário
+    //$('form').submit();
+
+
+
+
+</script>
+<!-- SCRIPT PARA CALCULAR PREÇO BASE DE CADA ITEM  -->
+<script>
+    $(document).on('change', '#produto', function calcularPrecoBase() {
+    var produtoSelecionado = $(this).val();
+    var precoBaseField = $(this).closest('tr').find('#preco-base'); // Seleciona o campo preco-base dentro do mesmo <tr>
+
+    if (produtoSelecionado) {
+      var vendedor1 = $('#vendedor1').val();
+      var comissao1 = $('#comissao1').val();
+
+      if (vendedor1 && comissao1) {
+        $.ajax({
+          type: 'POST',
+          url: '{% url 'get_preco_unitario' %}',  // Substitua pelo URL da sua view no Django
+          headers: {
+            'X-CSRFToken': csrfToken
+          },
+          data: {
+            'produto': produtoSelecionado,
+            'vendedor1': vendedor1,
+            'comissao1': comissao1
+          },
+          success: function(response) {
+            // Atualize o valor do campo de preço base com a resposta da view
+            precoBaseField.val(response.preco_base);
+          },
+          error: function(xhr, textStatus, errorThrown) {
+            // Trate o erro, se necessário
+          }
+        });
+      } else {
+        console.log('Preencha todos os campos');
+      }
+    } else {
+      console.log('Selecione um produto');
+    }
+  });
+
+  $(document).on('change', '#comissao1', function() {
+    calcularPrecoBase();
+  });
+
+
+
+</script>
+<!-- SCRIPT PARA CALCULAR PREÇO DE A VISTA E PARCELADO  -->
+<script>
+    // Função para calcular a soma dos valores da tabela e atualizar os campos de total
+    function calcularTotal() {
+        var totalAvistaInput = document.getElementById('total-avista');
+        var totalParceladoInput = document.getElementById('total-parcelado');
+        var descontoInput = document.getElementById('desconto');
+
+        var totalAvista = parseFloat(totalAvistaInput.value) || 0;
+        var totalParcelado = parseFloat(totalParceladoInput.value) || 0;
+        var desconto = parseFloat(descontoInput.value) || 0;
+
+        // Percorre cada linha da tabela e calcula a soma dos valores
+        var rows = document.querySelectorAll('table tbody tr');
+        var totalTabela = 0;
+        rows.forEach(function(row) {
+            var quantidadeInput = row.querySelector('.quantity');
+            var precoInput = row.querySelector('.unit-price');
+
+            var quantidade = parseFloat(quantidadeInput.value) || 0;
+            var preco = parseFloat(precoInput.value) || 0;
+            var valorTotal = quantidade * preco;
+
+            totalTabela += valorTotal;
+        });
+
+        var valorTotalComDesconto = totalTabela - desconto;
+
+        if (valorTotalComDesconto < totalAvista) {
+            totalAvista = valorTotalComDesconto;
+            totalParcelado = 0;
+        } else {
+            totalAvista = totalAvista;
+            totalParcelado = valorTotalComDesconto - totalAvista;
+        }
+
+        // Atualiza os campos de total
+        totalAvistaInput.value = totalAvista.toFixed(2);
+        totalParceladoInput.value = totalParcelado.toFixed(2);
+    }
+
+    // Adiciona eventos input aos campos de valor à vista, valor parcelado e desconto
+    var totalAvistaInput = document.getElementById('total-avista');
+    var totalParceladoInput = document.getElementById('total-parcelado');
+    var descontoInput = document.getElementById('desconto');
+
+    totalAvistaInput.addEventListener('input', calcularTotal);
+    totalParceladoInput.addEventListener('input', calcularTotal);
+    descontoInput.addEventListener('input', calcularTotal);
+
+    // Adiciona evento de escuta de alteração aos campos da tabela
+    var tableInputs = document.querySelectorAll('table tbody input');
+    tableInputs.forEach(function(input) {
+        input.addEventListener('input', calcularTotal);
+    });
+
+
+
+</script>
+
+<script>
+   $(document).ready(function() {
+
+   $('#total-avista, #total-parcelado, #desconto').on('change', function() {
+    updateTotalSum();
+  });
+
+  function calculateTotal(row) {
+    var quantity = parseInt(row.find('.quantity').val()) || 0;
+    var unitPrice = parseFloat(row.find('.unit-price').val()) || 0;
+    var total = quantity * unitPrice;
+    row.find('.total').text('R$ ' + total.toFixed(2));
+    return total;
+  }
+
+   function updateTotalSum() {
+      var sum = 0;
+      $('tbody tr').each(function() {
+        var total = calculateTotal($(this));
+        sum += total;
+      });
+
+      var desconto = parseFloat($('#desconto').val()) || 0;
+      var valorTotalPedido = sum - desconto;
+
+      var formattedSum = sum.toFixed(2);
+      var formattedValorTotalPedido = valorTotalPedido.toFixed(2);
+
+      $('#total-sum').text('Valor Total: R$ ' + formattedSum);
+      $('#pedido-desconto').text('Desconto: R$ ' + desconto.toFixed(2));
+      $('#order-total').text('Valor Total do Pedido: R$ ' + formattedValorTotalPedido);
+    }
+
+  $(document).on('input', '.quantity, .unit-price', function() {
+    var row = $(this).closest('tr');
+    calculateTotal(row);
+    updateTotalSum();
+  });
+
+  $(document).on('click', '.del-row', function() {
+    $(this).closest('tr').remove();
+    updateTotalSum();
+  });
+
+  // Inicializar o valor total ao carregar a página
+  updateTotalSum();
+});
+
+
+
+
+</script>
+
+</body>
+
+</html>
+{% endblock %}

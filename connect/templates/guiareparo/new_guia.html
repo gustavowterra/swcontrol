@@ -1,0 +1,100 @@
+{% load static %}
+
+<head xmlns="http://www.w3.org/1999/html">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nova Guia Reparo</title>
+
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            font-family: Arial, sans-serif;
+        }
+        table {
+            border-collapse: collapse;
+            width: 100%;
+            max-width: 800px;
+            text-align: center;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+        }
+        th {
+            background-color: #f2f2f2;
+            text-align: center;
+        }
+        td {
+            text-align: center;
+        }
+
+
+
+    </style>
+</head>
+<body>
+<section class="mt-2">
+    <div class="container">
+
+        <form method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            <div class="row mt-4">
+                <h6 style="margin-top:50px;"> NOVA GUIA - PEDIDO {{ pedido.numero }}
+                </h6>
+            </div>
+
+
+            <div class="row">
+
+                <h6>Tabela de Itens</h6>
+
+
+                <table>
+                    <thead>
+                    <tr>
+                        <th>Selecionar</th>
+                        <th>Nome do Item</th>
+                        <th>Observação</th>
+
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for item in itens %}
+                    <tr>
+                        <td><input type="checkbox" name="checks" value="{{item.id}}"></td>
+                        <td style="font-size:12px;"><input type="text" name="items" value="{{item.id}}" style="display:none;">  {{ item.nome }} - {{ item.comprimento}} x {{ item.largura }}</td>
+                        <td><textarea name="observacoes" placeholder="Escreva os detalhes para reparo"></textarea>
+                        </td>
+
+                    </tr>
+                    {% endfor %}
+
+                    </tbody>
+                </table>
+
+
+            </div>
+            <div class="row">
+
+                <div class="col-md-3" style="margin-top:10px;">
+                    <button id="submit-button " type="submit" class="btn btn-dark"
+                            style="font-size:12px; color:white; background-color:black;">
+                        Salvar
+                    </button>
+                </div>
+
+            </div>
+    </div>
+    </form>
+
+
+    </div>
+
+</section>
+
+</body>
+

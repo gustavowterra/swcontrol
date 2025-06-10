@@ -1,0 +1,1676 @@
+{% extends "./modelo.html" %}
+{% load static %}
+{% block container %}
+<head xmlns="http://www.w3.org/1999/html">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Untitled</title>
+    <link rel="stylesheet" href="{% static 'PEDIDO/bootstrap.min.css' %}">
+    <link rel="stylesheet" href="{% static 'PEDIDO/fontawesome-all.min.css' %}">
+    <style>
+    /* Estilos personalizados */
+     .table-field {
+        border: 1px solid black;
+        margin: 5px;
+        border-radius: 0;
+        font-size: 12px;
+        padding: 5px; /* Adicione um preenchimento para espaçamento interno */
+    }
+    .notification {
+        display: none;
+        position: fixed;
+        bottom: 20px;
+        left: 50%;
+        transform: translateX(-50%);
+        background-color: #f44336;
+        color: white;
+        padding: 10px 20px;
+        border-radius: 5px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    .custom-background1 {
+        background-color: #f2f2f2; /* Cor de fundo cinza claro */
+        padding: 30px; /* Ajuste o valor do preenchimento conforme necessário */
+
+    }
+
+    .form-control {
+      border:solid 1px;
+      border-radius: 2;
+      font-size: 12px;
+    }
+    .form-control2 {
+      border: none;
+      border-radius: 0;
+      border-bottom: none;
+      font-size: 12px;
+      margin: 5px;
+      padding: 5px;
+    }
+
+    .form-control::placeholder {
+      color: #999;
+      font-size: 12px;
+    }
+    .form-control2::placeholder {
+      color: #999;
+      font-size: 12px;
+    }
+
+    .custom-margin-top {
+      margin-top: 25px;
+    }
+
+    .gray-bg {
+      background-color: #f8f9fa;
+    }
+
+    .cliente-container {
+      background-color: #000;
+      color: #fff;
+      padding: 2px;
+    }
+
+    .modal-dialog {
+      max-width: 900px; /* Ajuste o valor conforme necessário */
+    }
+
+    .modal-content {
+      height: 550px; /* Ajuste o valor conforme necessário */
+    }
+    .form-wrapper {
+
+      padding: 10px;
+    }
+
+    </style>
+
+</head>
+<body>
+<section class="mt-2 custom-background1">
+<!-- Modal Que Carrega o Cadastro de Cliente Caso Cliente Não Cadastrado -->
+                        <div class="modal" id="modal-cadastro-cliente" tabindex="-1" role="dialog">
+                            <div class="modal-dialog modal-lg" role="document">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title">Cadastro de Cliente</h5>
+                                        <button id="fechar-modal" class="close" data-dismiss="modal"
+                                                aria-label="Fechar">
+                                            <span aria-hidden="true">&times;</span>
+                                        </button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <!-- Aqui será exibido o formulário de cadastro do cliente -->
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+    <div class="container custom-background1 ">
+         <form method="post" id="form-pedido" enctype="multipart/form-data">
+            {% csrf_token %}
+            <div class="row">
+                <div class="col-md-6 align-items-center text-center mb-4"
+                     style="margin-left: 200px; margin-right: auto;">
+                    <h4><strong>PEDIDO {{ pedido.numero }}</strong></h4>
+                </div>
+                <div class="row ">
+                    <div class="col">
+
+                        <div class="row mb-2 custom-background1">
+                            <div class="col-md-4">
+                                <label for="numero_pedido">Numero do Pedido</label>
+                                <input type="text" class="form-control2 text-center" id="numero_pedido"
+                                       name="numero_pedido"
+                                       value="{{ pedido.numero }}" readonly>
+                            </div>
+                            <div class="col-md-4">
+                                <label for="data-pedido">Data do Pedido</label>
+                                <input type="date" class="form-control2 text-center" id="data-pedido"
+                                       placeholder="Data do Pedido"
+                                       value="{{pedido.datapedido|date:'Y-m-d'}}"
+                                       name="data-pedido" readonly>
+                            </div>
+                            <div class="col-md-4">
+                                <label for="data_entrega">Data da Entrega</label>
+
+                                <input type="date" class="form-control2 text-center" id="data_entrega"
+                                       placeholder="Prazo de Entrega"
+                                       name="data_entrega" required>
+                    </div>
+                        </div>
+                    </div>
+
+                    <div id="dados-cliente" style="display: block;">
+                        <fieldset style="font-size:10px; border: 1px solid black; border-radius: 10px;padding: 10px;">
+                          <legend class="w-auto">Dados Cliente</legend>
+                          <div class="row">
+                            <div class="col-md-4">
+                              <div class="form-group">
+                                <label for="nome_cliente" class="form-label">Nome</label>
+                                <input class="form-control" value="{{ pedido.cliente_pedido.nome }}" type="text" id="nome_cliente" name="nome" readonly>
+                                  <input style="display:none;" class="form-control" type="text" id="cliente-boleto" name="boleto-cliente" readonly>
+                              </div>
+                            </div>
+                            <div class="col-md-3">
+                              <div class="form-group">
+                                <label for="documento_cliente" class="form-label">CPF / CNPJ - Inscrição Estadual</label>
+                                <input class="form-control" type="text" value="{{ pedido.cliente_pedido.documento }}" id="documento_cliente" name="documento" readonly>
+                              </div>
+                            </div>
+                            <div class="col-md-3">
+                              <div class="form-group">
+                                <label for="contato-cliente-cnpj" class="form-label">Contato ref. CNPJ</label>
+                                <input class="form-control" type="text" value="{{ pedido.cliente_pedido.nome_contato|default:'' }}" id="contato-cliente-cnpj" name="contato_cnpj" readonly>
+                              </div>
+                            </div>
+                            <div class="col-md-2">
+                              <div class="form-group">
+                                <label for="dt-abertura" class="form-label">Data de Abertura</label>
+                                <input class="form-control" type="date" value="{{ pedido.cliente_pedido.dt_abertura|date:'Y-m-d' }}" id="dt-abertura" name="data-abertura" readonly>
+                              </div>
+                            </div>
+                          </div>
+                          <div class="row">
+                            <div class="col-md-3">
+                              <div class="form-group">
+                                <label for="email-cliente" class="form-label">Email</label>
+                                <input class="form-control" type="email" value="{{ pedido.cliente_pedido.email }}" id="email-cliente" name="email-cliente" readonly>
+                              </div>
+                            </div>
+                            <div class="col-md-2">
+                              <div class="form-group">
+                                <label for="telefone1-cliente" class="form-label">Telefone 1</label>
+                                <input class="form-control" type="tel" value="{{ pedido.cliente_pedido.telefone1 }}" id="telefone1-cliente" name="telefone1-cliente" readonly>
+                              </div>
+                            </div>
+                            <div class="col-md-2">
+                              <div class="form-group">
+                                <label for="telefone2-cliente" class="form-label">Telefone 2</label>
+                                <input class="form-control" type="tel" id="telefone2-cliente" value="{{ pedido.cliente_pedido.telefone2 }}" name="telefone2-cliente" readonly>
+                              </div>
+                            </div>
+                            <div class="col-md-2">
+                              <div class="form-group">
+                                <label for="cep-cliente" class="form-label">CEP</label>
+                                <input class="form-control" type="text" id="cep-cliente" value="{{ pedido.cliente_pedido.CEP }}" name="cep-cliente" readonly>
+                              </div>
+                            </div>
+                          </div>
+                          <div class="row">
+                            <div class="col-md-3">
+                              <div class="form-group">
+                                <label for="bairro-cliente" class="form-label">Bairro</label>
+                                <input class="form-control" type="text" value="{{ pedido.cliente_pedido.bairro }}" id="bairro-cliente" name="bairro-cliente" readonly>
+                              </div>
+                            </div>
+                            <div class="col-md-3">
+                              <div class="form-group">
+                                <label for="cidade-cliente" class="form-label">Cidade</label>
+                                <input class="form-control" type="text" id="cidade-cliente" value="{{ pedido.cliente_pedido.cidade }}" name="cidade-cliente" readonly>
+                              </div>
+                            </div>
+                            <div class="col-md-2">
+                              <div class="form-group">
+                                <label for="estado-cliente" class="form-label">Estado</label>
+                                <input class="form-control" type="text" id="estado-cliente" value="{{ pedido.cliente_pedido.estado }}" name="estado-cliente" readonly>
+                              </div>
+                            </div>
+                            <div class="col-md-4">
+                              <div class="form-group">
+                                <label for="endereco-cliente" class="form-label">Endereço</label>
+                                <input class="form-control" type="text" id="endereco-cliente" name="endereco-cliente" value="{{ pedido.cliente_pedido.endereco }}" readonly>
+                              </div>
+                            </div>
+                            <div class="col-md-2">
+                              <div class="form-group">
+                                <label for="numero-endereco-cliente" class="form-label">Nº</label>
+                                <input class="form-control" type="text" id="numero-endereco-cliente" value="{{ pedido.cliente_pedido.numero_endereco }}" name="numero-endereco-cliente" readonly>
+                              </div>
+                            </div>
+                          </div>
+                          <div class="row">
+                            <div class="col-md-6">
+                              <div class="form-group">
+                                <label for="complemento-cliente" class="form-label">Complemento</label>
+                                <input class="form-control" type="text" id="complemento-cliente" value="{{ pedido.cliente_pedido.complemento|default:'' }}" name="complemento-cliente" readonly>
+                                  <label for="ponto-referencia-cliente" class="form-label">Ponto de Referência</label>
+                                <input class="form-control" type="text" id="ponto-referencia-cliente" value="{{ pedido.cliente_pedido.ponto_referencia|default:'' }}" name="ponto-referencia-cliente"readonly >
+                              </div>
+                            </div>
+                              <div class="col-md-4">
+                              <div class="form-group">
+                                <label for="tipo-cliente" class="form-label">Tipo Cliente</label>
+                                <input class="form-control" type="text" id="tipo-cliente" value="{{ pedido.cliente_pedido.tipo_cliente.descricao }}" name="tipo-cliente" readonly>
+                              </div>
+                            </div>
+                               <div class="col-md-4">
+                              <div class="form-group">
+                                <label for="score-cliente" class="form-label">Score Cliente</label>
+                                <input class="form-control" type="text" id="score-cliente" name="score-cliente" readonly>
+                              </div>
+                            </div>
+                          </div>
+                        </fieldset>
+                    </div>
+                         <div>
+                        <fieldset>
+                            <legend>Alterar o Endereço de Entrega Para:</legend>
+                            <div class="custom-control custom-radio">
+                                <input type="radio" id="endereco-cadastro" class="custom-control-input"
+                                       name="endereco-opcao" value="alterar_endereco_para_cadastro">
+                                <label class="form-label custom-control-label" for="endereco-cadastro">Endereço de
+                                    Cadastro</label>
+                            </div>
+                            <div class="custom-control custom-radio">
+                                <input type="radio" id="endereco-opcional" class="custom-control-input"
+                                       name="endereco-opcao" value="manter_endereco" checked>
+                                <label class="form-label custom-control-label" for="endereco-opcional">Endereço da
+                                    Entrega</label>
+                            </div>
+                        </fieldset>
+                    </div>
+                    <div>
+                        <div class="row mb-2">
+                            <h6 class="cliente-heading" style="margin-top: 30px">Endereço da Entrega</h6>
+                        </div>
+                        <div id="enderecoForm" style="display" class="form-wrapper">
+                            <div class="row">
+
+                                    <div class="col-md-4">
+                                        <div class="mb-2">
+                                            <h8><small>CEP</small></h8>
+                                            <div class="input-group">
+                                                <input class="form-control InputBorder" type="text" id="cep-entrega"
+                                                       style="font-size:12px;"
+                                                       value="{{ pedido.cep_entrega }} "
+                                                       name="cep-entrega" required>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <h8><small>Bairro</small></h8>
+                                        <input class="form-control InputBorder" type="text" id="bairro-entrega"
+                                               style="font-size:12px;"
+                                               value="{{ pedido.bairro_entrega }}"
+                                               name="bairro-entrega" required>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <h8><small>Cidade</small></h8>
+                                        <input class="form-control InputBorder" type="text" id="cidade-entrega"
+                                               style="font-size:12px;"
+                                                value="{{ pedido.cidade_entrega }}"
+                                               name="cidade-entrega" required>
+                                    </div>
+                                    <div class="col-md-1">
+                                        <h8><small>UF</small></h8>
+                                        <input class="form-control InputBorder" type="text" id="uf-entrega"
+                                                value="{{ pedido.uf_entrega }}"
+                                               style="font-size:12px;"
+                                               name="uf-entrega" required>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-4">
+                                        <h8><small>Logradouro</small></h8>
+                                        <input class="form-control InputBorder" type="text" id="logradouro-entrega"
+                                               style="font-size:12px;"
+                                                value="{{ pedido.endereco_entrega }}"
+                                               name="logradouro-entrega" required>
+                                    </div>
+                                    <div class="col-md-2">
+                                        <div class="mb-1">
+                                            <h8><small>Nº</small></h8>
+                                            <div class="input-group">
+                                                <input class="form-control InputBorder" type="number" id="numero_endereco"
+                                                       style="font-size:12px;"
+                                                        value="{{ pedido.numero_end_entrega }}"
+                                                       name="numero-endereco-entrega" required>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="mb-3">
+                                            <h8><small>Complemento</small></h8>
+                                            <div class="input-group">
+                                                <input class="form-control InputBorder" type="text" id="complemto_endereco"
+                                                       style="font-size:12px;"
+                                                        value="{{ pedido.complemento|default:'' }}"
+                                                       name="complemento_endereco">
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            <div class="col-md-4">
+                                        <div class="mb-3">
+                                            <h8><small>Ponto de Referencia</small></h8>
+                                            <div class="input-group">
+                                                <input class="form-control InputBorder" type="text" id="ponto_referencia"
+                                                       style="font-size:12px;"
+                                                        value="{{ pedido.ponto_referencia_entrega|default:'' }}"
+                                                       name="ponto_referencia_entrega">
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                        </div>
+                        <fieldset style="border: 1px solid black; border-radius: 10px;padding: 10px; margin-left: 10px; margin-top: 10px;"  >
+                            <legend style="font-size: 20px; "><small><strong> Tipo de Entrega </strong></small></legend>
+                                <div class="col-md-2">
+                                    <select class="form-control col-md-3" name="opcao_frete">
+                                        {% if pedido.tipo_entrega == 'propria' %}
+                                        <option value="propria" selected>Entrega Própria</option>
+                                        <option value="Transportadora">Transportadora</option>
+                                        <option value="retirada">Retirada Cliente</option>
+                                        {% elif pedido.tipo_entrega == 'Transportadora' %}
+                                        <option value="propria" selected>Entrega Própria</option>
+                                        <option value="Transportadora" selected>Transportadora</option>
+                                        <option value="retirada">Retirada Cliente</option>
+                                        {% else %}
+                                        <option value="propria" selected>Entrega Própria</option>
+                                        <option value="Transportadora" selected>Transportadora</option>
+                                        <option value="retirada" selected>Retirada Cliente</option>
+                                        {% endif %}
+                                        </select>
+                                </div>
+                        </fieldset>
+
+                    <div class="row mb-3 mt-2">
+                        <div class="col-md-3">
+
+                            <label for="vendedor1"><small><strong> Vendedor 1 (Interno) </strong></small></label>
+
+                            <input type="text" list="vendedores1" class="form-control"
+                                   id="vendedor1" name="vendedor1" value="{{ pedido.Vendedor }}" required>
+
+                            <datalist id="vendedores1">
+                                {% for vendedor in vendedores %}
+                                <option data-funcao="{{ vendedor.funcao }}" value="{{ vendedor.nome|upper }}"></option>
+                                {% endfor %}
+                            </datalist>
+                        </div>
+                        <div class="col-md-3">
+
+                            <label for="comissao1"><small><strong> Comissão Vendedor 1 </strong></small></label>
+                                 <input type="number" class="form-control text-center" id="comissao1" value="{{ pedido.vendedor_comissao }}" name="comissao1" >
+                        </div>
+
+                        <div class="col-md-3">
+                            <label for="vendedor2"><small><strong> Vendedor 2</strong></small></label>
+                            <input type="text" list="vendedores2" class="form-control"
+                                   id="vendedor2" value="{{pedido.Vendedor2|default:''}}" name="vendedor2">
+                            <datalist id="vendedores2">
+                                {% for vendedor in vendedores %}
+                                <option data-funcao="{{ vendedor.funcao }}" value="{{ vendedor.nome|upper }}"></option>
+                                {% endfor %}
+                            </datalist>
+                        </div>
+                         <div class="col-md-3">
+
+                            <label for="comissao2"><small><strong> Comissão Vendedor 2 </strong></small></label>
+                                 <input type="number" class="form-control text-center" value="{{ pedido.vendedor2_comissao|default:''}}" id="comissao2" name="comissao2" >
+                        </div>
+                    </div>
+
+
+                       <div class="container">
+
+                            <fieldset class="third-fieldset" >
+                                <legend>Dados dos Produtos</legend>
+                                <table  >
+                                    <thead>
+                                    <tr>
+                                        <th style="text-align:center; box-sizing:border-box; border:none; font-size:10px; white-space:normal;padding:5px;width:10%;">Quantidade </th>
+                                        <th style="text-align:center; box-sizing:border-box; border:none; font-size:10px; white-space:normal;padding:5px;width:40%;">Produtos</th>
+                                        <th style="text-align:center; box-sizing:border-box; border:none; font-size:10px; white-space:normal;padding:5px;width:10%;">Unitário</th>
+                                        <th style="text-align:center; box-sizing:border-box; border:none; font-size:10px; white-space:normal;padding:5px;width:10%;">Total</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    {% for item in itens %}
+                                    <tr>
+                                        <td><input readonly type="number" name="quantidade" value="{{ item.quantidade }}" style="text-align:center; box-sizing:border-box; border:none; font-size:10px; white-space:normal;padding:5px;width:100%;"></td>
+                                        <td><input readonly type="text" name="produtos" value="{{ item.nome }} - {{ item.observacao_item|upper }} {{ item.comprimento }} x {{ item.largura }} {{ item.tipo }}"  style="text-align:center;box-sizing:border-box; border:none; font-size:10px; white-space:normal;padding:5px;width:100%;"></td>
+
+                                        <td><input readonly type="text" class="unit" name="unitario" value="{{ item.preco }}" style="text-align:center;box-sizing:border-box; border:none; font-size:10px; white-space:normal;padding:5px;width:100%;"></td>
+                                        <td><input readonly type="text" class="total" name="total" value="{{ item.total_item }}" style="text-align:center;box-sizing:border-box; border:none; font-size:10px; white-space:normal;padding:5px;width:100%;"></td>
+                                    </tr>
+                                    {% endfor %}
+                                    </tbody>
+                                </table>
+                            </fieldset>
+                    </div>
+                            <!-- DEMAIS VALORES -->
+                        <fieldset style="border: 1px solid black; border-radius: 10px;padding: 10px; margin-left: 10px; margin-top: 10px;"  >
+                            <legend style="font-size: 20px; "><small><strong> Demais Valores </strong></small></legend>
+                            <div class="row mb-3 custom-margin-top">
+                                <div class="col-md-2">
+                                    <h6><strong><small>Desconto a Vista</small></strong></h6>
+                                    <select class="form-control desconto-avista text-center" id="desconto-avista" name="desconto-avista" readonly>
+                                        <option value="SIM">SIM</option>
+                                        <option value="NAO" selected>NÃO</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-2">
+                                    <h6><strong><small>Frete Embutido</small></strong></h6>
+                                    <input type="text"
+                                           class="form-control frete-embutido text-center"
+                                           id="frete-embutido" name="frete-embutido" value="R$ 0,00" readonly>
+                                </div>
+
+                                <div class="col-md-2">
+                                    <h6><strong><small>Bonus</small></strong></h6>
+
+                                    <input type="text"
+                                           class="form-control acerto text-center"
+                                           id="acerto" name="acerto" value="{{ pedido.valor_repasse|default:'R$ 0,00'}}">
+                                </div>
+
+                                    <div class="col-md-3">
+                                        <label for="bonificado"><small><strong> Bonificado </strong></small></label>
+                                        <select class="form-control text-center" id="bonificado" name="bonificado">
+                                            <option value="{{ pedido.bonificado.nome}}">{{ pedido.bonificado.nome}}</option>
+                                            {% for bonificado in bonificados %}
+                                            <option value="{{ bonificado.nome }}">{{ bonificado.nome }}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+
+
+                            </div>
+                        </fieldset>
+
+                        <div class="row mt-4">
+                            <div class="col">
+                                <p id="total-sum" class="mb-2">Valor Total Dos Produtos: R$ {{pedido.valorTotal}}</p>
+                                <p id="pedido-desconto" class="mb-2">Desconto: R$ 0.00</p>
+                                <p id="order-total">Valor Total do Pedido: R$ {{pedido.valorTotal}}</p>
+                            </div>
+                         </div>
+                             <!-- INFORMACOES ADICIONAIS DO PEDIDO -->
+                    <div class="row mb-3 custom-margin-top">
+
+                        <div class="col-md-2">
+                            <h6><strong><small>Fundo</small></strong></h6>
+                            <input type="text"
+                                   class="form-control text-center"
+                                   id="fundo" name="fundo" value="{{ pedido.fundo|default:'' }}">
+                        </div>
+                        <div class="col-md-2">
+                            <h6><strong><small>Bordas</small></strong></h6>
+                            <input type="text"
+                                   class="form-control text-center"
+                                   id="bordas" name="bordas" value="{{ pedido.borda|default:'' }}">
+                        </div>
+                        <div class="col-md-2">
+                            <h6><strong><small>Letras</small></strong></h6>
+                            <input type="text"
+                                   class="form-control text-center"
+                                   id="letras" name="letras" value="{{ pedido.letra|default:'' }}">
+                        </div>
+                        <div class="col-md-2">
+                            <h6><strong><small>Logomarca</small></strong></h6>
+                            <input type="text"
+                                   class="form-control text-center"
+                                   id="logomarca" name="logomarca" value="{{ pedido.logomarca|default:'' }}">
+                        </div>
+
+
+                         <div class="col-md-4">
+                            <h6><strong><small>Observação do Pedido</small></strong></h6>
+                            <input type="text"
+                                   class="form-control text-center"
+                                   id="observacao" name="observacao" value="{{ pedido.observacao|default:'' }}">
+                        </div>
+                        <div class="col-md-4">
+                            <h6><strong><small>Arquivo Layout Upload</small></strong></h6>
+                            <input type="file"
+                                   class="form-control text-center"
+                                   id="arquivo" name="arquivo" >
+                        </div>
+
+                        <div class="col-md-4">
+                            <h6><strong><small>Arquivo Layout Download</small></strong></h6>
+                            <a href="{{ pedido.caminho_layout }}">{{ pedido.caminho_layout|default:'' }}</a>
+
+
+
+                        </div>
+
+
+                    </div>
+                            <!-- INFORMACOES NFE -->
+                        <fieldset style="border: 1px solid black; border-radius: 10px;padding: 10px; margin-left: 10px; margin-top: 10px;"  >
+                            <legend style="font-size: 20px; "><small><strong> Informacoes NFe </strong></small></legend>
+                            <div class="row mb-3 custom-margin-top">
+                                <div class="col-md-2">
+                                    <h6><strong><small>Cliente Solicita?</small></strong></h6>
+                                    <select class="form-control text-center col-md-2" id="cliente-nfe" name="pedido-nfe-opcao">
+                                        {% if pedido.flag_nfe == 1 %}
+                                        <option value="nao" >NÃO</option>
+                                        <option value="sim" selected>SIM</option>
+                                        {% else %}
+                                        <option value="nao" selected >NÃO</option>
+                                        <option value="sim" >SIM</option>
+                                        {% endif %}
+                                    </select>
+                                </div>
+                                <div class="col-md-2">
+                                    <h6><strong><small>Nfe Antecipado?</small></strong></h6>
+                                    <select class="form-control text-center col-md-2" id="cliente-nfe-antecipado" name="antecipado-nfe-opcao">
+                                        {% if pedido.flag_nfe == 1 %}
+                                        <option value="nao" >NÃO</option>
+                                        <option value="sim" selected>SIM</option>
+                                        {% else %}
+                                        <option value="nao" selected >NÃO</option>
+                                        <option value="sim" >SIM</option>
+                                        {% endif %}
+                                    </select>
+                                </div>
+                                <div class="col-md-4">
+                                    <h6><strong><small>Informações Complementares NFe</small></strong></h6>
+                                    <textarea rows="4" cols="50" class="form-control text-center" id="informacoes-complementares" name="informacoes_complementares">
+                                        {{pedido.informacoes_adicionais|default:''}}
+                                    </textarea>
+                                </div>
+                                <div class="col-md-2">
+                                    <h6><strong><small>Valor Transportadora Nfe</small></strong></h6>
+                                    <input type="text"
+                                           class="form-control frete text-center"
+                                           id="frete" name="frete" value="{{ pedido.frete_valor|default:'R$ 0,00' }}">
+                                </div>
+                            </div>
+                        </fieldset>
+
+
+
+
+
+                        <div class="col-md-3">
+                            <button id="submit-button" type="submit" class="btn btn-dark">Cadastrar Pedido</button>
+                        </div>
+                    </div>
+                </div>
+                </div>
+                </div>
+         </form>
+
+    </div>
+
+</section>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="{% static 'PEDIDO/bootstrap.min.js' %}"></script>
+<script src="{% static 'PEDIDO/script.min.js' %}"></script>
+
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.mask/1.14.16/jquery.mask.min.js"></script>
+
+
+
+<!-- SCRIPT PARA FORMATAR DOCUMENTOS -->
+<script>
+    function formatarDocumento() {
+  var input = document.getElementById('documento-cliente');
+  var valor = input.value.replace(/\D/g, ''); // Remove caracteres não numéricos
+
+  // Verifica se é CPF (11 dígitos) ou CNPJ (14 dígitos)
+  if (valor.length <= 11) {
+    valor = valor.replace(/(\d{3})(\d)/, '$1.$2');
+    valor = valor.replace(/(\d{3})(\d)/, '$1.$2');
+    valor = valor.replace(/(\d{3})(\d{1,2})$/, '$1-$2');
+  } else {
+    valor = valor.replace(/^(\d{2})(\d)/, '$1.$2');
+    valor = valor.replace(/^(\d{2})\.(\d{3})(\d)/, '$1.$2.$3');
+    valor = valor.replace(/\.(\d{3})(\d)/, '.$1/$2');
+    valor = valor.replace(/(\d{4})(\d)/, '$1-$2');
+  }
+
+  input.value = valor;
+}
+</script>
+<!-- SCRIPT PARA BUSCA DE CEP ENTREGA -->
+<script>
+  $(document).ready(function() {
+  console.log('entrou');
+    $('#cep-entrega').on('keyup', function() {
+      var cep = $(this).val().replace(/\D/g, '');
+      if (cep.length == 8) {
+        $.ajax({
+          url: '/consultar_cep/',
+          type: 'GET',
+          data: { 'cep': cep },
+          dataType: 'json',
+          success: function(data) {
+          var localidade = data.bairro + ', ' + data.localidade + ' - ' + data.uf;
+          $('#bairro-entrega').val(data.bairro);
+          $('#cidade-entrega').val(data.localidade);
+          $('#uf-entrega').val(data.uf);
+          $('#logradouro-entrega').val(data.logradouro);
+        }
+        });
+      }
+    });
+   $('#cep-entrega').on('keyup', function() {
+    var cep = $(this).val().replace(/\D/g, '');
+    cep = cep.replace(/^(\d{5})(\d)/, '$1-$2');
+    $(this).val(cep);
+  });
+  });
+
+    </script>
+<!-- SCRIPT PARA BUSCAR VENDEDOR 1 E SUAS RESPECTIVAS COMISSÕES
+<script>
+    $(document).ready(function () {
+      $("#vendedor1").change(function () {
+        var selectedVendedor = $(this).val();
+        $.ajax({
+          type: "GET",
+          url: "/get-comissoes/",
+          data: {
+            vendedor: selectedVendedor
+          },
+          success: function (response) {
+            var options = response.comissoes; // Extrai as opções de comissão do objeto de resposta
+            var uniqueOptions = Array.from(new Set(options)); // Filtra os valores repetidos
+
+            var optionsHtml = ""; // String para armazenar as tags <option>
+
+            // Gera as tags <option> com base nas opções de comissão filtradas
+            for (var i = 0; i < uniqueOptions.length; i++) {
+              var optionValue = uniqueOptions[i] + "%"; // Adiciona o símbolo "%" ao valor da opção
+              optionsHtml += "<option value='" + optionValue + "'>" + optionValue + "</option>";
+            }
+
+            // Atualiza o conteúdo do campo "Comissão 1" com as opções de comissão filtradas
+            $("#comissao1").html(optionsHtml);
+          },
+          error: function (xhr, errmsg, err) {
+            console.log(xhr.status + ": " + xhr.responseText);
+          }
+        });
+      });
+    });
+
+
+
+
+
+
+
+
+
+
+
+
+
+</script>-->
+<!-- SCRIPT PARA BUSCAR CLIENTE PELO CPF / CNPJ -->
+<script>
+
+$(document).ready(function () {
+  $("#buscar-cliente").click(function () {
+    var tipoPedido = $("#tipo-pedido").val();
+    console.log(tipoPedido);
+    var nomeCliente = $("#cliente-nome-busca").val();
+    var documentoClienteNome = $("#clientes option[value='" + nomeCliente + "']").attr('data-cliente-documento');
+    console.log(documentoClienteNome);
+    var documentoCliente = $("#documento-cliente").val();
+    var numeroPedido = $("#numero_pedido").val();
+
+
+
+    $.ajax({
+      type: "GET",
+      url: "/get-cliente/",
+      data: {
+        documento: documentoCliente,
+        documento2: documentoClienteNome,
+        tipo_pedido: tipoPedido,
+        numero_pedido:numeroPedido
+      },
+      success: function (response) {
+        if (response.cliente) {
+          // Cliente encontrado, exiba os dados na mesma tela
+          exibirDadosCliente(response.cliente);
+          document.getElementById('mensagem-cliente-nao-encontrado').style.display = 'none';
+        }
+        else {
+            if (response.message) {
+              // Cliente encontrado, exiba os dados na mesma tela
+              alert('CLIENTE INCOMPATIVEL COM TIPO DO PEDIDO');
+              window.location.reload();
+            }
+            else{
+              // Cliente não encontrado, exiba o modal para cadastrar um novo cliente
+
+              document.getElementById('mensagem-cliente-nao-encontrado').style.display = 'block';
+              exibirFormularioCadastroCliente(documentoCliente);
+              $("#modal-cadastro-cliente").modal("show");
+              }
+        }
+      },
+      error: function (xhr, errmsg, err) {
+        console.log(xhr.status + ": " + xhr.responseText);
+      }
+    });
+  });
+
+  $("#modal-cadastro-cliente").on("click", "#salvar-cliente", function (event) {
+    event.preventDefault(); // Impede o envio do formulário tradicional
+
+    var formData = $("#form-cadastro-cliente").serialize(); // Obtém os dados do formulário
+
+    $.ajax({
+      type: "POST",
+      url: "/cadastrar_cliente/",
+      data: formData,
+      success: function (response) {
+        // Processar a resposta, se necessário
+        // Por exemplo, exibir uma mensagem de sucesso
+
+        // Fechar o modal de cadastro do cliente
+        $("#modal-cadastro-cliente").modal("hide");
+
+        // Atualizar os dados na tela de pedido com os dados do cliente cadastrado
+        exibirDadosCliente(response.cliente);
+
+        // Remover a mensagem de erro
+        document.getElementById('mensagem-cliente-nao-encontrado').style.display = 'none';
+
+        // Executar automaticamente o botão de busca
+        buscarCliente();
+      },
+      error: function (xhr, errmsg, err) {
+        console.log(xhr.status + ": " + xhr.responseText);
+      }
+    });
+  });
+
+  $("#fechar-modal").click(function () {
+    $("#modal-cadastro-cliente").modal("hide");
+  });
+});
+
+function exibirDadosCliente(cliente) {
+  // Atualizar os campos na tela de pedido com os dados do cliente
+  $("#nome_cliente").val(cliente.nome);
+  $("#email-cliente").val(cliente.email);
+  $("#documento_cliente").val(cliente.documento);
+  $("#telefone1-cliente").val(cliente.telefone1);
+  $("#telefone2-cliente").val(cliente.telefone2);
+  $("#cep-cliente").val(cliente.CEP);
+  $("#estado-cliente").val(cliente.estado);
+  $("#cidade-cliente").val(cliente.cidade);
+  $("#bairro-cliente").val(cliente.bairro);
+  $("#endereco-cliente").val(cliente.endereco);
+  $("#numero-endereco-cliente").val(cliente.numero_endereco);
+  $("#complemento-cliente").val(cliente.complemento);
+  $("#dt-abertura").val(cliente.dt_abertura);
+  $("#contato-cliente-cnpj").val(cliente.contato_cnpj);
+  $("#tipo-cliente").val(cliente.tipo_cliente);
+  $("#score-cliente").val(cliente.score_cliente);
+  $("#cliente-boleto").val(cliente.boleto);
+  $("#ponto-referencia-cliente").val(cliente.ponto_referencia);
+
+
+
+  $("#dados-cliente").show();
+}
+
+function exibirFormularioCadastroCliente(documento) {
+  fetch('/cadastrar_cliente/')
+    .then(response => response.text())
+    .then(data => {
+      // Exiba o formulário de cadastro de cliente na tela
+      const formulario = $(data);
+      formulario.find('#documento').val(documento); // Define o valor do campo "documento"
+      $("#modal-cadastro-cliente .modal-body").html(formulario);
+    })
+    .catch(error => {
+      console.error('Erro ao carregar o formulário de cadastro de cliente:', error);
+    });
+}
+function buscarCliente() {
+  var documentoCliente = $("#documento-cliente").val();
+
+  $.ajax({
+    type: "GET",
+    url: "/get-cliente/",
+    data: {
+      documento: documentoCliente
+    },
+    success: function (response) {
+      if (response.cliente) {
+        // Cliente encontrado, exiba os dados na mesma tela
+        exibirDadosCliente(response.cliente);
+        document.getElementById('mensagem-cliente-nao-encontrado').style.display = 'none';
+      } else {
+        // Cliente não encontrado, exiba o modal para cadastrar um novo cliente
+        document.getElementById('mensagem-cliente-nao-encontrado').style.display = 'block';
+        exibirFormularioCadastroCliente(documentoCliente);
+        $("#modal-cadastro-cliente").modal("show");
+      }
+    },
+    error: function (xhr, errmsg, err) {
+      console.log(xhr.status + ": " + xhr.responseText);
+    }
+  });
+}
+</script>
+
+<!-- SCRIPT PARA MOSTAR OS CAMPOS DE CADASTRAR ENDEREÇO QUANDO O CLIENTE SELECIONA OUTRO ENDEREÇO -->
+<script>
+    const radio1 = document.getElementById('endereco-cadastro');
+    const radio2 = document.getElementById('endereco-opcional');
+    const enderecoForm = document.getElementById('enderecoForm');
+
+
+    radio1.addEventListener('change', () => {
+        radio2.checked = false;
+        enderecoForm.style.display = 'none';
+    });
+
+    radio2.addEventListener('change', () => {
+        radio1.checked = false;
+         enderecoForm.style.display = 'block';
+    });
+
+
+
+
+
+
+
+
+
+
+
+
+
+</script>
+
+<!-- SCRIPT PARA INICIALIZAR OS CAMPOS DATA DE ENTREGA  -->
+<script>
+    // Função para definir a data atual no campo de data prevista
+    function definirDataAtual() {
+      var dataAtual = new Date();
+      dataAtual.setDate(dataAtual.getDate() + 15);
+      var ano = dataAtual.getFullYear();
+      var mes = ("0" + (dataAtual.getMonth() + 1)).slice(-2);
+      var dia = ("0" + dataAtual.getDate()).slice(-2);
+      var dataFormatada = ano + "-" + mes + "-" + dia;
+      document.getElementById("data_entrega").value = dataFormatada;
+    }
+
+    // Chama a função para definir a data atual
+    definirDataAtual();
+
+
+
+
+
+
+
+
+
+
+
+
+
+</script>
+
+<!-- SCRIPT PARA CRIAR UMA LISTA DE ITENS E ACIONAR A VIEW DE SALVAR ITENS COM A LISTA DE PEDIDOS  -->
+<script>
+$(document).ready(function() {
+  $('#submit-button').click(function(e) {
+    e.preventDefault();
+     var acertoValue = parseFloat($("#acerto").val().replace("R$", "").replace(",", ".").trim());
+            if (acertoValue > 0) {
+                // Verificar se o campo "Bonificado" é nulo
+                var bonificadoValue = $("#bonificado").val();
+                if (bonificadoValue === "") {
+                    alert("Favor Preencher Campo Bonificado");
+                    event.preventDefault(); // Impede o envio do formulário
+                    return false;
+                else{
+                    $('form').submit();
+                }
+                }
+            }
+            else{
+                    $('form').submit();
+                }
+
+
+      }
+    });
+  });
+});
+
+</script>
+<!-- SCRIPT PARA ATUALIZAR DATA ENTREGA  -->
+<script>
+
+   $(document).on('input', '.produto-input', function() {
+        var produtoInput = this;
+        var row = $(produtoInput).closest('tr');
+        var prazoFabricacao = 0;
+
+        // Obtém o prazo de fabricação do produto selecionado
+        var produtoSelecionado = row.find('option[value="' + produtoInput.value + '"]');
+        if (produtoSelecionado.length) {
+            prazoFabricacao = parseInt(produtoSelecionado.data('prazo-fabricacao'));
+        }
+
+        // Atualiza a data de entrega com base no prazo de fabricação
+        atualizarDataEntrega(prazoFabricacao);
+    });
+
+  function atualizarDataEntrega(prazoFabricacao) {
+      var dataEntregaInput = document.getElementById('data_entrega');
+      var hoje = new Date();
+      var prazoFabricacaoDias = parseInt(prazoFabricacao);
+
+      // Calcula a diferença entre a data de entrega e o dia de hoje em milissegundos
+      var diffMs = Date.parse(dataEntregaInput.value) - hoje.getTime();
+
+      // Calcula a diferença em dias
+      var diffDias = Math.ceil(diffMs / (1000 * 60 * 60 * 24));
+      console.log(diffDias);
+
+      // Verifica se o prazo de fabricação é maior ou igual à diferença em dias
+      if (prazoFabricacaoDias >= diffDias) {
+        // Adiciona o prazo de fabricação aos dias atuais
+        var dataEntrega = new Date(hoje.getTime() + prazoFabricacaoDias * 24 * 60 * 60 * 1000);
+
+        // Formata a data para o formato "yyyy-mm-dd"
+        var ano = dataEntrega.getFullYear();
+        var mes = ('0' + (dataEntrega.getMonth() + 1)).slice(-2);
+        var dia = ('0' + dataEntrega.getDate()).slice(-2);
+        var dataFormatada = ano + '-' + mes + '-' + dia;
+
+        // Define a data de entrega no campo de entrada
+        dataEntregaInput.value = dataFormatada;
+      }
+  }
+
+</script>
+<!-- SCRIPT PARA BUSCAR VALOR UNITARIO ITENS  -->
+<!--
+<script>
+
+$(document).ready(function() {
+
+    $(document).on("click", ".calcular-preco", function() {
+
+        var selectedProduct = $(this).closest(".row-produto-choice");
+        var produto = selectedProduct.find(".produto-input").val();
+        var tipo_produto = selectedProduct.find(".tipo-produto").val();
+        var quantidade = selectedProduct.find(".qtd-produto").val();
+        var comprimento = selectedProduct.find(".item-comprimento").val();
+        var largura = selectedProduct.find(".item-largura").val();
+        var adicional = selectedProduct.find(".valor-adicional").val().replace(',', '.').replace(/[^\d.-]/g, '');
+        var vendedor1 = $("#vendedor1").val();
+        var vendedor2 = $("#vendedor2").val();
+        var comissao1 = $("#comissao1").val();
+        var comissao2 = $("#comissao2").val();
+        var tipo_pedido = $("#tipo-pedido").val();
+        var documento = $("#documento_cliente").val();
+        var csrftoken = '{{ csrf_token }}';
+
+        if (!documento) {
+                alert("Selecione um Cliente Antes de Calcular o Preço");
+                return;
+            }
+        if (!vendedor1) {
+            alert('Selecione um Vendedor no Campo Vendedor 1');
+            return;
+        }
+         if (!comissao1) {
+            alert('Selecione uma no Comissão');
+            return;
+        }
+        if (!produto) {
+            alert('Selecione um Produto');
+            return;
+        }
+        var data= {
+                produto: produto,
+                tipo_produto: tipo_produto,
+                quantidade: quantidade,
+                adicional: adicional,
+                comprimento: comprimento,
+                largura: largura,
+                vendedor1: vendedor1,
+                vendedor2: vendedor2,
+                comissao1: comissao1,
+                comissao2: comissao2,
+                tipo_pedido: tipo_pedido,
+                documento: documento
+            };
+
+        $.ajax({
+            type: "POST",
+            url: "/get-price/",
+            headers: {
+                'X-CSRFToken': csrftoken
+            },
+            data: JSON.stringify(data),
+            contentType: 'application/json',
+            success: function(data) {
+                selectedProduct.find(".unit-price").val(data.valor_unitario);
+                selectedProduct.find(".total-produto").html('<strong> Total Do Produto: ' + data.total + '</strong>');
+                selectedProduct.find(".qtd-produto").prop("readonly", true);
+                selectedProduct.find(".item-comprimento").prop("readonly", true);
+                selectedProduct.find(".item-largura").prop("readonly", true);
+                selectedProduct.find(".observacao-item").prop("readonly", true);
+                selectedProduct.find(".valor-adicional").prop("readonly", true);
+                $("#comissao1").prop("readonly", true);
+                $("#comissao2").prop("readonly", true);
+                $("#vendedor1").prop("readonly", true);
+                $("#vendedor2").prop("readonly", true);
+                atualizarValorTotal();
+
+        // Atualize o botão para desabilitá-lo após o cálculo
+        $(this).prop("disabled", true);
+            },
+            error: function() {
+                console.log("Erro na solicitação AJAX.");
+            }
+        });
+    });
+
+
+    $("#add-row-button").click(function() {
+        var newRow = `
+        <div class="row mb-3 mt-2">
+           <div class="row mb-3 mt-2 row-produto-choice" style="border: 1px solid black; border-radius: 20px;padding: 30px;">
+                    <div class="col-md-4 text-center">
+                    <label for="produto"><small><strong> Produto</strong></small></label>
+                    <input type="text" list="produtos" class="form-control text-center produto-input"
+                           id="produto" name="produtos">
+                    <datalist id="produtos">
+                        {% for produto in produtos %}
+                        <option value="{{ produto.descricao|upper }}"></option>
+                        {% endfor %}
+                    </datalist>
+                </div>
+
+                <div class="col-md-3 text-center">
+
+                    <label for="tipo-produto"><small><strong> Tipo do Produto</strong></small></label>
+                    <select class="form-control text-center tipo-produto" style="width: 100%;" id="tipo-produto" name="tipo_produto">
+                        <option value="PADRAO" selected>PADRAO</option>
+                        <option value="BRINDE">BRINDE</option>
+                        <option value="ADICIONAL">ADICIONAL</option>
+                    </select>
+                </div>
+                 <div class="col-md-3 text-center">
+                                <label for="observacao-produto" class="text-center" ><small><strong> Observação Item </strong></small></label>
+                                <input type="text" class="form-control text-center observacao-item" id="observacao-produto" name="observacao_item" style="font-size:10px;">
+                        </div>
+
+
+                 <div class="row mb-6 mt-2 caracteristica-produtos" style="margin-right:20px;margin-left:20px;">
+                         <div class="col-md-1 text-center">
+                                <label for="qtd-produto" class="text-center" style="font-size:15px;"><small><strong> Quantidade </strong></small></label>
+                                <input type="number" class="form-control text-center qtd-produto" id="qtd-produto" value="1" name="quantidade" style="font-size:10px;">
+                        </div>
+                        <div class="col-md-2 text-center">
+                                <label for="comprimento-produto" class="text-center" style="font-size:15px;"><small><strong> Comprimento </strong></small></label>
+                                <input type="number" class="form-control text-center item-comprimento" id="comprimento-produto" value="1.000" name="comprimento" style="font-size:10px;">
+                        </div>
+                        <div class="col-md-2 text-center">
+                                <label for="largura-produto" class="text-center" style="font-size:15px; text-align:center;"><small><strong> Largura </strong></small></label>
+                                <input type="number" class="form-control text-center item-largura" id="largura-produto" value="1.000" name="largura" style="font-size:10px;">
+                        </div>
+                        <div class="col-md-2 text-center">
+                                <label for="valor-adicional" class="text-center" style="font-size:15px; text-align:center;"><small><strong> Adicional (Vendedor) </strong></small></label>
+                                <input type="text" class="form-control text-center valor-adicional" id="valor-adicional" name="valor_adicional" value="0.00" style="font-size:10px;">
+
+                        </div>
+
+                        <div class="col-md-2 text-center">
+                                <label for="valor-unitario" class="text-center" style="font-size:15px; text-align:center;"><small><strong> Valor Unitario </strong></small></label>
+                                <input type="text" class="form-control text-center unit-price" id="valor-unitario" name="valor_unitario" value="R$ 0,00" style="font-size:10px;">
+                        </div>
+
+                        <div class="col-md-1">
+                             <a class="btn-danger mt-4 btn-sm delete-row text-white" type="button"
+                                id="delete-row"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-trash-fill" viewBox="0 0 16 16">
+                              <path d="M2.5 1a1 1 0 0 0-1 1v1a1 1 0 0 0 1 1H3v9a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2V4h.5a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1H10a1 1 0 0 0-1-1H7a1 1 0 0 0-1 1H2.5zm3 4a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 .5-.5zM8 5a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7A.5.5 0 0 1 8 5zm3 .5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 1 0z"/>
+                            </svg></a>
+                            <a class="btn-info mt-4 btn-sm edit-row text-white" type="button"
+                                id="edit-row"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-pencil-square" viewBox="0 0 16 16">
+                              <path d="M15.502 1.94a.5.5 0 0 1 0 .706L14.459 3.69l-2-2L13.502.646a.5.5 0 0 1 .707 0l1.293 1.293zm-1.75 2.456-2-2L4.939 9.21a.5.5 0 0 0-.121.196l-.805 2.414a.25.25 0 0 0 .316.316l2.414-.805a.5.5 0 0 0 .196-.12l6.813-6.814z"/>
+                              <path fill-rule="evenodd" d="M1 13.5A1.5 1.5 0 0 0 2.5 15h11a1.5 1.5 0 0 0 1.5-1.5v-6a.5.5 0 0 0-1 0v6a.5.5 0 0 1-.5.5h-11a.5.5 0 0 1-.5-.5v-11a.5.5 0 0 1 .5-.5H9a.5.5 0 0 0 0-1H2.5A1.5 1.5 0 0 0 1 2.5v11z"/>
+                            </svg></a>
+                        </div>
+
+
+                      <div class=" mt-2 text-end">
+                        <button class="btn btn-dark btn-sm float-end mb-3 calcular-preco" type="button"
+                                id="calcula-preco">Calcular Preço</button>
+                    </div>
+
+                     <div class="row mt-1">
+                        <div class="col">
+                            <p id="total-produto" class="mb-2 total-produto"><strong> Total Do Produto: R$ 0.00</strong></p>
+                        </div>
+                     </div>
+                 </div>
+            </div>
+        </div>
+        `;
+        $("#tabela-itens").append(newRow);
+    });
+    $(document).on("click", ".delete-row", function() {
+        $(this).closest(".row-produto-choice").remove();
+        atualizarValorTotal();
+    });
+
+     $(document).on("click", ".edit-row", function() {
+            var row = $(this).closest(".row-produto-choice");
+
+
+            // Remover o atributo "readonly" de campos específicos na linha
+            row.find(".qtd-produto, .item-comprimento, .item-largura, .observacao-item, .valor-adicional").removeAttr("readonly");
+
+            // Definir o valor do campo "Valor Unitário" como zero na linha
+            row.find(".unit-price").val("R$ 0,00");
+            row.find(".total-produto").html('<strong> Total Do Produto: R$ 0,00</strong>');
+
+
+             var numRows = $(".row-produto-choice").length;
+
+            // Se houver mais de uma linha, desativar readonly em campos adicionais
+            if (numRows < 2) {
+                $("#comissao1").prop("readonly", false);
+                $("#comissao2").prop("readonly", false);
+                $("#vendedor1").prop("readonly", false);
+                $("#vendedor2").prop("readonly", false);
+            }
+            atualizarValorTotal();
+
+    });
+
+function atualizarValorTotal() {
+    var total = 0;
+    var totalPedido = 0;
+
+    // Iterar sobre cada linha de item na tabela
+    $(".tabela-itens .row-produto-choice").each(function() {
+        var valorTotalText = $(this).find(".total-produto").text();
+        var valorTotal = parseFloat(valorTotalText.replace("Total Do Produto:", "").replace("R$", "").replace(".", "").replace(",", ".").trim());
+        console.log('valorTotal', valorTotal);
+        total += valorTotal;
+        console.log('total', total);
+    });
+
+    var freteEmbutido = parseFloat($("#frete-embutido").val().replace("R$", "").replace(".", "").replace(",", ".").trim());
+    if (!isNaN(freteEmbutido)) {
+        total += freteEmbutido;
+    }
+
+    var bonus = parseFloat($("#acerto").val().replace("R$", "").replace(".", "").replace(",", ".").trim());
+    if (!isNaN(bonus)) {
+        totalPedido = total;
+    } else {
+        totalPedido = total;
+    }
+
+    console.log('totalPedido', totalPedido);
+
+    // Formatar os valores para exibição
+    var formattedTotalPedido = "R$ " + formatNumber(totalPedido);
+    var formattedTotal = "R$ " + formatNumber(total);
+
+    // Exibir os valores formatados
+    $("#order-total").html('<strong>Valor Total do Pedido: ' + formattedTotalPedido + '</strong>');
+    $("#total-sum").text("Valor Total Dos Produtos: " + formattedTotal);
+    console.log(total);
+}
+
+function formatNumber(number) {
+    var parts = number.toFixed(2).toString().split(".");
+    parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+    return parts.join(",");
+}
+
+
+
+
+
+    // Atualizar o valor total quando houver modificação na tabela de itens
+    $(".tabela-itens").on("change"," .row-produto-choice, .produto-input, .qtd-produto, .item-comprimento, .item-largura, .valor-adicional", function() {
+        atualizarValorTotal();
+    });
+     function calcularValorTotalProduto(row) {
+        var quantidade = parseFloat(row.find(".qtd-produto").val());
+        var valorUnitarioText = row.find(".unit-price").val();
+        var valorUnitario = parseFloat(valorUnitarioText.replace("R$", "").replace(",", ".").trim());
+
+        atualizarValorTotal();
+        return (quantidade * valorUnitario);
+        atualizarValorTotal();
+
+
+    }
+    $("#desconto-avista").change(function() {
+        var descontoSelecionado = $(this).val();
+
+    $(".tabela-itens .row-produto-choice").each(function() {
+            var row = $(this);
+
+            if (descontoSelecionado === "SIM") {
+                aplicarDesconto(row);
+                $(".momento-pagamento").prop("disabled", true);
+
+            } else {
+                zerarValores(row);
+                $(".momento-pagamento").prop("disabled", false);
+            }
+            atualizarValorTotal();
+        });
+    });
+
+   function aplicarDesconto(row) {
+    var valorUnitarioText = row.find(".unit-price").val();
+    var valorUnitario = parseFloat(valorUnitarioText.replace("R$", "").replace(",", ".").trim());
+    var adicionalText = row.find(".valor-adicional").val();
+    var adicional = parseFloat(adicionalText.replace("R$", "").replace(",", ".").trim());
+    var quantidade = parseFloat(row.find(".qtd-produto").val());
+
+    var desconto = (valorUnitario+adicional) * 0.05;
+
+    valorUnitario = valorUnitario *0.95;
+    adicional = adicional * 0.95;
+
+
+    var valorTotalProduto = (valorUnitario + adicional)  * quantidade;
+
+    row.find(".unit-price").val(formatCurrency(valorUnitario));
+    row.find(".valor-adicional").val(formatCurrency(adicional));
+    row.find(".total-produto").html('<strong> Total Do Produto: ' + formatCurrency(valorTotalProduto) + '</strong>');
+
+    // Atualizar o valor total da tabela
+    atualizarValorTotal();
+}
+
+
+
+function formatCurrency(value) {
+    return "R$ " + value.toFixed(2).replace(".", ",");
+}
+
+
+
+    function zerarValores(row) {
+        row.find(".unit-price").val("R$ 0.00");
+
+        // Zerar o valor total do produto
+        row.find(".total-produto").html('<strong> Total Do Produto: R$ 0.00</strong>');
+    }
+
+        // Inicializar o valor total ao carregar a página
+        atualizarValorTotal();
+
+    $("#frete-embutido").on("input", function() {
+        atualizarValorTotal();
+    });
+    $("#acerto").on("input", function() {
+        atualizarValorTotal();
+    });
+
+
+
+});
+</script>
+-->
+
+<!-- SCRIPT PARA EXIBIR DETALHES DE PAGAMENTO - 1ª FORMA DE PAGAMENTO  -->
+<script>
+var momentoPagamentoSelect = document.getElementById("momento-pagamento-1");
+var detalhesFaturamentoRow = document.getElementById("row-detalhes-faturamento");
+var formaPagamentoSelect = document.getElementById("forma-pgto-1");
+var detalhesAntecipadoRow = document.getElementById("data-pagamento-antecipado");
+
+
+
+// Adiciona o evento de mudança ao campo de seleção
+momentoPagamentoSelect.addEventListener("change", function() {
+
+    var clienteBoleto = document.getElementById("cliente-boleto");
+    console.log(clienteBoleto);
+
+
+  if ((clienteBoleto.value === "SIM")&&(momentoPagamentoSelect.value === "FATURADO"))  {
+    // Mostra o elemento
+    detalhesFaturamentoRow.style.display = "block";
+    formaPagamentoSelect.value="BOLETO";
+    detalhesAntecipadoRow.style.display = "none";
+
+  }
+  else {
+    if ((clienteBoleto.value === "NAO")&&(momentoPagamentoSelect.value === "FATURADO"))  {
+        // Mostra o elemento
+        alert("Cliente Não Habilitado Para Faturamento");
+        momentoPagamentoSelect.value = "ANTECIPADO";
+        detalhesFaturamentoRow.style.display = "none";
+        detalhesAntecipadoRow.style.display = "block";
+    }
+   else{
+    detalhesFaturamentoRow.style.display = "none";
+    }
+    }
+
+});
+
+</script>
+<script>
+var formaPagamentoSelect = document.getElementById("forma-pgto-1");
+var detalhesDivParcela = document.getElementById("pagamento-parcelado");
+var totalPagamento1 = document.getElementById("total_pagamento_1");
+
+// Adiciona o evento de mudança ao campo de seleção
+formaPagamentoSelect.addEventListener("change", function() {
+  // Verifica o valor selecionado
+  if (formaPagamentoSelect.value === "CARTAO CREDITO") {
+    // Mostra o elemento
+    detalhesDivParcela.style.display = "block";
+    totalPagamento1.style.display= "none";
+  } else {
+    // Oculta o elemento
+    detalhesDivParcela.style.display = "none";
+    totalPagamento1.style.display= "block";
+  }
+});
+</script>
+<!-- SCRIPT PARA EXIBIR DETALHES DE PAGAMENTO - 2ª FORMA DE PAGAMENTO  -->
+<script>
+var formaPagamento2Select = document.getElementById("forma-pgto-2");
+var detalhesDivParcela2 = document.getElementById("pagamento-parcelado-2");
+var totalPagamento2 = document.getElementById("total_pagamento_2");
+
+
+// Adiciona o evento de mudança ao campo de seleção
+formaPagamento2Select.addEventListener("change", function() {
+  // Verifica o valor selecionado
+  if (formaPagamento2Select.value === "CARTAO CREDITO") {
+    // Mostra o elemento
+    detalhesDivParcela2.style.display = "block";
+    totalPagamento2.style.display= "none";
+  } else {
+    // Oculta o elemento
+    detalhesDivParcela2.style.display = "none";
+    totalPagamento2.style.display= "block";
+  }
+});
+</script>
+<script>
+var momento2PagamentoSelect = document.getElementById("momento-pagamento_2");
+var detalhes2FaturamentoRow = document.getElementById("row-detalhes-faturamento-2");
+var formaPagamento2Select = document.getElementById("forma-pgto-2");
+// Adiciona o evento de mudança ao campo de seleção
+momento2PagamentoSelect.addEventListener("change", function() {
+    var cliente2Boleto = document.getElementById("cliente-boleto");
+
+   if ((cliente2Boleto.value === "SIM")&&(momento2PagamentoSelect.value === "FATURADO"))  {
+    // Mostra o elemento
+    detalhes2FaturamentoRow.style.display = "block";
+    formaPagamento2Select.value="BOLETO";
+
+  }
+  else {
+    if ((cliente2Boleto.value === "NAO")&&(momento2PagamentoSelect.value === "FATURADO"))  {
+        // Mostra o elemento
+        alert("Cliente Não Habilitado Para Faturamento");
+        momento2PagamentoSelect.value = "ANTECIPADO";
+        detalhes2FaturamentoRow.style.display = "none";
+    }
+   else{
+    detalhes2FaturamentoRow.style.display = "none";
+    }
+    }
+
+});
+
+</script>
+
+<script>
+// Função para formatar o valor em moeda brasileira (R$)
+function formatarMoeda(valor) {
+  return valor.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+}
+
+// Seleciona todos os elementos da tabela com a classe 'valor-total'
+var elementosValorProduto = document.querySelectorAll('.total-produto');
+
+// Percorre os elementos e formata o valor em moeda brasileira
+elementosValorProduto.forEach(function(elemento) {
+  var valor = parseFloat(elemento.textContent.replace(',', '.'));
+  if (!isNaN(valor)) {
+    elemento.textContent = formatarMoeda(valor);
+  }
+});
+</script>
+<!-- SCRIPT PARA FORMATAR CAMPOS DE MEDIDAS C/ 3 CASAS DECIMAIS e r$ C/ 2 CASAS DECIMAIS  -->
+<script>
+  function formatInput2Value(input) {
+  var value = input.value.trim();
+
+  if (value === "") {
+    return;
+  }
+
+  value = value.replace(/[^0-9]/g, "");
+  value = value.slice(0, -3) + "." + value.slice(-3);
+
+  input.value = value;
+}
+
+// Adiciona o evento de digitação aos campos de largura ou comprimento existentes
+document.addEventListener("keyup", function(event) {
+  var target = event.target;
+
+  if (target.classList.contains("item-comprimento") || target.classList.contains("item-largura")) {
+    formatInput2Value(target);
+  }
+});
+document.addEventListener("DOMContentLoaded", function() {
+    var valorAdicionalInputs = document.querySelectorAll(".valor-adicional");
+
+
+    valorAdicionalInputs.forEach(function(input) {
+        input.addEventListener("input", function() {
+            var valor = parseFloat(input.value.replace(/\D/g, ""));
+            if (!isNaN(valor)) {
+                input.value = formatCurrency(valor / 100);
+            }
+        });
+    });
+});
+document.addEventListener("DOMContentLoaded", function() {
+    var valorFrete = document.querySelectorAll(".frete-embutido");
+
+
+   valorFrete.forEach(function(input) {
+        input.addEventListener("input", function() {
+            var valor = parseFloat(input.value.replace(/\D/g, ""));
+            if (!isNaN(valor)) {
+                input.value = formatCurrency(valor / 100);
+            }
+        });
+    });
+});
+ var acertoElement = document.querySelector(".acerto");
+
+    // Obter o valor do atributo "value"
+    var acertoValue = acertoElement.value;
+
+    // Formatar o valor usando a função formatCurrency
+    var formattedAcerto = formatCurrency(acertoValue);
+
+    // Atualizar o valor no elemento
+    acertoElement.value = formattedAcerto;
+
+
+
+document.addEventListener("DOMContentLoaded", function() {
+    var valorBonus = document.querySelectorAll(".acerto");
+
+
+  valorBonus.forEach(function(input) {
+        input.addEventListener("input", function() {
+            var valor = parseFloat(input.value.replace(/\D/g, ""));
+            if (!isNaN(valor)) {
+                input.value = formatCurrency(valor / 100);
+            }
+        });
+    });
+});
+document.addEventListener("DOMContentLoaded", function() {
+    var valortotalpagamento1 = document.querySelectorAll(".total-pagamento1");
+
+
+    valortotalpagamento1.forEach(function(input) {
+        input.addEventListener("input", function() {
+            var valor = parseFloat(input.value.replace(/\D/g, ""));
+            if (!isNaN(valor)) {
+                input.value = formatCurrency(valor / 100);
+            }
+        });
+    });
+});
+document.addEventListener("DOMContentLoaded", function() {
+    var parceladocartao1 = document.querySelectorAll(".parceladocartao1");
+
+
+    parceladocartao1.forEach(function(input) {
+        input.addEventListener("input", function() {
+            var valor = parseFloat(input.value.replace(/\D/g, ""));
+            if (!isNaN(valor)) {
+                input.value = formatCurrency(valor / 100);
+            }
+        });
+    });
+});
+document.addEventListener("DOMContentLoaded", function() {
+    var totalpagamento2 = document.querySelectorAll(".totalpagamento2");
+
+
+    totalpagamento2.forEach(function(input) {
+        input.addEventListener("input", function() {
+            var valor = parseFloat(input.value.replace(/\D/g, ""));
+            if (!isNaN(valor)) {
+                input.value = formatCurrency(valor / 100);
+            }
+        });
+    });
+});
+document.addEventListener("DOMContentLoaded", function() {
+    var parceladocartao2 = document.querySelectorAll(".parceladocartao2");
+
+
+    parceladocartao2.forEach(function(input) {
+        input.addEventListener("input", function() {
+            var valor = parseFloat(input.value.replace(/\D/g, ""));
+            if (!isNaN(valor)) {
+                input.value = formatCurrency(valor / 100);
+            }
+        });
+    });
+});
+
+function formatCurrency(value) {
+    var formatter = new Intl.NumberFormat("pt-BR", {
+        style: "currency",
+        currency: "BRL",
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2
+    });
+    return formatter.format(value);
+}
+
+</script>
+<!-- SCRIPT PARA FORMATAR CAMPOS DE VALOR C/2 CASAS DECIMAIS
+<script>
+  function formatInputValue(input) {
+  var value = input.value.trim();
+
+  if (value === "") {
+    return;
+  }
+
+  value = value.replace(/[^0-9]/g, "");
+  value = value.slice(0, -2) + "." + value.slice(-2);
+
+  input.value = value;
+}
+
+// Adiciona o evento de digitação aos campos de largura ou comprimento existentes
+document.addEventListener("keyup", function(event) {
+  var target = event.target;
+
+  if (target.classList.contains("unit-price")|| target.classList.contains("desconto-item")) {
+    formatInputValue(target);
+  }
+});
+
+</script> -->
+
+<script>
+  $(document).ready(function() {
+  $('#total-parcelas, #total_pagamento1').on('input', function() {
+    var totalParcelas = parseFloat($('#total-parcelas').val()) || 0;
+    var totalPagamento = parseFloat($('#total_pagamento1').val().replace(',', '.').replace(/[^\d.-]/g, '')) || 0;
+
+    if (totalParcelas > 0 && totalPagamento > 0) {
+      var valorParcelas = totalPagamento / totalParcelas;
+      $('#valor-parcelas').val(valorParcelas.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL', minimumFractionDigits: 2 }));
+    }
+
+  });
+});
+</script>
+<script>
+  $(document).ready(function() {
+  $('#total-parcelas-2, #total_pg_2').on('input', function() {
+    var totalParcelas2 = parseFloat($('#total-parcelas-2').val()) || 0;
+    var totalPagamento2 = parseFloat($('#total_pg_2').val().replace(',', '.').replace(/[^\d.-]/g, '')) || 0;
+
+    if (totalParcelas2 > 0 && totalPagamento2 > 0) {
+      var valorParcelas2 = totalPagamento2 / totalParcelas2;
+      $('#valor-parcelas-2').val(valorParcelas2.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL', minimumFractionDigits: 2 }));
+    }
+
+  });
+});
+</script>
+<script>
+function formatCurrency(value) {
+    var options = {
+        style: "currency",
+        currency: "BRL",
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2
+    };
+
+    return value.toLocaleString("pt-BR", options);
+}
+
+// Atualizar o valor formatado quando a página carregar
+document.addEventListener("DOMContentLoaded", function() {
+    var totalProdutoElement = document.getElementById("total-produto");
+    var originalValue = totalProdutoElement.textContent.trim();
+    var formattedValue = formatCurrency(parseFloat(originalValue.replace("Total Do Produto:", "").replace("R$", "").replace(",", ".").trim()));
+    totalProdutoElement.innerHTML = "<strong> Total Do Produto: " + formattedValue + " </strong>";
+});
+</script>
+
+</body>
+
+</html>
+{% endblock %}

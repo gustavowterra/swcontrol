@@ -1,0 +1,105 @@
+{% extends "./modelo.html" %}
+{% load static %}
+
+{% block container %}
+<html style="font-size: 16px;" lang="pt"><head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="utf-8">
+    <meta name="keywords" content="Cadastro de Cliente">
+    <meta name="description" content="">
+    <title>Página Inicial</title>
+    <link rel="stylesheet" href="{% static 'colaborador/nicepage.css' %}" media="screen">
+<link rel="stylesheet" href="{% static 'colaborador/Página-Inicial.css' %}" media="screen">
+    <script class="u-script" type="text/javascript" src="{% static 'colaborador/jquery.js' %}" defer=""></script>
+    <script class="u-script" type="text/javascript" src="{% static 'colaborador/nicepage.js' %}" defer=""></script>
+    <meta name="generator" content="Nicepage 5.4.1, nicepage.com">
+    
+    <link id="u-theme-google-font" rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:100,100i,300,300i,400,400i,500,500i,700,700i,900,900i|Open+Sans:300,300i,400,400i,500,500i,600,600i,700,700i,800,800i">
+    
+    
+    
+    <script type="application/ld+json">{
+		"@context": "http://schema.org",
+		"@type": "Organization",
+		"name": "Site1"
+}</script>
+    <meta name="theme-color" content="#478ac9">
+    <meta property="og:title" content="Página Inicial">
+    <meta property="og:description" content="">
+    <meta property="og:type" content="website">
+  <meta data-intl-tel-input-cdn-path="intlTelInput/"></head>
+  <body class="u-body u-xl-mode" data-lang="pt">
+    <section class="u-align-center u-clearfix u-grey-5 u-section-1" id="sec-e066">
+      <div class="u-clearfix u-sheet u-sheet-1">
+        <h6 class="u-text u-text-default u-text-1">Editar Colaborador</h6>
+      </div>
+    </section>
+    <section class="u-align-center u-clearfix u-grey-5 u-section-2" id="sec-fd3a">
+      <div class="u-clearfix u-sheet u-sheet-1">
+        <div class="u-expanded-width u-form u-form-1">
+          <form method="POST" class="form-control" style="padding: 10px" source="custom" name="form">
+            {% csrf_token %}
+            <div class="u-form-group u-form-name u-form-partition-factor-4 u-label">
+              <label for="name-3b9a" class="u-label">Nome</label>
+              <input type="text" placeholder="Nome" id="name-3b9a" name="nome" class="u-border-2 u-border-black u-border-no-left u-border-no-right u-border-no-top u-input u-input-rectangle u-input-1" value={{colaborador.nome}} required="">
+            </div>
+            <div class="u-form-date u-form-group u-form-partition-factor-4 u-label">
+              <label for="data_nascimento" class="u-label">Data de Nascimento</label>
+              <input type="date" placeholder="Data de Nascimento" id="data_nascimento" name="data" class="u-border-2 u-border-black u-border-no-left u-border-no-right u-border-no-top u-input u-input-rectangle u-input-2" required="required" value={{colaborador.data_nascimento|date:'Y-m-d'}}>
+            </div> <div class="u-form-date u-form-group u-form-partition-factor-4 u-label">
+              <label for="data_admissao" class="u-label">Data de Admissão</label>
+              <input type="date" placeholder="Data de Nascimento" id="data_admissao" name="data" class="u-border-2 u-border-black u-border-no-left u-border-no-right u-border-no-top u-input u-input-rectangle u-input-2" required="required" value={{colaborador.data_nascimento|date:'Y-m-d'}}>
+            </div>
+            <div class="u-form-group u-form-partition-factor-4 u-label u-form-group-3">
+              <label for="text-ab93" class="u-label">CPF</label>
+              <input type="text" id="text-ab93" name="cpf" class="u-border-2 u-border-black u-border-no-left u-border-no-right u-border-no-top u-input u-input-rectangle u-input-3" placeholder="CPF" value={{colaborador.cpf}}>
+            </div>
+            <div class="u-form-group u-form-partition-factor-4 u-label u-form-group-4">
+              <label for="text-9af0" class="u-label">EMAIL</label>
+              <input type="text" placeholder="EMAIL" id="text-9af0" name="email" class="u-border-2 u-border-black u-border-no-left u-border-no-right u-border-no-top u-input u-input-rectangle u-input-4" value={{colaborador.email}}>
+            </div>
+            <div class="u-form-group u-form-partition-factor-3 u-label u-form-group-5">
+              <label for="text-1c2a" class="u-label">Telefone</label>
+              <input type="text" placeholder="TELEFONE" id="text-1c2a" name="telefone" class="u-border-2 u-border-black u-border-no-left u-border-no-right u-border-no-top u-input u-input-rectangle u-input-5" value={{colaborador.telefone}}>
+            </div>
+            <div class="u-form-group u-form-partition-factor-3 u-form-select u-label u-form-group-7">
+              <label for="select-e3ec" class="u-label">Função</label>
+              <div class="u-form-select-wrapper">
+                <select id="select-e3ec" name="funcao" class="u-border-2 u-border-black u-border-no-left u-border-no-right u-border-no-top u-input u-input-rectangle u-input-7" required="required">
+
+                   <option value="{{ colaborador.funcao }}">{{ colaborador.funcao }}</option>
+                    {% for funcao in funcoes %}
+                    <option value="{{ funcao.0 }}">{{ funcao.1 }}</option>
+                    {% endfor %}
+                </select>
+                <svg class="u-caret u-caret-svg" version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" width="16px" height="16px" viewBox="0 0 16 16" style="fill:currentColor;" xml:space="preserve"><polygon class="st0" points="8,12 2,4 14,4 "></polygon></svg>
+              </div>
+            </div>
+              <div class="u-form-group u-form-partition-factor-3 u-form-select u-label u-form-group-7">
+              <label for="select-e3ec" class="u-label">Status Colaborador</label>
+               <select id="select-status" name="status" class="u-border-2 u-border-black u-border-no-left u-border-no-right u-border-no-top u-input u-input-rectangle u-input-7" required="required">
+
+                   <option value="{{ colaborador.status.id }}">{{ colaborador.status.descricao }}</option>
+                    {% for s in status %}
+                    <option value="{{ s.id }}">{{ s.descricao }}</option>
+                    {% endfor %}
+                </select>
+              </div>
+            <div class="u-form-group u-label u-form-group-8">
+              <label for="text-be20" class="u-label">Endereço</label>
+              <input type="text" placeholder="ENDEREÇO" id="text-be20" name="endereco" class="u-border-2 u-border-black u-border-no-left u-border-no-right u-border-no-top u-input u-input-rectangle u-input-8" value={{colaborador.endereco}}>
+            </div>
+            <div class="u-align-left u-form-group u-form-submit">
+              <a class="u-border-2 u-border-black u-btn u-btn-rectangle u-btn-submit u-button-style u-none u-btn-1">SALVAR<br>
+              </a>
+              <input type="submit" value="submit" class="u-form-control-hidden">
+            </div>
+
+          </form>
+        </div>
+      </div>
+    </section>
+
+  
+</body></html>
+{% endblock %}

@@ -1,0 +1,826 @@
+{% extends "./modelo.html" %}
+{% load static %}
+{% block container %}
+<head xmlns="http://www.w3.org/1999/html">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Novo Orcamento</title>
+    <link rel="stylesheet" href="{% static 'PEDIDO/fontawesome-all.min.css' %}">
+    <style>
+    /* Estilos personalizados */
+    .modal-dialog {
+      max-width: 900px; /* Ajuste o valor conforme necessário */
+    }
+
+    .modal-content {
+      height: 500px; /* Ajuste o valor conforme necessário */
+    }
+
+    .custom-background1 {
+        background-color: #f2f2f2; /* Cor de fundo cinza claro */
+        padding: 10px; /* Ajuste o valor do preenchimento conforme necessário */
+    }
+
+        .form-control {
+      border: 1px solid black;
+      border-radius: 5px;
+      font-size: 70%;
+       background-color: #f8f9fa;
+    }
+    .form-control2 {
+      border: none;
+      border-radius: 0;
+      border-bottom: none;
+      font-size: 80%;
+    }
+
+    .form-control::placeholder {
+      color: #999;
+      font-size: 80%;
+    }
+    .form-control2::placeholder {
+      color: #999;
+      font-size: 80%;
+    }
+
+    .custom-margin-top {
+      margin-top: 35px;
+      margin-left:10px;
+    }
+
+    .gray-bg {
+      background-color: #f8f9fa;
+
+    }
+
+    .cliente-container {
+      background-color: #000;
+      color: #fff;
+      padding: 2px;
+    }
+
+    .modal-dialog {
+      max-width: 1200px; /* Ajuste o valor conforme necessário */
+    }
+
+    .modal-content {
+      height: 500px; /* Ajuste o valor conforme necessário */
+    }
+    .form-wrapper {
+
+      padding: 10px;
+    }
+
+
+
+
+
+
+    </style>
+</head>
+<body>
+<section class="mt-2">
+    <div class="container">
+        <div class="modal" id="modal-cadastro-fornecedor" tabindex="-1" role="dialog">
+            <div class="modal-dialog modal-lg" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Cadastro de Cliente</h5>
+                        <button id="fechar-modal-fornecedor" class="close" data-dismiss="modal" aria-label="Fechar">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <!-- Aqui será exibido o formulário de cadastro do cliente -->
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="row">
+                <div class="row">
+                    <div class="col-md-4 mt-5">
+                        <h5><strong>Novo Orçamento</strong></h5>
+                    </div>
+                </div>
+                <form method="post" enctype="multipart/form-data" action="/orcamento/">
+                    {% csrf_token %}
+                    <div class="row mt-4">
+                        {% if 'Gerente' in colaborador.funcao %}
+                        <div class="col-md-4">
+                            <label for="empresa">Empresa:</label>
+                            <div class="d-flex align-items-center ">
+                                <select class="form-control text-center" style="font-size:12px;" name="empresa"
+                                        id="empresa" required>
+                                    {% for empresa in empresas %}
+                                    <option value="{{ empresa.nome }}">{{empresa.nome}}</option>
+                                    {% endfor %}
+                                </select>
+
+                            </div>
+                        </div>
+                        {% else %}
+                         <div class="col-md-4">
+                            <label for="empresa">Empresa:</label>
+                           <input class="form-control text-center" type="text" name="empresa" value="{{colaborador.empresa.nome}}" style="font-size:12px;" readonly>
+                        </div>
+
+                        {% endif %}
+                        <div class="row">
+                            <div class="col-md-4">
+
+                            <label for="nome_cliente">Nome do Cliente:</label>
+                            <div class="d-flex align-items-center ">
+                                <input type="text" name="nome_cliente" id="nome_cliente"
+                                       class="form-control text-center"
+                                       style="font-size:12px;" placeholder="Ex.: Empresa ABC"
+                                       required>
+
+                            </div>
+                        </div>
+                            <div class="col-md-3">
+
+                            <label for="cliente_telefone">Telefone:</label>
+                            <div class="d-flex align-items-center ">
+                                <input type="text" name="cliente_telefone" id="cliente_telefone"
+                                       class="form-control text-center"
+                                       style="font-size:12px;" placeholder="Whatsapp de Preferência"
+                                       required>
+
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+
+                            <label for="email_cliente">Email do Cliente:</label>
+                            <div class="d-flex align-items-center ">
+                                <input type="email" name="email_cliente" id="email_cliente"
+                                       class="form-control text-center"
+                                       style="font-size:12px;" placeholder="nomedocliente@gmail.com"
+                                       required>
+
+                            </div>
+                        </div>
+
+                        </div>
+
+
+
+
+
+
+
+
+                        <div class="col-md-2">
+                            <label for="validade_orcamento">Validade:</label>
+                            <input type="text" name="validade" id="validade_orcamento"
+                                   class="form-control text-center" value="15" style="font-size:12px;">
+                        </div>
+                    </div>
+                    <div class="row mt-4">
+                        <div class="col-md-2">
+                            <label for="endereco">Endereço Entrega:</label>
+                            <input type="text" name="endereco" id="endereco"
+                                   class="form-control text-center"  style="font-size:12px;">
+                        </div>
+                        <div class="col-md-2">
+                            <label for="bairro">Bairro Entrega:</label>
+                            <input type="text" name="bairro" id="bairro"
+                                   class="form-control text-center"  style="font-size:12px;">
+                        </div>
+                        <div class="col-md-2">
+                            <label for="cidade">Cidade Entrega:</label>
+                            <input type="text" name="cidade" id="cidade"
+                                   class="form-control text-center"  style="font-size:12px;">
+                        </div>
+                         <div class="col-md-2">
+                            <label for="estado">Estado Entrega:</label>
+                            <input type="text" name="estado" id="estado"
+                                   class="form-control text-center" style="font-size:12px;">
+                        </div>
+                    </div>
+
+                    <div class="row mt-4">
+
+                        <h6>Tabela de Itens</h6>
+                        <div class="col-md-12  text-end">
+                            <button class="btn btn-dark btn-sm add-row text-white" type="button"
+                                    onclick="adicionarLinha()"
+                                    id="add-row-button"
+                                    style="position:absolute; bottom:2px; right: 20px; z-index:1000;">adicionar produto
+                            </button>
+                        </div>
+
+                       <table id="tabela-itens" border="1" cellspacing="0" cellpadding="5"
+       style="margin-left:10px; font-size:12px; width: 100%;">
+    <thead>
+        <tr>
+            <th style="width: 5%;">Qtd</th>
+            <th style="width: 55%;">Descrição do Item</th>
+            <th style="width: 5%;">Comprimento</th>
+            <th style="width: 5%;">Largura</th>
+            <th style="width: 5%;">Tipo</th>
+            <th style="width: 5%;">Template</th>
+            <th style="width: 5%;">UN (R$)</th>
+            <th style="width: 5%;">Valor Total (R$)</th>
+            <th style="width: 5%;"></th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td><input type="number" name="quantidade" min="1" placeholder="0" style="width: 100px;"
+                       onchange="calcularValorTotal(this)" value="1"></td>
+            <td><input type="text" name="descricao_item" placeholder="Descrição" style="width: 100%;"></td>
+            <td><input type="text" class="item-comprimento" name="comprimento" placeholder="Comprimento" style="width: 100px;"></td>
+            <td><input type="text" class="item-largura" name="largura" placeholder="Largura" style="width: 100px;"></td>
+            <td>
+                <select name="tipo_item" style="width: 100%;">
+                    {% for tipo in tipos_medidas %}
+                    <option value="{{tipo.descricao}}">{{tipo.descricao}}</option>
+                    {% endfor %}
+                </select>
+            </td>
+            <td>
+                <select name="templates" style="width: 100%;">
+                    <option value=""></option>
+                    {% for template in templates %}
+                    <option value="{{ template.id }}">{{template.descricao}} | {{template.empresa}}</option>
+                    {% endfor %}
+                </select>
+            </td>
+            <td><input type="text" class="unit-price"  name="preco_unitario" placeholder="0.00" style="width: 100px;"
+                       onchange="calcularValorTotal(this)"></td>
+            <td><input type="number" name="valor_total" step="0.01" placeholder="0.00" readonly style="width: 100px;"></td>
+            <td style="font-size:7px;">
+                <a class="btn-danger btn-sm delete-row text-white" onclick="removerLinha(this)" type="button" id="delete-row">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                         class="bi bi-trash-fill" viewBox="0 0 16 16">
+                        <path d="M2.5 1a1 1 0 0 0-1 1v1a1 1 0 0 0 1 1H3v9a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2V4h.5a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1H10a1 1 0 0 0-1-1H7a1 1 0 0 0-1 1H2.5zm3 4a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 .5-.5zM8 5a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7A.5.5 0 0 1 8 5zm3 .5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 1 0z"/>
+                    </svg>
+                </a>
+            </td>
+        </tr>
+    </tbody>
+</table>
+
+
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-12 mt-4 text-end">
+                            <p class="valor-total">Total R$ 0,00</p>
+                        </div>
+
+
+
+                    </div>
+                    <div class="row" style="margin-top:20px;">
+
+                        <label for="forma_pagamento">Forma de Pagamento:</label>
+                        <div class="col-md-3">
+                            <input  type="text" id="forma_pagamento" name="forma_pagamento" class="form-control text-center" PLACEHOLDER="Forma de Pagamento" style="font-size:12px;">
+
+
+                        </div>
+
+                    </div>
+                     <div class="row" style="margin-top:20px;">
+
+                        <label for="texto_garantia">Texto Garantia</label>
+                        <div class="col-md-3">
+                            <input  type="text" id="texto_garantia" name="texto_garantia" class="form-control text-center" PLACEHOLDER="Forma de Pagamento" style="font-size:12px;">
+
+                        </div>
+
+                    </div>
+
+                     <div class="row" style="margin-top:20px;">
+
+                        <div class="col-md-3">
+                            <button id="submit-button" type="submit" class="btn btn-dark" style="font-size:12px;">
+                                Cadastrar Orçamento
+                            </button>
+                        </div>
+
+                    </div>
+
+
+                </form>
+            </div>
+
+
+        </div>
+
+
+    </div>
+
+    </div>
+
+    </div>
+</section>
+
+
+<!-- Importação do jQuery -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+<!-- Importação do Bootstrap -->
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+<!-- SCRIPT PARA FORMATAR CAMPOS DE VALOR C/2 CASAS DECIMAIS -->
+<script>
+  function formatInputValue(input) {
+  var value = input.value.trim();
+
+  if (value === "") {
+    return;
+  }
+
+  value = value.replace(/[^0-9]/g, "");
+  value = value.slice(0, -2) + "." + value.slice(-2);
+
+  input.value = value;
+}
+
+// Adiciona o evento de digitação aos campos de largura ou comprimento existentes
+document.addEventListener("keyup", function(event) {
+  var target = event.target;
+
+  if (target.classList.contains("unit-price")|| target.classList.contains("desconto-item")) {
+    formatInputValue(target);
+  }
+});
+
+</script> -->
+
+<script>
+  // Função para calcular o valor total de uma linha
+  function calcularValorTotal(element) {
+    var linha = element.closest('tr');
+    var quantidade = linha.querySelector('input[name="quantidade"]').value;
+    var precoUnitario = linha.querySelector('input[name="preco_unitario"]').value;
+    var valorTotal = quantidade * precoUnitario;
+    linha.querySelector('input[name="valor_total"]').value = valorTotal.toFixed(2);
+
+    // Atualiza o valor total geral
+    atualizarValorTotalGeral();
+  }
+
+  // Função para adicionar uma nova linha à tabela
+  function adicionarLinha() {
+    var tabela = document.getElementById('tabela-itens').getElementsByTagName('tbody')[0];
+    var novaLinha = document.createElement('tr');
+
+    // HTML da nova linha
+    novaLinha.innerHTML = `
+      <td><input type="number" value="1" name="quantidade" placeholder="0" onchange="calcularValorTotal(this)" style="width: 100px;"></td>
+      <td><input type="text" name="descricao_item" placeholder="Descrição" style="width: 100%;"></td>
+      <td><input type="text" class="item-comprimento" name="comprimento" placeholder="Comprimento" style="width: 100px;"></td>
+      <td><input type="text" class="item-largura" name="largura" placeholder="Largura"style="width: 100px;"></td>
+      <td>
+        <select name="tipo_item"style="width: 100px;">
+          {% for tipo in tipos_medidas %}
+          <option value="{{tipo.descricao}}">{{tipo.descricao}}</option>
+          {% endfor %}
+        </select>
+      </td>
+       <td><select name="templates" style="width: 100%;">
+            <option value=""></option>
+            {% for template in templates %}
+            <option value="{{ template.id }}">{{template.descricao}} | {{template.empresa}}</option>
+            {% endfor %}
+        </select>
+      </td>
+      <td><input type="number" class="unit-price" name="preco_unitario" step="0.01" placeholder="0.00" onchange="calcularValorTotal(this)"style="width: 100px;"></td>
+      <td><input type="number" name="valor_total" step="0.01" placeholder="0.00" style="width: 100px;" readonly></td>
+      <td style="font-size:7px;">
+        <a class="btn-danger btn-sm delete-row text-white" onclick="removerLinha(this)" type="button" id="delete-row">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-trash-fill" viewBox="0 0 16 16">
+            <path d="M2.5 1a1 1 0 0 0-1 1v1a1 1 0 0 0 1 1H3v9a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2V4h.5a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1H10a1 1 0 0 0-1-1H7a1 1 0 0 0-1 1H2.5zm3 4a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 .5-.5zM8 5a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7A.5.5 0 0 1 8 5zm3 .5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 1 0z"/>
+          </svg>
+        </a>
+      </td>
+    `;
+
+    tabela.appendChild(novaLinha);
+  }
+
+  // Função para remover a linha da tabela
+  function removerLinha(button) {
+    var linha = button.closest('tr');
+    linha.remove();
+
+    // Atualiza o valor total geral após remover a linha
+    atualizarValorTotalGeral();
+  }
+
+  // Função para atualizar o valor total geral
+  function atualizarValorTotalGeral() {
+    var tabela = document.getElementById('tabela-itens');
+    var linhas = tabela.querySelectorAll('tbody tr');
+    var totalGeral = 0;
+
+    // Soma todos os valores da coluna "Valor Total"
+    linhas.forEach(function(linha) {
+      var valorTotal = linha.querySelector('input[name="valor_total"]').value;
+      totalGeral += parseFloat(valorTotal) || 0;
+    });
+
+    // Atualiza o valor total geral no elemento <p>
+    document.querySelector('.valor-total').innerText = 'Total R$ ' + totalGeral.toFixed(2);
+  }
+</script>
+
+
+
+
+
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        function calcularVTotal() {
+            var inputs = document.querySelectorAll("input[name='valor_parcela']");
+            var total = 0;
+
+            for (var i = 0; i < inputs.length; i++) {
+                var valorParcela = parseFloat(inputs[i].value) || 0;
+                total += valorParcela;
+            }
+
+            var valorTotalElement = document.getElementById("pedido-total");
+            valorTotalElement.textContent = "Valor Total do Pedido: R$ " + total.toFixed(2);
+        }
+
+        // Chama a função inicialmente para exibir o valor total com os valores existentes
+        calcularVTotal();
+
+        // Adiciona um event listener para calcular o valor total sempre que houver alterações nos inputs
+        var valorParcelaInputs = document.querySelectorAll("input[name='valor_parcela']");
+        for (var i = 0; i < valorParcelaInputs.length; i++) {
+            valorParcelaInputs[i].addEventListener("input", calcularVTotal);
+        }
+          $(document).on('click', '.del-row', function() {
+    $(this).closest('tr').remove();
+
+    calcularVTotal(); // Chamando a função para recalcular o valor total
+});
+
+function calcularVTotal() {
+    var total = 0;
+
+    $('input[name="valor_parcela"]').each(function() {
+        var valorParcela = parseFloat($(this).val()) || 0;
+        total += valorParcela;
+    });
+
+    $('#pedido-total').text('Valor Total do Pedido: R$ ' + total.toFixed(2));
+}
+    });
+
+
+
+
+
+
+
+
+
+
+
+</script>
+<script>
+    $(document).ready(function() {
+  $("#novo-fornecedor").click(function() {
+    document.getElementById('modal-cadastro-fornecedor').style.display = 'block';
+    // Fazer uma requisição AJAX para obter o formulário de cadastro do fornecedor
+    $.ajax({
+      url: "/cadastrar_cliente/",
+      type: "GET",
+      success: function(response) {
+        $(".modal-body").html(response);
+      },
+      error: function(error) {
+        console.error(error);
+      }
+    });
+  });
+  $("#modal-cadastro-fornecedor").on("click", "#salvar-cliente", function (event) {
+    event.preventDefault(); // Impede o envio do formulário tradicional
+
+    var formData = $("#form-cadastro-cliente").serialize(); // Obtém os dados do formulário
+
+    $.ajax({
+      type: "POST",
+      url: "/cadastrar_cliente/",
+      data: formData,
+      success: function (response) {
+        // Processar a resposta, se necessário
+        // Por exemplo, exibir uma mensagem de sucesso
+
+        // Fechar o modal de cadastro do fornecedor
+        document.getElementById('modal-cadastro-fornecedor').style.display = 'none';
+        window.location.reload();
+
+      },
+      error: function (xhr, errmsg, err) {
+        console.log(xhr.status + ": " + xhr.responseText);
+      }
+    });
+  });
+
+  $("#fechar-modal-fornecedor").click(function() {
+    console.log('fechar');
+    document.getElementById('modal-cadastro-fornecedor').style.display = 'none';
+  });
+});
+
+
+</script>
+
+<!-- SCRIPT PARA BUSCAR CLIENTE PELO CPF / CNPJ -->
+<script>
+$(document).ready(function () {
+  $("#buscar-cliente").click(function () {
+    var documentoCliente = $("#documento-cliente").val();
+
+    $.ajax({
+      type: "GET",
+      url: "/get-cliente/",
+      data: {
+        documento: documentoCliente
+      },
+      success: function (response) {
+        if (response.cliente) {
+          // Cliente encontrado, exiba os dados na mesma tela
+          exibirDadosCliente(response.cliente);
+          document.getElementById('mensagem-cliente-nao-encontrado').style.display = 'none';
+        } else {
+          // Cliente não encontrado, exiba o modal para cadastrar um novo cliente
+          document.getElementById('mensagem-cliente-nao-encontrado').style.display = 'block';
+          exibirFormularioCadastroCliente(documentoCliente);
+          $("#modal-cadastro-cliente").modal("show");
+        }
+      },
+      error: function (xhr, errmsg, err) {
+        console.log(xhr.status + ": " + xhr.responseText);
+      }
+    });
+  });
+
+  $("#modal-cadastro-cliente").on("click", "#salvar-cliente", function (event) {
+    event.preventDefault(); // Impede o envio do formulário tradicional
+
+    var formData = $("#form-cadastro-cliente").serialize(); // Obtém os dados do formulário
+
+    $.ajax({
+      type: "POST",
+      url: "/cadastrar_cliente/",
+      data: formData,
+      success: function (response) {
+        // Processar a resposta, se necessário
+        // Por exemplo, exibir uma mensagem de sucesso
+
+        // Fechar o modal de cadastro do cliente
+        $("#modal-cadastro-cliente").modal("hide");
+
+        // Atualizar os dados na tela de pedido com os dados do cliente cadastrado
+        exibirDadosCliente(response.cliente);
+
+        // Remover a mensagem de erro
+        document.getElementById('mensagem-cliente-nao-encontrado').style.display = 'none';
+
+        // Executar automaticamente o botão de busca
+        buscarCliente();
+      },
+      error: function (xhr, errmsg, err) {
+        console.log(xhr.status + ": " + xhr.responseText);
+      }
+    });
+  });
+
+  $("#fechar-modal").click(function () {
+    $("#modal-cadastro-cliente").modal("hide");
+  });
+});
+
+function exibirDadosCliente(cliente) {
+  // Atualizar os campos na tela de pedido com os dados do cliente
+  $("#nome-cliente").text(cliente.nome);
+  $("#email-cliente").text(cliente.email);
+  $("#documento_cliente").text(cliente.documento);
+  $("#telefone1-cliente").text(cliente.telefone1);
+  $("#telefone2-cliente").text(cliente.telefone2);
+  $("#cep-cliente").text(cliente.CEP);
+  $("#estado-cliente").text(cliente.estado);
+  $("#cidade-cliente").text(cliente.cidade);
+  $("#bairro-cliente").text(cliente.bairro);
+  $("#endereco-cliente").text(cliente.endereco);
+  $("#numero-endereco-cliente").text(cliente.numero_endereco);
+  $("#complemento-cliente").text(cliente.complemento);
+
+  $("#dados-cliente").show();
+}
+
+function exibirFormularioCadastroCliente(documento) {
+  fetch('/cadastrar_cliente/')
+    .then(response => response.text())
+    .then(data => {
+      // Exiba o formulário de cadastro de cliente na tela
+      const formulario = $(data);
+      formulario.find('#documento').val(documento); // Define o valor do campo "documento"
+      $("#modal-cadastro-cliente .modal-body").html(formulario);
+    })
+    .catch(error => {
+      console.error('Erro ao carregar o formulário de cadastro de cliente:', error);
+    });
+}
+function buscarCliente() {
+  var documentoCliente = $("#documento-cliente").val();
+
+  $.ajax({
+    type: "GET",
+    url: "/get-cliente/",
+    data: {
+      documento: documentoCliente
+    },
+    success: function (response) {
+      if (response.cliente) {
+        // Cliente encontrado, exiba os dados na mesma tela
+        exibirDadosCliente(response.cliente);
+        document.getElementById('mensagem-cliente-nao-encontrado').style.display = 'none';
+      } else {
+        // Cliente não encontrado, exiba o modal para cadastrar um novo cliente
+        document.getElementById('mensagem-cliente-nao-encontrado').style.display = 'block';
+        exibirFormularioCadastroCliente(documentoCliente);
+        $("#modal-cadastro-cliente").modal("show");
+      }
+    },
+    error: function (xhr, errmsg, err) {
+      console.log(xhr.status + ": " + xhr.responseText);
+    }
+  });
+}
+
+
+
+</script>
+<!-- SCRIPT PARA FORMATAR CAMPOS DE MEDIDAS C/ 3 CASAS DECIMAIS e r$ C/ 2 CASAS DECIMAIS  -->
+<script>
+  function formatInput2Value(input) {
+  var value = input.value.trim();
+
+  if (value === "") {
+    return;
+  }
+
+  value = value.replace(/[^0-9]/g, "");
+  value = value.slice(0, -3) + "." + value.slice(-3);
+
+  input.value = value;
+}
+
+// Adiciona o evento de digitação aos campos de largura ou comprimento existentes
+document.addEventListener("keyup", function(event) {
+  var target = event.target;
+
+  if (target.classList.contains("item-comprimento") || target.classList.contains("item-largura")) {
+    formatInput2Value(target);
+  }
+});
+document.addEventListener("DOMContentLoaded", function() {
+    var valorAdicionalInputs = document.querySelectorAll(".valor-adicional");
+
+
+    valorAdicionalInputs.forEach(function(input) {
+        input.addEventListener("input", function() {
+            var valor = parseFloat(input.value.replace(/\D/g, ""));
+            if (!isNaN(valor)) {
+                input.value = formatCurrency(valor / 100);
+            }
+        });
+    });
+});
+document.addEventListener("DOMContentLoaded", function() {
+    var valorFrete = document.querySelectorAll(".frete-embutido");
+
+
+   valorFrete.forEach(function(input) {
+        input.addEventListener("input", function() {
+            var valor = parseFloat(input.value.replace(/\D/g, ""));
+            if (!isNaN(valor)) {
+                input.value = formatCurrency(valor / 100);
+            }
+        });
+    });
+});
+document.addEventListener("DOMContentLoaded", function() {
+    var valorBonus = document.querySelectorAll(".acerto");
+
+
+  valorBonus.forEach(function(input) {
+        input.addEventListener("input", function() {
+            var valor = parseFloat(input.value.replace(/\D/g, ""));
+            console.log(valor);
+            if (!isNaN(valor)) {
+                input.value = formatCurrency(valor / 100);
+            }
+        });
+    });
+});
+document.addEventListener("DOMContentLoaded", function() {
+    var valortotalpagamento1 = document.querySelectorAll(".total-pagamento1");
+
+
+    valortotalpagamento1.forEach(function(input) {
+        input.addEventListener("input", function() {
+            var valor = parseFloat(input.value.replace(/\D/g, ""));
+            if (!isNaN(valor)) {
+                input.value = formatCurrency(valor / 100);
+            }
+        });
+    });
+});
+document.addEventListener("DOMContentLoaded", function() {
+    var parceladocartao1 = document.querySelectorAll(".parceladocartao1");
+
+
+    parceladocartao1.forEach(function(input) {
+        input.addEventListener("input", function() {
+            var valor = parseFloat(input.value.replace(/\D/g, ""));
+            if (!isNaN(valor)) {
+                input.value = formatCurrency(valor / 100);
+            }
+        });
+    });
+});
+document.addEventListener("DOMContentLoaded", function() {
+    var totalpagamento2 = document.querySelectorAll(".totalpagamento2");
+
+
+    totalpagamento2.forEach(function(input) {
+        input.addEventListener("input", function() {
+            var valor = parseFloat(input.value.replace(/\D/g, ""));
+            if (!isNaN(valor)) {
+                input.value = formatCurrency(valor / 100);
+            }
+        });
+    });
+});
+document.addEventListener("DOMContentLoaded", function() {
+    var parceladocartao2 = document.querySelectorAll(".parceladocartao2");
+
+
+    parceladocartao2.forEach(function(input) {
+        input.addEventListener("input", function() {
+            var valor = parseFloat(input.value.replace(/\D/g, ""));
+            if (!isNaN(valor)) {
+                input.value = formatCurrency(valor / 100);
+            }
+        });
+    });
+});
+
+function formatCurrency(value) {
+    var formatter = new Intl.NumberFormat("pt-BR", {
+        style: "currency",
+        currency: "BRL",
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2
+    });
+    return formatter.format(value);
+}
+
+</script>
+
+<!-- SCRIPT PARA FORMATAR TELEFONES -->
+<script>
+  $(document).ready(function() {
+
+
+  // Formatação do campo de telefone
+  $('#cliente_telefone').on('keyup', function() {
+    var telefone = $(this).val().replace(/\D/g, '');
+    var formattedTelefone = '';
+
+    if (telefone.length >= 11) {
+      // Formato para telefones com DDD
+      formattedTelefone = '(' + telefone.substr(0, 2) + ') ' + telefone.substr(2, 5) + '-' + telefone.substr(7);
+    } else if (telefone.length >= 10) {
+      // Formato para telefones sem DDD
+      formattedTelefone = telefone.substr(0, 5) + '-' + telefone.substr(5);
+    } else if (telefone.length >= 6) {
+      // Formato para telefones com 9 dígitos (sem formatação especial)
+      formattedTelefone = telefone.substr(0, 5) + '-' + telefone.substr(5);
+    } else {
+      // Telefone com menos de 6 dígitos (sem formatação especial)
+      formattedTelefone = telefone;
+    }
+
+    $(this).val(formattedTelefone);
+  });
+
+});
+
+
+   </script>
+</body>
+
+{% endblock %}

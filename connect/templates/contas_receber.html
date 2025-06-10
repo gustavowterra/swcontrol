@@ -1,0 +1,849 @@
+{% extends "./modelo.html" %}
+{% load static %}
+{% block container %}
+<head xmlns="http://www.w3.org/1999/html">
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
+    <link rel="stylesheet" href="{% static 'meus_pedidos/assets/bootstrap/css/bootstrap.min.css' %}">
+    <link rel="stylesheet" href="{% static 'meus_pedidos/assets/fonts/fontawesome-all.min.css' %}">
+    <link rel="stylesheet" href="{% static 'meus_pedidos/assets/fonts/font-awesome.min.css' %}">
+    <link rel="stylesheet" href="{% static 'meus_pedidos/assets/fonts/fontawesome5-overrides.min.css' %}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css">
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.31.2/css/theme.bootstrap_4.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.css">
+    <link rel="stylesheet" href="{% static 'meus_pedidos/assets/css/styles.min.css' %}">
+    <link href="{% static 'dashboard/assets/css/nucleo-icons.css' %}" rel="stylesheet"/>
+    <link href="{% static 'dashboard/assets/css/nucleo-svg.css' %}" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
+    <link id="pagestyle" href="{% static 'dashboard/assets/css/material-dashboard.css?v=3.1.0' %}" rel="stylesheet"/>
+<style>
+    .status-cell {
+    color: var(--bs-gray-800);
+    background: var(--bs-white);
+}
+
+.aberto {
+    background: orange;
+    color: white;
+}
+
+.a-vencer {
+    background: blue;
+    color: white;
+}
+
+.vencido {
+    background: red;
+    color: white;
+}
+
+.pago {
+    background: black;
+    color: white;
+}
+
+
+</style>
+</head>
+<body>
+<div class="modal" id="modal-confirma-pagamento" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Confirmar Pagamento</h5>
+                    <button type="button" class="close" data-dismiss="modal" id="fechar-modal-confirma-pagamento" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+
+                    <form method="post" enctype="multipart/form-data"  id="form-confirma-pagamento">
+                        {% csrf_token %}
+                        <div class="form-group">
+                            <label for="tipo_pagamento">Tipo do Pagamento</label>
+
+                            <select type="text" class="form-control col-md-6" id="tipo_pagamento" name="tipo_pagamento">
+                                {% for forma in formas_pagamento %}
+                                 <option value="{{ forma.descricao }}">{{ forma.descricao }}</option>
+
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="form-group col-md-6">
+
+                            <label for="select-banco">Bancos</label>
+                            <div class="d-flex align-items-center ">
+                                <select type="text" class="form-control col-md-6" id="select-banco" name="transportadora">
+                                    {% for banco in bancos %}
+                                    <option value="{{ banco.id }}">{{ banco.nome }}-{{ banco.empresa.nome }}</option>
+                                    {% endfor %}
+                                </select>
+
+
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="data-pagamento">Data Pagamento</label>
+                            <input type="date" class="form-control" id="data-pagamento" name="data_pagamento" value="{{data_atual|date:'Y-m-d'}}">
+                            <label for="valor-pago">Valor Pago</label>
+                            <input type="text" class="form-control" id="valor-pago" name="valor-pago">
+                        </div>
+
+
+                        <button type="submit" id="confirmar-pagamento-btn" class="btn btn-dark mt-2">Confirmar</button>
+                    </form>
+
+                </div>
+            </div>
+    </div>
+</div>
+
+<div id="wrapper">
+    <div class="d-flex flex-column" id="content-wrapper" style="background: white">
+        <div id="content" style="color: #2D2F3E;">
+            <div class="container-fluid" style="margin-bottom: 50px;">
+                <div class="row">
+                    <div class="col-12 col-sm-6 col-md-6 col-lg-6 mt-2"><h4 class="text-dark mr-4 mb-4 mt-2" style="padding:20px;">A Receber</h4></div>
+
+                    <div class="col-12 col-sm-6 col-md-6 text-end" style="margin-bottom: 30px;"><a
+                            class="btn btn-dark mt-4" role="button" href="/download-relatorio-contasreceber/"><i class="fa fa-plus"></i>&nbsp;Download
+                        </a>
+                    <a
+                            class="btn btn-dark mt-4" role="button" href="/pedido/"><i class="fa fa-plus"></i>&nbsp;Novo
+                        Pedido</a></div></div>
+                </div>
+
+                <div class="card" id="TableSorterCard"
+                     style="border-style: none;border-radius: 6.5px;">
+                    <form method="GET" action="/contas_receber/">
+                        {% csrf_token %}
+                        <div class="card-header py-3" style="border-width: 0px;background: var(--bs-gray-700);">
+                            <button id="botao-filtrar" class="btn btn-dark text-black" type="button"
+                                    style="background: var(--bs-white);">
+                                Filtrar
+                            </button>
+                            <button id="botao-apagar-filtro" class="btn btn-dark text-black" type="submit"
+                                    style="background: var(--bs-white);">
+                                Apagar Filtro
+                            </button>
+
+                            <div class="row table-topper align-items-center" id="row-form" style="display:none">
+                                <div class="col-md-8">
+                                    <div class="row align-items-center">
+                                        <div class="col-md-4">
+                                            <label class="col-form-label text-white"
+                                                   style="font-weight: bold;">Período Data de Vencimento</label>
+                                        </div>
+                                    </div>
+                                    <div class="row align-items-center">
+                                        <div class="col-md-2">
+                                            <input type="date"
+                                                   class="form-control"
+                                                   id="filter-vencimento-inicial"
+                                                   name="filter_vencimento_inicial"
+                                                   style="background: var(--bs-card-cap-bg);color: black;border-style: solid;border-color: white;">
+                                        </div>
+                                        <div class="col-md-2">
+                                            <input type="date"
+                                                   class="form-control"
+                                                   id="filter-vencimento-final"
+                                                   name="filter_vencimento_final"
+                                                   style="margin-left: 20px;background: var(--bs-card-cap-bg);color: black;border-style: solid;border-color: white;">
+                                        </div>
+                                    </div>
+                                </div>
+
+
+                                <div class="col-md-8">
+                                    <div class="row align-items-center">
+                                        <div class="col-md-4">
+                                            <label class="col-form-label text-white"
+                                                   style="font-weight: bold;">Período Data de Pagamento </label>
+                                        </div>
+                                    </div>
+                                    <div class="row align-items-center">
+                                        <div class="col-md-2">
+                                            <input type="date"
+                                                   class="form-control"
+                                                   id="filter-data-pagamento-inicial"
+                                                   name="filter_data_pagamento_inicial"
+                                                   style="background: var(--bs-card-cap-bg);color: black;border-style: solid;border-color: white;">
+                                        </div>
+                                        <div class="col-md-2">
+                                            <input type="date"
+                                                   class="form-control"
+                                                   id="filter-data-pagamento-final"
+                                                   name="filter_data_pagamento_final"
+                                                   style="margin-left: 20px;background: var(--bs-card-cap-bg);color: black;border-style: solid;border-color: white;">
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-8">
+                                    <div class="row align-items-center">
+                                        <div class="col-md-4">
+                                            <label class="col-form-label text-white"
+                                                   style="font-weight: bold;">Período Data de Pedido </label>
+                                        </div>
+                                    </div>
+                                    <div class="row align-items-center">
+                                        <div class="col-md-2">
+                                            <input type="date"
+                                                   class="form-control"
+                                                   id="filter-data-pedido-inicial"
+                                                   name="filter_data_pedido_inicial"
+                                                   style="background: var(--bs-card-cap-bg);color: black;border-style: solid;border-color: white;">
+                                        </div>
+                                        <div class="col-md-2">
+                                            <input type="date"
+                                                   class="form-control"
+                                                   id="filter-data-pedido-final"
+                                                   name="filter_data_pedido_final"
+                                                   style="margin-left: 20px;background: var(--bs-card-cap-bg);color: black;border-style: solid;border-color: white;">
+                                        </div>
+                                    </div>
+                                </div>
+                                <! SEGUNDA LINHA DO FILTRO>
+                                <div class="row table-topper align-items-center">
+                                    <div class="col-md-3">
+                                        <div class="row align-items-center" style="margin-right: 10px;">
+                                            <div class="col-md-6">
+                                                <label for="numero-pedido-filter" class="col-form-label text-white"
+                                                       style="font-weight: bold;">Número
+                                                    do Pedido</label>
+                                                <input type="text"
+                                                       class="form-control"
+                                                       id="numero-pedido-filter"
+                                                       name="numero_pedido_filter"
+                                                       style="background: var(--bs-card-cap-bg);border-color: var(--bs-gray-100);">
+                                            </div>
+                                            <div class="col-md-6">
+                                                <label for="documento-cliente-filter" class="col-form-label text-white"
+                                                       style="font-weight: bold;">CPF / CNPJ Cliente</label>
+                                                <input type="text"
+                                                       class="form-control"
+                                                       id="documento-cliente-filter"
+                                                       name="documento_cliente_filter"
+                                                       style="background: var(--bs-card-cap-bg);border-color: var(--bs-gray-100);">
+                                            </div>
+                                                <div class="col-md-6">
+                                                <label for="nome-cliente-filter" class="col-form-label text-white"
+                                                       style="font-weight: bold;"><small> Nome do Cliente</small></label>
+                                                <input type="text"
+                                                       class="form-control"
+                                                       id="nome-cliente-filter"
+                                                       name="nome_cliente_filter"
+                                                       style="background: var(--bs-card-cap-bg);border-color: var(--bs-gray-100);">
+
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="row table-topper align-items-center">
+                                    <div class="col-md-6">
+                                        <div class="row align-items-center" style="margin-right: 10px;">
+                                            <div class="col-md-3">
+                                                <label for="status-pagamento-filter" class="col-form-label text-white"
+                                                       style="font-weight: bold;">Status
+                                                    Pagamento</label>
+                                                <input type="text"
+                                                       class="form-control"
+                                                       id="status-pagamento-filter"
+                                                       list="status-pagamento"
+                                                       name="status_pagamento_filter"
+                                                       style="background: var(--bs-card-cap-bg);border-color: var(--bs-gray-100);">
+                                                <datalist id="status-pagamento">
+                                                    {% for item in status_conta %}
+                                                    <option value="{{ item.0 }}"></option>
+                                                    {% endfor %}
+
+                                                </datalist>
+                                            </div>
+                                            <div class="col-md-3">
+                                                <label for="valor-parcela-filter" class="col-form-label text-white"
+                                                       style="font-weight: bold;">Valor Parcela</label>
+                                                <input type="text"
+                                                       class="form-control valor_parcela_filter"
+                                                       id="valor-parcela-filter"
+                                                       name="valor_parcela_filter"
+                                                       style="background: var(--bs-card-cap-bg);border-color: var(--bs-gray-100);">
+                                            </div>
+                                            <div class="col-md-3">
+                                                <label for="forma-pagamento-filter" class="col-form-label text-white"
+                                                       style="font-weight: bold;"><small> Forma de Pagamento</small></label>
+                                                <input type="text"
+                                                       class="form-control"
+                                                       list="formas-pagamento"
+                                                       id="forma-pagamento-filter"
+                                                       name="forma_pagamento_filter"
+                                                       style="background: var(--bs-card-cap-bg);border-color: var(--bs-gray-100);">
+                                                <datalist id="formas-pagamento">
+                                                    {% for forma_pagamento in formas_pagamento %}
+                                                    <option value="{{ forma_pagamento.descricao }}"></option>
+                                                    {% endfor %}
+                                                </datalist>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <label for="empresa-filter" class="col-form-label text-white"
+                                                       style="font-weight: bold;">Empresa</label>
+                                                <select type="text" class="form-control"
+                                                        style="background: var(--bs-card-cap-bg);border-color: var(--bs-gray-100);"
+                                                        id="empresa-filter"
+                                                    name="filter_empresa" >
+                                                    <option value="" selected></option>
+                                                {% for empresa in empresas %}
+                                                <option class="form-control" style="background: var(--bs-card-cap-bg);border-color: var(--bs-gray-100);" value="{{ empresa.nome }}">{{ empresa.nome }}</option>
+                                                {% endfor %}
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+
+                                <div class="col-md-4">
+                                    <div class="row align-items-center">
+                                        <div class="col-md-12 mt-2">
+                                            <button class="btn btn-dark text-black" type="submit"
+                                                    style="background: var(--bs-white);">
+                                                Pesquisar
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                {% if colaborador.funcao == 'Gerente' %}
+                <div class="row">
+                    <div class="col-xl-3 mt-4 col-sm-6 mb-xl-0 mb-4">
+                        <div class="card">
+                            <div class="card-header p-3 pt-2">
+                                <div class="icon icon-lg icon-shape bg-gradient-dark shadow-dark text-center border-radius-xl mt-n4 position-absolute">
+                                    <i class="material-icons opacity-10">payments</i>
+                                </div>
+                                <div class="text-end pt-1">
+                                    <p class="text-sm mb-0 text-capitalize">Total a Receber</p>
+                                    <h4 class="mb-0">{{ total_receber }}</h4>
+                                </div>
+                            </div>
+
+
+                        </div>
+                    </div>
+            <div class="col-xl-3 mt-4 col-sm-6 mb-xl-0 mb-4">
+                <div class="card">
+                    <div class="card-header p-3 pt-2">
+                        <div class="icon icon-lg icon-shape bg-gradient-dark shadow-dark text-center border-radius-xl mt-n4 position-absolute">
+                            <i class="material-icons opacity-10">payments</i>
+                        </div>
+                        <div class="text-end pt-1">
+                            <p class="text-sm mb-0 text-capitalize">Total Vencido</p>
+                            <h4 class="mb-0">{{ total_vencido }}</h4>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+            <div class="col-xl-3 mt-4 col-sm-6 mb-xl-0 mb-4">
+                <div class="card">
+                    <div class="card-header p-3 pt-2">
+                        <div class="icon icon-lg icon-shape bg-gradient-dark shadow-dark text-center border-radius-xl mt-n4 position-absolute">
+                            <i class="material-icons opacity-10">payments</i>
+                        </div>
+                        <div class="text-end pt-1">
+                            <p class="text-sm mb-0 text-capitalize"><strong>Total Recebido</strong></p>
+                            <h4 class="mb-0">{{ total_pago }}</h4>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+        </div>
+                {% endif %}
+
+                <div class="row mt-4">
+                    <div class="col-12">
+                        <div class="table-responsive" style="border-top-style: none;background: #171921;">
+                            <table class="table table-striped table tablesorter" id="ipi-table">
+                                <thead class="thead-dark"
+                                       style="background: rgb(33,37,48);border-width: 0px;border-color: rgb(0,0,0);border-bottom-color: #21252F;">
+                                <tr style="border-style: none;border-color: rgba(255,255,255,0);background: #21252f;">
+                                    <th class="text-center"
+                                        style="background: var(--bs-gray-300);color: var(--bs-black);border-style: none;">
+                                        ID - Pedido
+                                    </th>
+                                    <th class="text-center"
+                                        style="background: var(--bs-gray-300);color: var(--bs-black);border-style: none;">
+                                        Nome do Cliente
+                                    </th>
+                                    <th class="text-center"
+                                        style="background: var(--bs-gray-300);color: var(--bs-black);border-style: none;">
+                                        Data de Vencimento
+                                    </th>
+                                    <th class="text-center"
+                                        style="background: var(--bs-gray-300);color: var(--bs-black);border-style: none;">
+                                        Forma de Pagamento
+                                    </th>
+                                    <th class="text-center"
+                                        style="background: var(--bs-gray-300);color: var(--bs-black);border-style: none;">
+                                        Valor da Parcela
+                                    </th>
+                                    <th class="text-center"
+                                        style="background: var(--bs-gray-300);color: var(--bs-black);border-style: none;">
+                                        Nº Parcela / Total de Parcelas
+                                    </th>
+                                    <th class="text-center"
+                                        style="background: var(--bs-gray-300);color: var(--bs-black);border-style: none;">
+                                        Total do Pedido
+                                    </th>
+                                    <th class="text-center"
+                                        style="background: var(--bs-gray-300);color: var(--bs-black);border-style: none;">
+                                        Status
+                                    </th>
+                                    <th class="text-center filter-false sorter-false"
+                                        style="background: var(--bs-gray-300);color: var(--bs-black);border-style: none;">
+                                        Ações
+                                    </th>
+                                    <th class="text-center filter-false sorter-false"
+                                        style="background: var(--bs-gray-300);color: var(--bs-black);border-style: none;">
+                                        Boletos
+                                    </th>
+                                </tr>
+                                </thead>
+                                <tbody class="text-center" style="border-top-width: 0px; font-size:80%">
+                                {% for consulta in consultas %}
+                                <tr style="background: #262a38;">
+                                    <td style="color: var(--bs-gray-800);background: var(--bs-white);white-space: normal;">{{ consulta.id }}-{{ consulta.pedido }} {{ consulta.pedido_conta.status }}
+                                    </td>
+                                    {% if consulta.flag_uni == 1 %}
+                                    <td style="color: var(--bs-gray-800);background: var(--bs-white);white-space: normal;">{{ consulta.cliente.nome }} - {{ consulta.descricao }}
+                                    </td>
+                                    {% else %}
+                                    <td style="color: var(--bs-gray-800);background: var(--bs-white);white-space: normal;">{{ consulta.cliente.nome }}
+                                    </td>
+                                    {% endif %}
+                                    <td style="color: var(--bs-gray-800);background: var(--bs-white);white-space: normal;">{{ consulta.data_vencimento|date:'d/m/Y' }}
+                                    </td>
+                                    <td style="color: var(--bs-gray-800);background: var(--bs-white);white-space: normal;">{{ consulta.tipo_pgto }}
+                                    </td>
+
+                                    <td class="valor-total" id="consulta-valor" style="color: var(--bs-gray-800);background: var(--bs-white);">{{ consulta.valor }}
+                                    </td>
+                                    <td style="color: var(--bs-gray-800);background: var(--bs-white);white-space: normal;">{{ consulta.numero_parcela }} / {{ consulta.total_parcelas }}
+                                    </td>
+                                    {% if consulta.flag_uni != 1 %}
+                                    <td class="valor-total" id="consulta-total" style="color: var(--bs-gray-800);background: var(--bs-white);">{{ consulta.pedido_conta.valorTotal }}
+                                    </td>
+                                    {% else %}
+                                    <td class="valor-total" id="consulta-total" style="color: var(--bs-gray-800);background: var(--bs-white);">-
+                                    </td>
+                                    {% endif %}
+                                    <td style="color: var(--bs-gray-800);background: var(--bs-white);">{{ consulta.status_conta }}
+                                    </td>
+                                    <td class="text-center align-middle"
+                                        style="max-height: 60px;height: 60px;background: var(--bs-white);color: var(--bs-gray-800);">
+
+
+                                        <a class="btn btnMaterial btn-flat primary semicircle" id="consultar-pedido"
+                                           role="button"
+                                           title="visualizar pedido"
+                                           href="/consultarpedido/{{ consulta.pedido }}"
+                                           style="color: var(--bs-table-color);"><i class="far fa-eye"></i></a>
+                                       {% if  colaborador.funcao == 'Gerente' or consulta.status_conta == 'Pendente Faturamento' %}
+
+                                        <a class="btn btnMaterial btn-flat success semicircle" id="editar-conta"
+                                           role="button"
+                                            title="editar conta"
+                                           href="/editar_conta/{{ consulta.pedido }}" style="color: rgb(0,197,179);"><i
+                                                class="fas fa-pen"
+                                                style="color: var(--bs-black);"></i></a>
+                                        {% endif %}
+                                        {% if colaborador.funcao == 'Financeiro' and consulta.status_conta == 'A Vencer' and consulta.tipo_pgto == 'BOLETO' and consulta.caminho_boleto is None %}
+                                         <a class="btn btnMaterial btn-flat success semicircle" id="editar-conta"
+                                           role="button"
+                                            title="editar conta"
+                                           href="/editar_conta/{{ consulta.pedido }}" style="color: rgb(0,197,179);"><i
+                                                class="fas fa-pen"
+                                                style="color: var(--bs-black);"></i></a>
+                                        {% endif %}
+                                        {% if colaborador.funcao == 'Gerente' %}
+                                        <a class="confirmar-pagamento" id="confirmar-pagamento"
+                                           role="button"
+                                           title="confirmar pagamento"
+                                           data-pedido="{{ consulta.pedido}}"
+                                           data-valor="{{ consulta.valor }}"
+                                           data-conta-id = "{{ consulta.id }}"
+
+                                           style="color: var(--bs-table-color);">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
+                                                 fill="currentColor" class="bi bi-check-circle-fill"
+                                                 viewBox="0 0 16 16">
+                                                <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zm-3.97-3.03a.75.75 0 0 0-1.08.022L7.477 9.417 5.384 7.323a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-.01-1.05z"/>
+                                            </svg></a>
+                                        {% endif %}
+                                    </td>
+                                    <td class="text-center align-middle"
+                                        style="max-height: 60px;height: 60px;background: var(--bs-white);color: var(--bs-gray-800);">
+                                        <a class="btn btnMaterial btn-flat btnNoBorders btn-emitir-boleto" id="bt-geraboleto-{{ consulta.pedido }}" data-id="{{ consulta.id }}" data-pedido="{{ consulta.pedido }}"
+                                           role="button" title="emitir boleto">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
+                                                 fill="currentColor" class="bi bi-file-earmark-text"
+                                                 viewBox="0 0 16 16">
+                                                <path d="M5.5 7a.5.5 0 0 0 0 1h5a.5.5 0 0 0 0-1h-5zM5 9.5a.5.5 0 0 1 .5-.5h5a.5.5 0 0 1 0 1h-5a.5.5 0 0 1-.5-.5zm0 2a.5.5 0 0 1 .5-.5h2a.5.5 0 0 1 0 1h-2a.5.5 0 0 1-.5-.5z"/>
+                                                <path d="M9.5 0H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2V4.5L9.5 0zm0 1v2A1.5 1.5 0 0 0 11 4.5h2V14a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1h5.5z"/>
+                                            </svg>
+                                        </a>
+                                        {% if consulta.caminho_boleto %}
+                                            <a class="btn btnMaterial btn-flat btnNoBorders btn-dpwnload-boleto" id="bt-download-{{ consulta.pedido }}"
+                                               role="button" title="download boleto" href="{{ consulta.caminho_boleto }}">
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-file-earmark-arrow-down-fill" viewBox="0 0 16 16">
+                                                  <path d="M9.293 0H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2V4.707A1 1 0 0 0 13.707 4L10 .293A1 1 0 0 0 9.293 0zM9.5 3.5v-2l3 3h-2a1 1 0 0 1-1-1zm-1 4v3.793l1.146-1.147a.5.5 0 0 1 .708.708l-2 2a.5.5 0 0 1-.708 0l-2-2a.5.5 0 0 1 .708-.708L7.5 11.293V7.5a.5.5 0 0 1 1 0z"/>
+                                                </svg>
+                                            </a>
+                                            <a class="btn btnMaterial btn-flat btnNoBorders btn-delete-boleto" id="bt-delete-{{ consulta.pedido }}" data-conta="{{consulta.id_cobranca}}"
+                                               role="button" title="delete boleto">
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-file-earmark-x-fill" viewBox="0 0 16 16">
+                                                  <path d="M9.293 0H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2V4.707A1 1 0 0 0 13.707 4L10 .293A1 1 0 0 0 9.293 0zM9.5 3.5v-2l3 3h-2a1 1 0 0 1-1-1zM6.854 7.146 8 8.293l1.146-1.147a.5.5 0 1 1 .708.708L8.707 9l1.147 1.146a.5.5 0 0 1-.708.708L8 9.707l-1.146 1.147a.5.5 0 0 1-.708-.708L7.293 9 6.146 7.854a.5.5 0 1 1 .708-.708z"/>
+                                                </svg>
+                                            </a>
+                                        {% endif %}
+                                        {% if consulta.status_conta == 'Pendente Faturamento' %}
+
+                                         <a class="btn btnMaterial btn-flat btnNoBorders btn-unificar-cobranca" id="bt-unificar-{{ consulta.pedido }}" data-pedido="{{consulta.pedido.numero}}" data-cliente="{{ consulta.cliente.documento }}"
+                                               role="button" title="Unificar Cobranças de {{consulta.cliente.nome }}" href="/unificar_contas/{{ consulta.cliente.documento }}">
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-files" viewBox="0 0 16 16">
+                                                  <path d="M13 0H6a2 2 0 0 0-2 2 2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h7a2 2 0 0 0 2-2 2 2 0 0 0 2-2V2a2 2 0 0 0-2-2zm0 13V4a2 2 0 0 0-2-2H5a1 1 0 0 1 1-1h7a1 1 0 0 1 1 1v10a1 1 0 0 1-1 1zM3 4a1 1 0 0 1 1-1h7a1 1 0 0 1 1 1v10a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V4z"/>
+                                                </svg>
+                                            </a>
+                                        {% endif %}
+
+
+
+
+                                    </td>
+                                </tr>
+                                <!-- Modal de edição -->
+                                <div class="modal fade" id="modal-editar-{{ consulta.pedido }}" tabindex="-1"
+                                     role="dialog" aria-labelledby="modal-editar-label" aria-hidden="true">
+                                    <div class="modal-dialog" role="document">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <h5 class="modal-title" id="modal-editar-label">Editar Pedido {{
+                                                    consulta.pedido }}</h5>
+                                                <button type="button" class="close" data-dismiss="modal"
+                                                        aria-label="Close">
+                                                    <span aria-hidden="true">&times;</span>
+                                                </button>
+                                            </div>
+                                            <div class="modal-body">
+                                                <!-- Campos de edição -->
+                                                <input type="text" id="descricao-{{ consulta.pedido }}"
+                                                       value="{{ consulta.descricao }}">
+                                                <input type="date" id="data_vencimento-{{ consulta.pedido }}"
+                                                       value="{{ consulta.data_vencimento }}">
+                                                <!-- Outros campos de edição -->
+                                            </div>
+                                            <div class="modal-footer">
+                                                <button type="button" class="btn btn-primary"
+                                                        onclick="salvarEdicao({{ consulta.pedido }})">Salvar
+                                                </button>
+                                                <button type="button" class="btn btn-secondary" data-dismiss="modal">
+                                                    Fechar
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<footer class="bg-white sticky-footer" style="background: linear-gradient(#1f232d 0%, #1f232d 100%);">
+    <div class="container my-auto">
+        <div class="text-center my-auto copyright text-gray-100" style="font-size: 13.5px;"><span>Copyright © Conectiva Soluções Tecnologicas&nbsp;<span
+                id="year">2022</span></span></div>
+    </div>
+</footer>
+<a class="border rounded d-inline scroll-to-top" href="#page-top"><i class="fas fa-angle-up"></i></a>
+</div>
+<script src="{% static 'meus_pedidos/assets/bootstrap/js/bootstrap.min.js' %}"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.31.2/js/jquery.tablesorter.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.31.2/js/widgets/widget-filter.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.31.2/js/widgets/widget-storage.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
+
+<script src="{% static 'meus_pedidos/assets/js/script.min.js' %}"></script>
+<script>
+var btnsEmitirBoleto = document.querySelectorAll('.btn-emitir-boleto');
+
+// Itera sobre os botões encontrados
+btnsEmitirBoleto.forEach(function(btn) {
+  btn.addEventListener('click', function() {
+    // Obtém o número do pedido do atributo de dados 'data-pedido'
+    var numeroPedido = this.getAttribute('data-pedido');
+    var idConta = this.getAttribute('data-id');
+
+
+    // Cria um objeto de dados para enviar na requisição
+    var data = {
+      numero_pedido: numeroPedido,
+      id_conta: idConta
+    };
+
+    // Faz a requisição para a view 'emitir_nota' usando fetch
+    fetch('/emitir-boleto/', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-CSRFToken': '{{ csrf_token }}'
+      },
+      body: JSON.stringify(data)
+    })
+    .then(response => {
+        if (response.status === 200) {
+            // Se a resposta for bem-sucedida (status_code 200), parseie o JSON
+            return response.json();
+        } else {
+            // Se a resposta não for bem-sucedida, lance um erro com a mensagem de erro da resposta
+            throw new Error(`Erro na resposta da requisição: ${response.statusText}`);
+        }
+    })
+    .then(data => {
+        // Lógica de tratamento da resposta, se necessário
+        console.log(data);
+
+        // Verifique se existe a propriedade 'bankSlipUrl' no JSON de resposta
+        if (data && data.hasOwnProperty('bankSlipUrl')) {
+            // Redirecione a página para a URL do PDF do boleto
+
+            window.open(data.bankSlipUrl, '_blank');
+
+        }
+    })
+    .catch(error => {
+        // Lógica de tratamento de erro, se necessário
+        console.error('Erro:', error);
+    })
+  })
+ });
+</script>
+
+
+<script>
+    var btnDeleteBoleto = document.querySelectorAll('.btn-delete-boleto');
+
+// Itera sobre os botões encontrados
+btnDeleteBoleto.forEach(function(btn) {
+  btn.addEventListener('click', function() {
+    // Obtém o número do pedido do atributo de dados 'data-pedido'
+    var id_conta = this.getAttribute('data-conta');
+    var confirmDelete = confirm("Tem certeza que deseja prosseguir com a exclusão do boleto?");
+
+    if (confirmDelete) {
+
+        // Cria um objeto de dados para enviar na requisição
+        var data = {
+          id_conta: id_conta
+        };
+
+        // Faz a requisição para a view 'emitir_nota' usando fetch
+        fetch('/delete-boleto/', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': '{{ csrf_token }}'
+          },
+          body: JSON.stringify(data)
+        })
+        .then(response => {
+            if (response.status === 200) {
+                // Se a resposta for bem-sucedida (status_code 200), parseie o JSON
+                alert('Boleto Deletado Com Sucesso!');
+                window.location.reload();
+            } else {
+                // Se a resposta não for bem-sucedida, lance um erro com a mensagem de erro da resposta
+                throw new Error(`Erro na resposta da requisição: ${response.statusText}`);
+            }
+        })
+        .then(data => {
+            // Lógica de tratamento da resposta, se necessário
+            console.log(data);
+
+            // Verifique se existe a propriedade 'bankSlipUrl' no JSON de resposta
+            if (data && data.hasOwnProperty('bankSlipUrl')) {
+                // Redirecione a página para a URL do PDF do boleto
+
+
+
+            }
+        })
+        .catch(error => {
+            // Lógica de tratamento de erro, se necessário
+            console.error('Erro:', error);
+        })
+    }
+  })
+ });
+</script>
+<script>
+    // Obtém referência ao botão e à div
+    const botaoFiltrar = document.getElementById('botao-filtrar');
+    const rowForm = document.getElementById('row-form');
+
+    // Adiciona o manipulador de evento ao botão
+    botaoFiltrar.addEventListener('click', function() {
+        // Verifica o status de exibição atual da div
+        const displayStatus = rowForm.style.display;
+
+        // Altera o status de exibição com base no status atual
+        if (displayStatus === 'none') {
+            rowForm.style.display = 'block';
+        } else {
+            rowForm.style.display = 'none';
+        }
+    });
+
+
+</script>
+<script>
+// Função para formatar o valor em moeda brasileira (R$)
+function formatarMoeda(valor) {
+  return valor.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+}
+
+// Seleciona todos os elementos da tabela com a classe 'valor-total'
+var elementosValorTotal = document.querySelectorAll('.valor-total');
+
+// Percorre os elementos e formata o valor em moeda brasileira
+elementosValorTotal.forEach(function(elemento) {
+  var valor = parseFloat(elemento.textContent.replace(',', '.'));
+  if (!isNaN(valor)) {
+    elemento.textContent = formatarMoeda(valor);
+  }
+});
+</script>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+    var valor = document.querySelectorAll(".valor_parcela_filter");
+
+
+    valor.forEach(function(input) {
+        input.addEventListener("input", function() {
+            var valor = parseFloat(input.value.replace(/\D/g, ""));
+            if (!isNaN(valor)) {
+                input.value = formatCurrency(valor / 100);
+            }
+        });
+    });
+});
+
+function formatCurrency(value) {
+    var formatter = new Intl.NumberFormat("pt-BR", {
+        style: "currency",
+        currency: "BRL",
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2
+    });
+    return formatter.format(value);
+}
+</script>
+
+
+<script>
+var btnsConfirmarPagamento = document.querySelectorAll('.confirmar-pagamento');
+
+// Itera sobre os botões encontrados
+btnsConfirmarPagamento.forEach(function(btns) {
+  btns.addEventListener('click', function() {
+    console.log('entrou clique');
+    // Obtém o número do pedido do atributo de dados 'data-pedido'
+    var numeroPedido = this.getAttribute('data-pedido');
+    var consultaID = this.getAttribute('data-conta-id');
+    var valorParcela = this.getAttribute('data-valor');
+    document.getElementById('valor-pago').value = valorParcela;
+
+    document.getElementById('modal-confirma-pagamento').style.display = 'block';
+
+    document.getElementById('form-confirma-pagamento').addEventListener('submit', function(event) {
+      // Impede o comportamento padrão de submissão do formulário
+      event.preventDefault();
+      var tipoPagamento = document.getElementById('tipo_pagamento').value;
+      var bancoId = document.getElementById('select-banco').value;
+      var dataPagamento = document.getElementById('data-pagamento').value;
+      var valorPago = document.getElementById('valor-pago').value;
+      //var volumes = document.getElementById('volumes-frete').value;
+      //var opcaoContaPagar = document.getElementById('opcao-conta-pagar').value;
+
+      document.getElementById('modal-confirma-pagamento').style.display = 'none';
+
+
+    // Cria um objeto de dados para enviar na requisição
+    var data = {
+      tipoPagamento: tipoPagamento,
+      bancoId: bancoId,
+      dataPagamento: dataPagamento,
+      valorPago: valorPago,
+      contaID: consultaID,
+      numeroPedido: numeroPedido
+    };
+
+
+    fetch('/registra_recebimento/', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-CSRFToken': '{{ csrf_token }}'
+      },
+      body: JSON.stringify(data)
+    })
+    .then(function(response) {
+      if (response.ok) {
+        // Manipule a resposta da requisição conforme necessário
+        alert('Pagamento Registrado com Sucesso!');
+        window.location.reload();
+        return response.json();
+      } else {
+        alert('Ocorreu um erro: Favor contactar o suporte');
+      }
+    })
+    .then(data => {
+        // Lógica de tratamento da resposta, se necessário
+
+    })
+    .then(function(responseData) {
+       if (responseData.error) {
+        // Realize as ações necessárias para tratar o erro
+        alert('Erro: ' + responseData.error);
+      }else{
+      console.log(responseData); }
+      // Realize as ações necessárias com os dados da resposta
+    })
+    .catch(function(error) {
+      console.error('Erro: ' + error.message);
+    });
+    });
+  });
+});
+document.getElementById('fechar-modal-confirma-pagamento').addEventListener('click', function() {
+  document.getElementById('modal-confirma-pagamento').style.display = 'none';
+});
+</script>
+
+
+</body>
+</html>
+{% endblock %}

@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Editar Campos</title>
+    <script>
+        function mostrarInput() {
+            const campoSelecionado = document.getElementById("campo-selecao").value;
+            const inputs = document.getElementsByClassName("campo-input");
+
+            // Esconde todos os inputs inicialmente
+            for (let i = 0; i < inputs.length; i++) {
+                inputs[i].style.display = "none";
+            }
+
+            // Mostra o input correspondente ao campo selecionado
+            if (campoSelecionado) {
+                document.getElementById("input-" + campoSelecionado).style.display = "block";
+            }
+        }
+    </script>
+</head>
+<body>
+    <h1>Escolha o campo para editar</h1>
+
+    <!-- Dropdown para selecionar o campo -->
+    <label for="campo-selecao">Selecione o campo:</label>
+    <select id="campo-selecao" onchange="mostrarInput()">
+        <option value="">-- Selecione --</option>
+        {% for campo in campos %}
+            <option value="{{ campo }}">{{ campo }}</option>
+        {% endfor %}
+    </select>
+
+    <!-- Inputs para cada campo -->
+    <form method="post" action="/edita_orcamento/{{orcamento.id}}/">
+        {% csrf_token %}
+        {% for campo in campos %}
+            <div id="input-{{ campo }}" class="campo-input" style="display: none;">
+                <label for="{{ campo }}">{{ campo }}:</label>
+                <input type="text" id="{{ campo }}" name="{{ campo }}" placeholder="Digite o novo valor para {{ campo }}" value="{{ orcamento.campo }}">
+            </div>
+        {% endfor %}
+
+        <button type="submit">Salvar</button>
+    </form>
+</body>
+</html>

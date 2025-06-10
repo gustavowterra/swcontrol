@@ -1,0 +1,117 @@
+{% extends "./modelo.html" %}
+{% load static %}
+
+{% block container %}
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
+    <title>formcliente</title>
+    <link rel="stylesheet" href="{% static 'cliente/css/bootstrap.min.css' %}">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Advent+Pro&amp;display=swap">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Anek+Tamil&amp;display=swap">
+    <link rel="stylesheet" href="{% static 'cliente/css/styles.min.css' %}" >
+</head>
+<body style="padding-right: 0px;">
+<section class="py-4 py-xl-5"><h1 style="margin-right: 10px;font-family: 'Anek Tamil', sans-serif;">Cadastro
+    Clientes</h1></section>
+<div class="container">
+    <form method="POST">
+    {% csrf_token %}
+    <div class="row">
+        <div class="col-md-3">
+            <div class="mb-3"><small>&nbsp;</small>
+                <div class="input-group">
+                    <input class="form-control InputBorder" type="text" placeholder="Nome" name="nome" id="nome" required
+                           style="/*border: 0;*//*border-width: 0 0 1px 0;*//*border-color: black;*//*border-radius: 0;*/">
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="mb-3"><small>&nbsp;</small>
+                <div class="input-group"><input class="form-control InputBorder" type="email" placeholder="Email" name="email" id="email" required
+                                                style="/*border: 0;*//*border-width: 0 0 1px 0;*//*border-color: black;*//*border-radius: 0;*/">
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="mb-3"><small>&nbsp;</small>
+                <div class="input-group"><input class="form-control InputBorder" type="text" placeholder="CPF" name="cpf" id="cpf" required
+                                                style="/*border: 0;*//*border-width: 0 0 1px 0;*//*border-color: black;*//*border-radius: 0;*/">
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-3">
+            <div class="mb-3"><small>&nbsp;</small>
+                <div class="input-group"><input class="form-control InputBorder" type="text" placeholder="Telefone 1" name="telefone1" id="telefone1" required
+                                                style="/*border: 0;*//*border-width: 0 0 1px 0;*//*border-color: black;*//*border-radius: 0;*/">
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="mb-3"><small>&nbsp;</small>
+                <div class="input-group"><input class="form-control InputBorder" type="text" placeholder="Telefone 2" name="telefone2" id="telefone2"
+                                                style="/*border: 0;*//*border-width: 0 0 1px 0;*//*border-color: black;*//*border-radius: 0;*/">
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="mb-3"><small>&nbsp;</small>
+                <div class="input-group"></div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-3">
+            <div class="mb-3"><small>&nbsp;</small>
+                <div class="input-group"><input class="form-control InputBorder" type="text" placeholder="CEP" name="cep" id="cep" required
+                                                style="/*border: 0;*//*border-width: 0 0 1px 0;*//*border-color: black;*//*border-radius: 0;*/">
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="mb-3"><small>&nbsp;</small>
+                <div class="input-group"><input class="form-control InputBorder" type="text" placeholder="ESTADO" name="estado" id="estado" required
+                                                style="/*border: 0;*//*border-width: 0 0 1px 0;*//*border-color: black;*//*border-radius: 0;*/">
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="mb-3"><small>&nbsp;</small>
+                <div class="input-group"><input class="form-control InputBorder" type="text" placeholder="CIDADE" name="cidade" id="cidade" required
+                                                style="/*border: 0;*//*border-width: 0 0 1px 0;*//*border-color: black;*//*border-radius: 0;*/">
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="mb-3"><small>&nbsp;</small>
+                <div class="input-group"><input class="form-control InputBorder" type="text" placeholder="BAIRRO" name="bairro" id="bairro" required
+                                                style="/*border: 0;*//*border-width: 0 0 1px 0;*//*border-color: black;*//*border-radius: 0;*/">
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-3 col-xl-6">
+            <div class="mb-3"><small>&nbsp;</small>
+                <div class="input-group"><input class="form-control InputBorder" type="text" placeholder="ENDEREÇO" name="endereco" id="endereco" required
+                                                style="/*border: 0;*//*border-width: 0 0 1px 0;*//*border-color: black;*//*border-radius: 0;*/">
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col">
+            <button class="btn btn-primary" type="SALVAR"
+                    style="color: var(--bs-btn-color);border-color: var(--bs-btn-color);background: var(--bs-gray-dark);margin-top: 20px;margin-left: 0px;">
+                SALVAR
+            </button>
+        </div>
+    </div>
+</div>
+<script src="{% static 'cliente/css/bootstrap.min.js' %}"></script>
+</body>
+</html>
+{% endblock %}

@@ -1,0 +1,600 @@
+{% extends "./modelo.html" %}
+{% load static %}
+{% block container %}
+<head xmlns="http://www.w3.org/1999/html">
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
+    <link rel="stylesheet" href="{% static 'meus_pedidos/assets/bootstrap/css/bootstrap.min.css' %}">
+    <link rel="stylesheet" href="{% static 'meus_pedidos/assets/fonts/fontawesome-all.min.css' %}">
+    <link rel="stylesheet" href="{% static 'meus_pedidos/assets/fonts/font-awesome.min.css' %}">
+    <link rel="stylesheet" href="{% static 'meus_pedidos/assets/fonts/fontawesome5-overrides.min.css' %}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css">
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.31.2/css/theme.bootstrap_4.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.css">
+    <link rel="stylesheet" href="{% static 'meus_pedidos/assets/css/styles.min.css' %}">
+
+</head>
+<style>
+    .form-control{
+        font-size:80%
+
+    }
+
+</style>
+<body>
+<div class="modal" id="modal-foto" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Upload Foto</h5>
+                <button type="button" class="close" data-dismiss="modal" id="fechar-modal-foto" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <!-- Conteúdo do formulário de cadastro de foto -->
+                <form method="post" enctype="multipart/form-data" id="modal-foto-form">
+                    {% csrf_token %}
+                     <div class="form-group">
+                        <label for="nome_vendedor">Nome</label>
+                        <input type="text" class="form-control" id="nome_vendedor" name="nome_vendedor"
+                               readonly>
+                    </div>
+                    <div class="form-group">
+                        <label for="foto_colaborador">Selecione a Foto</label>
+                        <input type="file" class="form-control" id="foto_colaborador"
+                               name="foto_colaborador">
+                    </div>
+
+
+                    <button type="submit" id="upload-btn" class="btn btn-dark mt-2">Upload</button>
+                </form>
+
+            </div>
+        </div>
+    </div>
+</div>
+<div id="wrapper">
+    <div class="d-flex flex-column" id="content-wrapper" style="background: white">
+        <div id="content" style="color: #2D2F3E;">
+            <div class="container-fluid" style="margin-bottom: 50px;">
+                <div class="row">
+                    <div class="col-12 col-sm-6 col-md-6 col-lg-6"><h3 class="text-dark mb-4 mt-4">Colaboradores</h3>
+                    </div>
+                    <div class="col-12 col-sm-6 col-md-6 text-end" style="margin-bottom: 30px;"><a
+                            class="btn btn-dark mt-4" role="button" href="/colaborador/"><i class="fa fa-plus"></i>&nbsp;Novo
+                        Colaborador</a></div>
+                </div>
+
+                <div class="card" id="TableSorterCard"
+                     style="border-style: none;border-radius: 6.5px;">
+                    <form method="GET" action="/consulta_colaboradores/">
+                        {% csrf_token %}
+                        <div class="card-header py-3" style="border-width: 0px;background: var(--bs-gray-700);">
+                            <button id="botao-filtrar" class="btn btn-dark text-black" type="button"
+                                    style="background: var(--bs-white);">
+                                Filtrar
+                            </button>
+                            <button id="botao-apagar-filtro" class="btn btn-dark text-black" type="submit"
+                                    style="background: var(--bs-white);">
+                                Apagar Filtro
+                            </button>
+
+                            <div class="row table-topper align-items-center" id="row-form" style="display:none">
+
+
+                                <! SEGUNDA LINHA DO FILTRO>
+                                <div class="row table-topper align-items-center">
+                                    <div class="col-md-3">
+                                        <div class="row align-items-center" style="margin-right: 10px;">
+                                            <div class="col-md-6">
+                                                <label for="nome-cliente-filter" class="col-form-label text-white"
+                                                       style="font-weight: bold;">Nome do Colaborador</label>
+                                                <input type="text"
+                                                       class="form-control text-white"
+                                                       id="nome-cliente-filter"
+                                                       name="nome_filter"
+                                                       style="background: var(--bs-card-cap-bg);border-color: var(--bs-gray-100);">
+                                            </div>
+                                            <div class="col-md-6">
+                                                <label for="documento-cliente-filter" class="col-form-label text-white"
+                                                       style="font-weight: bold;">CPF</label>
+                                                <input type="text"
+                                                       class="form-control text-white"
+                                                       id="documento-cliente-filter"
+                                                       name="cpf_filter"
+                                                       placeholder="somente numeros"
+                                                       style="background: var(--bs-card-cap-bg);border-color: var(--bs-gray-100);">
+                                            </div>
+                                            <div class="col-md-6">
+                                                <label for="status-filter" class="col-form-label text-white"
+                                                       style="font-weight: bold;">Status</label>
+                                                <select id="status-filter" class="form-select text-white"
+                                                        name="status_filter"
+                                                        style="background: var(--bs-card-cap-bg);border-color: var(--bs-gray-100);">
+                                                    {% for s in status %}
+                                                    <option class="form-control text-center" value="{{ s.id }}"
+                                                            style="background: var(--bs-card-cap-bg);border-color: var(--bs-gray-100);">
+                                                        {{ s.descricao }}
+                                                    </option>
+                                                    {% endfor %}
+                                                </select>
+
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="col-md-4">
+                                    <div class="row align-items-center">
+                                        <div class="row" style="margin-top:20px;"></div>
+                                        <div class="col-md-12">
+                                            <button class="btn btn-dark text-black" type="submit"
+                                                    style="background: var(--bs-white);">
+                                                Pesquisar
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+
+
+                <div class="row">
+                    <div class="col-12">
+                        <div class="table-responsive" style="border-top-style: none;">
+                            <table class="table table-striped table tablesorter" id="ipi-table">
+                                <thead class="thead-dark"
+                                       style="background: rgb(33,37,48);border-width: 0px;border-color: rgb(0,0,0);border-bottom-color: #21252F;">
+                                <tr style="border-style: none;border-color: rgba(255,255,255,0);">
+                                    <th class="text-center"
+                                        style="background: var(--bs-gray-300);color: var(--bs-black);border-style: none;">
+                                        Nome do Colaorador
+                                    </th>
+                                    <th class="text-center"
+                                        style="background: var(--bs-gray-300);color: var(--bs-black);border-style: none;">
+                                        Data de Nascimento
+                                    </th>
+                                    <th class="text-center"
+                                        style="background: var(--bs-gray-300);color: var(--bs-black);border-style: none;">
+                                        Email
+                                    </th>
+                                    <th class="text-center"
+                                        style="background: var(--bs-gray-300);color: var(--bs-black);border-style: none;">
+                                        CPF
+                                    </th>
+                                    <th class="text-center"
+                                        style="background: var(--bs-gray-300);color: var(--bs-black);border-style: none;">
+                                        FUNÇÃO
+                                    </th>
+                                    <th class="text-center"
+                                        style="background: var(--bs-gray-300);color: var(--bs-black);border-style: none;">
+                                        Telefone
+                                    </th>
+                                    <th class="text-center"
+                                        style="background: var(--bs-gray-300);color: var(--bs-black);border-style: none;">
+                                        Endereço
+                                    </th>
+                                    <th class="text-center sorter-false"
+                                        style="background: var(--bs-gray-300);color: var(--bs-black);border-style: none;">
+                                        Empresa
+                                    </th>
+                                    <th class="text-center sorter-false"
+                                        style="background: var(--bs-gray-300);color: var(--bs-black);border-style: none;">
+
+                                    </th>
+
+                                </tr>
+                                </thead>
+                                <tbody class="text-center" style="border-top-width: 0px; font-size:80%">
+                                {% for colaborador in colaboradores %}
+                                <tr style="background: #262a38;">
+                                    <td style="color: var(--bs-gray-800);background: var(--bs-white);">{{ colaborador.nome }}
+                                    </td>
+                                    <td style="color: var(--bs-gray-800);background: var(--bs-white);">{{ colaborador.data_nascimento | date:'d/m/Y' }}
+                                    </td>
+                                    <td style="color: var(--bs-gray-800);background: var(--bs-white);">{{ colaborador.email }}
+                                    </td>
+                                    <td style="color: var(--bs-gray-800);background: var(--bs-white);">{{ colaborador.cpf }}
+                                    </td>
+                                    <td style="color: var(--bs-gray-800);background: var(--bs-white);">{{ colaborador.funcao }}
+                                    </td>
+                                    <td style="color: var(--bs-gray-800);background: var(--bs-white);">
+                                        {{ colaborador.telefone }}
+                                    </td>
+                                    <td style="color: var(--bs-gray-800);background: var(--bs-white);">{{colaborador.endereco }}
+                                    </td>
+                                    <td style="color: var(--bs-gray-800);background: var(--bs-white);">{{ colaborador.empresa | default:'' }}
+                                    </td>
+                                    <td class="text-center align-middle"
+                                        style="max-height: 60px;height: 60px;background: var(--bs-white);color: var(--bs-gray-800);">
+
+                                        <a class="btn btnMaterial btn-flat success semicircle" id="editar-colaborador"
+                                           title="Editar Colaborador"
+                                           role="button"
+                                           href="/editar_colaborador/{{colaborador.id }}"
+
+                                           style="color: rgb(0,197,179);">
+                                            <i class="fas fa-pen" style="color: var(--bs-black);"></i>
+                                        </a>
+                                        {% if 'Vendedor' in colaborador.funcao %}
+                                        <a class="btn btnUploadFoto btn-flat dark semicircle" data-colaborador="{{colaborador.nome}}"
+                                           data-colaborador-id="{{ colaborador.id }}" id="foto-colaborador"
+                                           title="Cadastrar Foto Vendedor"
+                                           role="button"
+                                        >
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-camera-fill" viewBox="0 0 16 16">
+                                                <path d="M10.5 8.5a2.5 2.5 0 1 1-5 0 2.5 2.5 0 0 1 5 0"/>
+                                                <path d="M2 4a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2h-1.172a2 2 0 0 1-1.414-.586l-.828-.828A2 2 0 0 0 9.172 2H6.828a2 2 0 0 0-1.414.586l-.828.828A2 2 0 0 1 3.172 4zm.5 2a.5.5 0 1 1 0-1 .5.5 0 0 1 0 1m9 2.5a3.5 3.5 0 1 1-7 0 3.5 3.5 0 0 1 7 0"/>
+                                            </svg>
+                                        </a>
+                                        {% endif %}
+                                    </td>
+
+                                </tr>
+
+                                {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                        <!-- Modal Que Carrega o Cadastro de Cliente Caso Cliente Não Cadastrado -->
+                        <div class="modal" id="modal-cadastro-cliente" tabindex="-1" role="dialog">
+                            <div class="modal-dialog modal-lg" role="document">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title">Cadastro de Cliente</h5>
+                                        <button id="fechar-modal" class="close" data-dismiss="modal"
+                                                aria-label="Fechar">
+                                            <span aria-hidden="true">&times;</span>
+                                        </button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <!-- Aqui será exibido o formulário de cadastro do cliente -->
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<footer class="bg-white sticky-footer" style="background: linear-gradient(#1f232d 0%, #1f232d 100%);">
+    <div class="container my-auto">
+        <div class="text-center my-auto copyright text-gray-100" style="font-size: 13.5px;"><span>Copyright © Conectiva Soluções Tecnologicas&nbsp;<span
+                id="year">2022</span></span></div>
+    </div>
+</footer>
+<a class="border rounded d-inline scroll-to-top" href="#page-top"><i class="fas fa-angle-up"></i></a>
+</div>
+<script src="{% static 'meus_pedidos/assets/bootstrap/js/bootstrap.min.js' %}"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.31.2/js/jquery.tablesorter.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.31.2/js/widgets/widget-filter.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.31.2/js/widgets/widget-storage.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
+<script src="{% static 'meus_pedidos/assets/js/script.min.js' %}"></script>
+<script>
+
+    var btnDelete = document.querySelectorAll('.btn-delete');
+    btnDelete.forEach(function(btn) {
+        btn.addEventListener('click', function() {
+            var idCliente = this.getAttribute('data-cliente');
+            var confirmDelete = confirm("Tem certeza que deseja prosseguir com a exclusão do cliente?");
+
+            if (confirmDelete) {
+                var cliente = idCliente;
+                var url = "/delete_cliente/";
+
+                var xhr = new XMLHttpRequest();
+                xhr.open("POST", url, true);
+                xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+
+                // Obtém o token CSRF do cookie e adiciona na requisição
+                var csrfToken = getCookie('csrftoken');
+                xhr.setRequestHeader("X-CSRFToken", csrfToken);
+
+                xhr.onreadystatechange = function() {
+                    if (xhr.readyState === 4 && xhr.status === 200) {
+                        var response = JSON.parse(xhr.responseText);
+                        alert(response.mensagem);
+                        window.location.reload();
+                    } else if (xhr.readyState === 4 && xhr.status !== 200) {
+                        alert("Falha ao excluir o pedido.");
+                    }
+                };
+                xhr.send("cliente_id=" + cliente);
+            } else {
+                // Exclusão do pedido cancelada
+                alert("Exclusão do pedido cancelada.");
+                event.preventDefault(); // Impede o envio do formulário
+            }
+        });
+    });
+    function getCookie(name) {
+    var cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        var cookies = document.cookie.split(';');
+        for (var i = 0; i < cookies.length; i++) {
+            var cookie = cookies[i].trim();
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+}
+
+
+</script>
+<script>
+var btnFaturamento = document.querySelectorAll('.faturamento');
+
+// Itera sobre os botões encontrados
+btnFaturamento.forEach(function(btn) {
+  btn.addEventListener('click', function() {
+    // Obtém o número do pedido do atributo de dados 'data-pedido'
+    var numeroDocumento = this.getAttribute('data-numero-documento');
+
+
+    // Cria um objeto de dados para enviar na requisição
+    var data = {
+      documento: numeroDocumento,
+
+    };
+
+    // Faz a requisição para a view 'emitir_nota' usando fetch
+    fetch('/cliente-faturamento/', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-CSRFToken': '{{ csrf_token }}'
+      },
+      body: JSON.stringify(data)
+    })
+    .then(function(response) {
+      if (response.ok) {
+        return response.json().then(function(data) {
+        alert(data.message);
+        window.location.reload();
+         });
+
+      } else {
+         return response.json().then(function(data) {
+         alert(data.error);
+         window.location.reload();
+         });
+      }
+    })
+    .then(data => {
+        // Lógica de tratamento da resposta, se necessário
+        console.log(data);
+
+        // Verifique se existe a propriedade 'bankSlipUrl' no JSON de resposta
+
+    })
+    .then(function(responseData) {
+       if (responseData.error) {
+        // Realize as ações necessárias para tratar o erro
+        alert('Erro: ' + responseData.error);
+      }else{
+      console.log(responseData); }
+      // Realize as ações necessárias com os dados da resposta
+    })
+    .catch(function(error) {
+      console.error('Erro: ' + error.message);
+    });
+
+  });
+});
+document.getElementById('fechar-modal-revenda').addEventListener('click', function() {
+  document.getElementById('modal-turn-revenda').style.display = 'none';
+});
+
+
+
+</script>
+<script>
+var btnsTurnRevenda = document.querySelectorAll('.turn-revenda');
+
+// Itera sobre os botões encontrados
+btnsTurnRevenda.forEach(function(btn) {
+  btn.addEventListener('click', function() {
+    // Obtém o número do pedido do atributo de dados 'data-pedido'
+    var numeroDocumento = this.getAttribute('data-numero-documento');
+    var nomeCliente = this.getAttribute('data-nome-cliente');
+    document.getElementById('documento_cliente_modal').value = numeroDocumento;
+    document.getElementById('nome_cliente_revenda').value = nomeCliente;
+    document.getElementById('modal-turn-revenda').style.display = 'block';
+
+    document.getElementById('modal-revenda-form').addEventListener('submit', function(event) {
+      // Impede o comportamento padrão de submissão do formulário
+      event.preventDefault();
+      var documento = document.getElementById('documento_cliente_modal').value;
+      var nome = document.getElementById('nome_cliente_revenda').value;
+      var nivel = document.getElementById('nivel_classificacao_revenda').value;
+
+
+
+    // Cria um objeto de dados para enviar na requisição
+    var data = {
+      documento: documento,
+      nome: nome,
+      nivel: nivel
+    };
+
+    // Faz a requisição para a view 'emitir_nota' usando fetch
+    fetch('/cadastra_revenda/', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-CSRFToken': '{{ csrf_token }}'
+      },
+      body: JSON.stringify(data)
+    })
+    .then(function(response) {
+      if (response.ok) {
+        return response.json().then(function(data) {
+        alert(data.message);
+        window.location.reload();
+         });
+
+      } else {
+         return response.json().then(function(data) {
+         alert(data.error);
+         window.location.reload();
+         });
+      }
+    })
+    .then(data => {
+        // Lógica de tratamento da resposta, se necessário
+        console.log(data);
+
+        // Verifique se existe a propriedade 'bankSlipUrl' no JSON de resposta
+
+    })
+    .then(function(responseData) {
+       if (responseData.error) {
+        // Realize as ações necessárias para tratar o erro
+        alert('Erro: ' + responseData.error);
+      }else{
+      console.log(responseData); }
+      // Realize as ações necessárias com os dados da resposta
+    })
+    .catch(function(error) {
+      console.error('Erro: ' + error.message);
+    });
+    });
+  });
+});
+document.getElementById('fechar-modal-revenda').addEventListener('click', function() {
+  document.getElementById('modal-turn-revenda').style.display = 'none';
+});
+
+
+
+</script>
+<script>
+var btnsEditarCliente = document.querySelectorAll(".editar-cliente");
+
+// Itera sobre os botões encontrados
+btnsEditarCliente.forEach(function(btn) {
+  btn.addEventListener("click", function(event) {
+    event.preventDefault(); // Evita o comportamento padrão do link
+
+    // Obtém o número do documento do cliente do atributo de dados "data-numero-documento"
+    var numeroDocumento = this.getAttribute("data-numero-documento");
+
+    // Exibe o modal correspondente
+    var modalCadastroCliente = document.getElementById("modal-cadastro-cliente");
+    modalCadastroCliente.style.display = "block";
+  });
+});
+
+</script>
+
+<script>
+    // Obtém referência ao botão e à div
+    const botaoFiltrar = document.getElementById('botao-filtrar');
+    const rowForm = document.getElementById('row-form');
+
+    // Adiciona o manipulador de evento ao botão
+    botaoFiltrar.addEventListener('click', function() {
+        // Verifica o status de exibição atual da div
+        const displayStatus = rowForm.style.display;
+
+        // Altera o status de exibição com base no status atual
+        if (displayStatus === 'none') {
+            rowForm.style.display = 'block';
+        } else {
+            rowForm.style.display = 'none';
+        }
+    });
+
+
+</script>
+
+<script>
+var btnUploadFoto = document.querySelectorAll('.btnUploadFoto');
+
+// Itera sobre os botões encontrados
+btnUploadFoto.forEach(function(btns) {
+  btns.addEventListener('click', function() {
+    console.log('entrou clique');
+
+    // Obtém o nome e ID do colaborador
+    var nomeColaborador = this.getAttribute('data-colaborador');
+    var idColaborador = this.getAttribute('data-colaborador-id');
+
+    // Preencher o campo nome no modal
+    document.getElementById('nome_vendedor').value = nomeColaborador;
+
+    // Exibir o modal
+    document.getElementById('modal-foto').style.display = 'block';
+
+    // Verificar se o evento de submit já foi adicionado para evitar duplicação
+    var form = document.getElementById('modal-foto-form');
+    if (!form.dataset.listenerAdded) {
+      form.dataset.listenerAdded = true;
+
+      // Lidar com o envio do formulário
+      form.addEventListener('submit', function(event) {
+        event.preventDefault(); // Impede o comportamento padrão
+
+        // Verifica se um arquivo foi selecionado
+        var arquivo = document.getElementById('foto_colaborador').files[0];
+        if (!arquivo) {
+          alert("Por favor, selecione uma foto.");
+          return;
+        }
+
+        // Criar um objeto FormData para enviar o arquivo e os dados
+        var formData = new FormData();
+        formData.append('id_colaborador', idColaborador);
+        formData.append('nome_colaborador', nomeColaborador);
+        formData.append('arquivo', arquivo); // Adiciona o arquivo selecionado
+
+        // Fechar o modal após envio
+        document.getElementById('modal-foto').style.display = 'none';
+
+        // Fazer a requisição usando fetch
+        fetch('/upload_foto_vendedor/', {
+          method: 'POST',
+          headers: {
+            'X-CSRFToken': '{{ csrf_token }}' // Inclui o CSRF token para segurança
+          },
+          body: formData // Enviar os dados com FormData
+        })
+        .then(response => response.json())
+        .then(data => {
+          if (data.success) {
+            // Exibir mensagem de sucesso
+            alert(data.message);
+            window.location.href = '/painel_orcamento/';
+          } else {
+            // Exibir mensagem de erro
+            alert(data.message);
+          }
+        })
+        .catch(error => {
+          console.error('Erro:', error);
+        });
+      });
+    }
+  });
+});
+
+// Fechar o modal ao clicar no botão de fechar
+document.getElementById('fechar-modal-foto').addEventListener('click', function() {
+  document.getElementById('modal-foto').style.display = 'none';
+});
+
+</script>
+</body>
+</html>
+{% endblock %}

@@ -1,0 +1,43 @@
+{% load static %}
+
+<select class="select">
+  <option disabled="true" selected>Opção</option>
+  <option value="1">Opção 1</option>
+  <option value="2">Opção 2</option>
+  <option value="3">Opção 3</option>
+</select>
+
+<style>
+  .select {
+    position: relative;
+    display: block;
+    width: 100%;
+    height: 3em;
+    line-height: 3;
+    background: #fff;
+    overflow: hidden;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    -ms-appearance: none;
+    appearance: none;
+    outline: 0;
+    background: #fff;
+    border: 1px solid #e8eced;
+    margin: 0;
+    padding: 0 0 0 .5em;
+    color: #97aaaf;
+    cursor: pointer;
+  }
+
+  .select::after {
+    content: url("{% static 'colaborador/chevron-down.png' %}");
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    padding: 0 1em;
+    background: #000025;
+    pointer-events: none;
+    color: #fff;
+  }
+</style>

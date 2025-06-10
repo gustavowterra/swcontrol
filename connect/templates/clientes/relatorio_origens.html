@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Resumo Origens Clientes</title>
+    {% for tipo in tipos %}
+   <div>
+       {% for r in resumo %}
+    {% if tipo.descricao == r.tipo_entrada__descricao %}
+    <p>{{tipo.descricao}}</p>
+     {% with mes=r.mes_cadastro|date:"F/Y" %}
+    <p> {{ mes }} - {{r.total_clientes}}</p>
+         {% endwith %}
+
+
+       {% endif %}
+       {% endfor %}
+       </div>
+        {% endfor %}
+
+
+
+
+
+
+</head>
+<body>
+
+</body>
+</html>

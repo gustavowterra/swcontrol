@@ -1,0 +1,418 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Orçamento</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        /* Define o layout para tamanho A4 em modo retrato */
+        @page {
+            size: A4 portrait;
+            margin: 0mm 10mm 10mm 10mm;
+        }
+
+        /* Margens globais para o conteúdo */
+        .container {
+            width: 100%;
+            max-width: 210mm; /* Largura de uma folha A4 */
+            padding: 20mm; /* Margem interna */
+            margin: 0 auto;
+            box-sizing: border-box;
+        }
+
+        /* Ajustar o estilo do banner com imagem de fundo sem zoom */
+        .banner {
+            background-image: url('{% static "orcamento/template_grf.jpg" %}');
+            background-size: contain; /* Ajusta a imagem ao conteúdo */
+            background-repeat: no-repeat;
+            background-position: center;
+            width: 100%;
+            height: 200px;
+            text-align: center;
+            line-height: 100px;
+            margin-bottom: 20px;
+
+        }
+
+        /* Texto abaixo do banner */
+        .texto-orcamento {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            font-weight: bold;
+            color: #006400;
+            margin-bottom: 20px;
+        }
+
+        /* Coração laranja ao lado do texto */
+        .texto-orcamento img {
+            width: 16px; /* Tamanho igual à fonte */
+            height: 16px;
+            margin-right: 8px;
+
+        }
+        .distribuidor {
+            display: flex;
+            align-items: center; /* Alinha verticalmente */
+            justify-content: center; /* Alinha horizontalmente */
+        }
+         .distribuidor img {
+            width: 100px; /* Tamanho igual à fonte */
+            height: 50px;
+            align-items: center;
+            justify-content: center;
+            position: center;
+            margin-right: 8px;
+
+        }
+
+        /* Estilo da borda dos dados do cliente */
+        .dados-cliente {
+            border: 2px solid #333;
+            padding: 10px;
+            margin-bottom: 20px;
+        }
+
+        .dados-cliente h2 {
+            margin: 0 0 10px 0;
+            font-size: 18px;
+        }
+
+        .dados-cliente p {
+            margin: 5px 0;
+            font-size: 12px;
+        }
+
+        /* Estilo da tabela de itens */
+        .tabela-itens {
+            width: 100%;
+            border-collapse: collapse;
+
+        }
+
+        .tabela-itens th, .tabela-itens td {
+            border: 1px solid #333;
+            padding: 8px;
+            text-align: center;
+            font-size: 12px;
+            color: #B22222;
+        }
+
+        .tabela-itens th {
+            background-color: #f4f4f4;
+        }
+
+        /* Estilo do total geral */
+        .total {
+            text-align: right;
+            font-weight: bold;
+            padding: 5px 0;
+
+            color: #B22222;
+            font-size: 16px;
+        }
+        /* Texto abaixo do banner */
+        .texto-garantia {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            font-weight: bold;
+            color: #006400;
+            margin-bottom: 20px;
+        }
+         .texto-material {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            font-weight: bold;
+
+            margin-bottom: 20px;
+        }
+                /* Estilo do rodapé */
+        .rodape {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 10px;
+            font-size: 12px;
+        }
+
+        /* Estilo da coluna de entrega e pagamento */
+        .rodape .esquerda,
+        .rodape .direita {
+            width: 48%;
+            font-size: 16px;
+            color: #006400;
+        }
+
+        /* Texto principal do rodapé */
+        .rodape-centralizado {
+            text-align: center;
+            font-size: 26px;
+            font-weight: bold;
+            color: red; /* Cor do texto em vermelho */
+            background-color: yellow; /* Fundo amarelo simulando marca-texto */
+            margin: 20px 0;
+        }
+
+        /* Informações da vendedora e link para o catálogo */
+        .rodape-inferior {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 14px;
+        }
+
+        .rodape-inferior .vendedora {
+            text-align: left;
+            font-size: 16px;
+            color: #006400;
+        }
+
+        .rodape-inferior .catalogo {
+            text-align: right;
+        }
+
+        /* Ícones das redes sociais */
+        .rodape-redes {
+            display: flex;
+            justify-content: center;
+            margin: 10px 0;
+        }
+
+        .rodape-redes img {
+            width: 24px;
+            height: 24px;
+            margin: 0 10px;
+        }
+
+        /* Imagem do rodapé completa */
+        .rodape-imagem {
+            width: 100%;
+            height: 100px;
+            background-image: url('{% static "orcamento/rodape_grf.png" %}');
+            background-size: cover;
+            background-position: center;
+            margin-top: 20px;
+        }
+         .Container-2 {
+            width: 100%;
+            max-width: 210mm; /* Largura de uma folha A4 */
+            padding: 0; /* Margem interna */
+            margin: 0 auto;
+            box-sizing: border-box;
+        }
+         .fornecedor img {
+            width: 800px; /* Tamanho igual à fonte */
+            height:1200px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: center;
+        }
+
+        /* Ajustes para impressão */
+       @media print {
+            body, .container {
+                width: 100%;
+                max-width: 210mm;
+                height: 297mm; /* Altura de uma folha A4 */
+                padding: 0; /* Remove padding no modo de impressão */
+            }
+
+            .banner {
+                background-size: contain; /* Para garantir que a imagem se ajuste corretamente */
+                background-position: center;
+
+                height: 200px; /* Reduzir a altura ligeiramente para encaixar melhor */
+                width: 100%;
+                margin-top:0px;
+            }
+
+            .container {
+                padding: 0mm 10mm 10mm 10mm; /* Margens específicas para impressão */
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <!-- Botão de Impressão -->
+        <button type="button" id="imprimirBotao" onclick="imprimir()">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-printer-fill" viewBox="0 0 16 16">
+                <path d="M5 1a2 2 0 0 0-2 2v1h10V3a2 2 0 0 0-2-2zm6 8H5a1 1 0 0 0-1 1v3a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1v-3a1 1 0 0 0-1-1"/>
+                <path d="M0 7a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v3a2 2 0 0 1-2 2h-1v-2a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v2H2a2 2 0 0 1-2-2zm2.5 1a.5.5 0 1 0 0-1 .5.5 0 0 0 0 1"/>
+            </svg> IMPRIMIR
+        </button>
+
+        <!-- Botão de Voltar -->
+        <a role="button" id="voltarBotao" href="/painel_orcamento/">Voltar para Tela Inicial</a>
+
+    <!-- Banner com imagem de fundo -->
+    <div class="banner"></div>
+
+    <!-- Texto com coração laranja e mensagem de orçamento -->
+    <div class="texto-orcamento">
+        <img src="{% static 'orcamento/coracao_grf.png' %}" alt="Coração Laranja">
+        VOCÊ ACABA DE RECEBER UM ORÇAMENTO #GuermaTapetes
+    </div>
+
+    <!-- Dados do Cliente -->
+    <div class="dados-cliente">
+        <h2>Orçamento #{{numero_orcamento}}</h2>
+        <p><strong>Data:</strong> {{ orcamento.datacriacao|date:'d/m/y' }}</p>
+        <p><strong>Razão Social / Nome:</strong> {{ orcamento.cliente_lead.nome }}</p>
+        <p><strong>Email:</strong> {{ orcamento.cliente_lead.email }}   </p>
+        <p><strong>Contato:</strong> {{orcamento.cliente_lead.telefone}} </p>
+    </div>
+    <div class="distribuidor">
+         <img src="{% static 'orcamento/distribuidor.png' %}" alt="Distribuidor-Img">
+
+
+    </div>
+    <!-- Tabela de Itens do Orçamento -->
+    <table class="tabela-itens">
+        <thead>
+            <tr>
+                <th>Quantidade</th>
+                <th>Especificações</th>
+                <th>Unit.</th>
+                <th>Total</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for item in itens %}
+            <tr>
+                <td>{{item.quantidade}}</td>
+                <td>{{item.descricao}} - {{ item.comprimento }} x {{ item.largura }}</td>
+                <td class="valor-total">{{item.valor_item}}</td>
+                <td class="valor-total">{{item.valor_total_item}}</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+    <!-- Total Geral -->
+    <div class="total">
+        <p><strong>Total Geral: {{valor_total}}</strong></p>
+    </div>
+    <div class="texto-garantia">
+      >>> {{ orcamento.texto_garantia }} <<<
+    </div>
+     <div class="texto-material">
+      Material de alta resistência e durabilidade,
+      voltado para tráfego intenso de pessoas.
+
+      Antichamas, antifungo, lavável.  Costado antiderrapante
+
+    </div>
+    <!-- Rodapé -->
+    <div class="rodape">
+        <!-- Texto sobre entrega -->
+        <div class="esquerda">
+            <strong>ENTREGA GRÁTIS:</strong>
+            <p>Receba Seu Tapete em ATÉ 15 DIAS CORRIDOS</p>
+        </div>
+        <!-- Texto sobre pagamento -->
+        <div class="direita">
+            <strong>COMO PAGAR:</strong>
+            <p>{{ orcamento.forma_pagamento }}</p>
+        </div>
+    </div>
+
+    <!-- Texto centralizado -->
+    <div class="rodape-centralizado">
+        COBRIMOS QUALQUER OFERTA
+    </div>
+
+    <!-- Informações da vendedora e catálogo -->
+    <div class="rodape-inferior">
+        <div class="vendedora">
+            <p>Vendedor(a): {{ nome_vendedor }} </p>
+            <p>Telefone: {{ orcamento.vendedor.telefone_comercial }}</p>
+        </div>
+        <div class="catalogo">
+            Acesse no catálogo clicando no ícone:
+            <div class="rodape-redes">
+                <a role="button" href="https://wa.me/55 {{orcamento.vendedor.telefone_comercial}}" style="margin-right:10px;">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="#006400"
+                         class="bi bi-whatsapp" viewBox="0 0 16 16">
+                        <path d="M13.601 2.326A7.85 7.85 0 0 0 7.994 0C3.627 0 .068 3.558.064 7.926c0 1.399.366 2.76 1.057 3.965L0 16l4.204-1.102a7.9 7.9 0 0 0 3.79.965h.004c4.368 0 7.926-3.558 7.93-7.93A7.9 7.9 0 0 0 13.6 2.326zM7.994 14.521a6.6 6.6 0 0 1-3.356-.92l-.24-.144-2.494.654.666-2.433-.156-.251a6.56 6.56 0 0 1-1.007-3.505c0-3.626 2.957-6.584 6.591-6.584a6.56 6.56 0 0 1 4.66 1.931 6.56 6.56 0 0 1 1.928 4.66c-.004 3.639-2.961 6.592-6.592 6.592m3.615-4.934c-.197-.099-1.17-.578-1.353-.646-.182-.065-.315-.099-.445.099-.133.197-.513.646-.627.775-.114.133-.232.148-.43.05-.197-.1-.836-.308-1.592-.985-.59-.525-.985-1.175-1.103-1.372-.114-.198-.011-.304.088-.403.087-.088.197-.232.296-.346.1-.114.133-.198.198-.33.065-.134.034-.248-.015-.347-.05-.099-.445-1.076-.612-1.47-.16-.389-.323-.335-.445-.34-.114-.007-.247-.007-.38-.007a.73.73 0 0 0-.529.247c-.182.198-.691.677-.691 1.654s.71 1.916.81 2.049c.098.133 1.394 2.132 3.383 2.992.47.205.84.326 1.129.418.475.152.904.129 1.246.08.38-.058 1.171-.48 1.338-.943.164-.464.164-.86.114-.943-.049-.084-.182-.133-.38-.232"/>
+                    </svg>
+                </a>
+                <a role="button" href="https://www.facebook.com/GUERMATAPETESRJ/?locale=pt_BR" style="margin-right:10px;">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="#006400" class="bi bi-facebook"
+                         viewBox="0 0 16 16">
+                        <path d="M16 8.049c0-4.446-3.582-8.05-8-8.05C3.58 0-.002 3.603-.002 8.05c0 4.017 2.926 7.347 6.75 7.951v-5.625h-2.03V8.05H6.75V6.275c0-2.017 1.195-3.131 3.022-3.131.876 0 1.791.157 1.791.157v1.98h-1.009c-.993 0-1.303.621-1.303 1.258v1.51h2.218l-.354 2.326H9.25V16c3.824-.604 6.75-3.934 6.75-7.951"/>
+                    </svg>
+                </a>
+                <a role="button" href="https://www.instagram.com/guerma.tapetes/" style="margin-right:10px;">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="#006400"
+                         class="bi bi-instagram" viewBox="0 0 16 16">
+                        <path d="M8 0C5.829 0 5.556.01 4.703.048 3.85.088 3.269.222 2.76.42a3.9 3.9 0 0 0-1.417.923A3.9 3.9 0 0 0 .42 2.76C.222 3.268.087 3.85.048 4.7.01 5.555 0 5.827 0 8.001c0 2.172.01 2.444.048 3.297.04.852.174 1.433.372 1.942.205.526.478.972.923 1.417.444.445.89.719 1.416.923.51.198 1.09.333 1.942.372C5.555 15.99 5.827 16 8 16s2.444-.01 3.298-.048c.851-.04 1.434-.174 1.943-.372a3.9 3.9 0 0 0 1.416-.923c.445-.445.718-.891.923-1.417.197-.509.332-1.09.372-1.942C15.99 10.445 16 10.173 16 8s-.01-2.445-.048-3.299c-.04-.851-.175-1.433-.372-1.941a3.9 3.9 0 0 0-.923-1.417A3.9 3.9 0 0 0 13.24.42c-.51-.198-1.092-.333-1.943-.372C10.443.01 10.172 0 7.998 0zm-.717 1.442h.718c2.136 0 2.389.007 3.232.046.78.035 1.204.166 1.486.275.373.145.64.319.92.599s.453.546.598.92c.11.281.24.705.275 1.485.039.843.047 1.096.047 3.231s-.008 2.389-.047 3.232c-.035.78-.166 1.203-.275 1.485a2.5 2.5 0 0 1-.599.919c-.28.28-.546.453-.92.598-.28.11-.704.24-1.485.276-.843.038-1.096.047-3.232.047s-2.39-.009-3.233-.047c-.78-.036-1.203-.166-1.485-.276a2.5 2.5 0 0 1-.92-.598 2.5 2.5 0 0 1-.6-.92c-.109-.281-.24-.705-.275-1.485-.038-.843-.046-1.096-.046-3.233s.008-2.388.046-3.231c.036-.78.166-1.204.276-1.486.145-.373.319-.64.599-.92s.546-.453.92-.598c.282-.11.705-.24 1.485-.276.738-.034 1.024-.044 2.515-.045zm4.988 1.328a.96.96 0 1 0 0 1.92.96.96 0 0 0 0-1.92m-4.27 1.122a4.109 4.109 0 1 0 0 8.217 4.109 4.109 0 0 0 0-8.217m0 1.441a2.667 2.667 0 1 1 0 5.334 2.667 2.667 0 0 1 0-5.334"/>
+                    </svg>
+                </a>
+
+            </div>
+        </div>
+    </div>
+
+    <!-- Imagem do rodapé -->
+    <div class="rodape-imagem"></div>
+</div>
+{% for template in templates %}
+{% if template %}
+<div class="Container-2">
+        <div class="fornecedor">
+            <img src="{{ template.template.caminho_imagem }}" alt="Imagem do template {{ template.template.descricao }}">
+        </div>
+</div>
+{% endif %}
+{% endfor %}
+<script>
+// Função para formatar o valor em moeda brasileira (R$)
+function formatarMoeda(valor) {
+  return valor.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+}
+
+// Seleciona todos os elementos da tabela com a classe 'valor-total'
+var elementosValorTotal = document.querySelectorAll('.valor-total');
+
+// Percorre os elementos e formata o valor em moeda brasileira
+elementosValorTotal.forEach(function(elemento) {
+  var valor = parseFloat(elemento.textContent.replace(',', '.'));
+  if (!isNaN(valor)) {
+    elemento.textContent = formatarMoeda(valor);
+  }
+});
+</script>
+<script>
+        function imprimir() {
+            // Oculta os botões de impressão e voltar
+            document.getElementById('imprimirBotao').style.display = 'none';
+            document.getElementById('voltarBotao').style.display = 'none';
+
+            // Aciona o diálogo de impressão
+            window.print();
+
+            // Define um tempo limite para exibir os botões novamente após a impressão (opcional)
+            setTimeout(function() {
+                document.getElementById('imprimirBotao').style.display = 'block';
+                document.getElementById('voltarBotao').style.display = 'block';
+            }, 1000); // Aguarda 1 segundo após a impressão para exibir os botões novamente (ajuste conforme necessário)
+        }
+    </script>
+</body>
+</html>

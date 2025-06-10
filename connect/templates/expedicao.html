@@ -1,0 +1,812 @@
+{% load static %}
+<html lang="en" xmlns="http://www.w3.org/1999/html">
+
+<head>
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link rel="apple-touch-icon" sizes="76x76" href="{% static 'dashboard/assets/img/apple-icon.png' %}">
+    <link rel="icon" type="image/png" href="{% static 'dashboard/assets/img/favicon.png' %}">
+    <link rel="stylesheet" href="{% static 'meus_pedidos/assets/bootstrap/css/bootstrap.min.css' %}">
+    <link rel="stylesheet" href="{% static 'meus_pedidos/assets/fonts/fontawesome-all.min.css' %}">
+    <link rel="stylesheet" href="{% static 'meus_pedidos/assets/fonts/font-awesome.min.css' %}">
+    <link rel="stylesheet" href="{% static 'meus_pedidos/assets/fonts/fontawesome5-overrides.min.css' %}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.31.2/css/theme.bootstrap_4.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.css">
+    <link rel="stylesheet" href="{% static 'meus_pedidos/assets/css/styles.min.css' %}">
+
+    <title>
+        swconnect - tem & guerma
+    </title>
+    <!--     Fonts and icons     -->
+    <link rel="stylesheet" type="text/css"
+          href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700,900|Roboto+Slab:400,700"/>
+    <!-- Nucleo Icons -->
+    <link href="{% static 'dashboard/assets/css/nucleo-icons.css' %}" rel="stylesheet"/>
+    <link href="{% static 'dashboard/assets/css/nucleo-svg.css' %}" rel="stylesheet"/>
+    <!-- Font Awesome Icons -->
+    <script src="https://kit.fontawesome.com/42d5adcbca.js" crossorigin="anonymous"></script>
+    <!-- Material Icons -->
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
+    <!-- CSS Files -->
+    <link id="pagestyle" href="{% static 'dashboard/assets/css/material-dashboard.css?v=3.1.0' %}" rel="stylesheet"/>
+    <!-- Nepcha Analytics (nepcha.com) -->
+    <!-- Nepcha is a easy-to-use web analytics. No cookies and fully compliant with GDPR, CCPA and PECR. -->
+    <script defer data-site="YOUR_DOMAIN_HERE" src="https://api.nepcha.com/js/nepcha-analytics.js"></script>
+    <style>
+    .form-control{
+        font-size:80%
+
+    }
+    </style>
+</head>
+
+<body class="g-sidenav-show  bg-gray-200">
+<div class="modal" id="modal-informacoes-frete" tabindex="-1" role="dialog" aria-hidden="true">
+                                <div class="modal-dialog modal-dialog-centered">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h5 class="modal-title">Informações Para Transportadora</h5>
+                                            <button type="button" class="close" data-dismiss="modal" id="fechar-modal-transportadora" aria-label="Close">
+                                                <span aria-hidden="true">&times;</span>
+                                            </button>
+                                        </div>
+                                        <div class="modal-body">
+                                            <!-- Conteúdo do formulário de cadastro de frete -->
+                                            <form method="post" enctype="multipart/form-data"  id="modal-transportadora-form">
+                                                {% csrf_token %}
+                                                <div class="form-group">
+                                                    <label for="numero_pedido_transportadora">Número do Pedido</label>
+                                                    <input type="text" class="form-inline" id="numero_pedido_transportadora" name="numero_pedido_transportadora">
+                                                </div>
+                                                <div class="row">
+
+                                                        <label for="total-volumes">Total de Volumes</label>
+                                                        <input type="text" class="col-md-3 form-inline" id="total-volumes" name="total_volumes">
+
+
+                                                </div>
+                                                 <div class="row">
+                                                    <label for="total-volumes">Peso</label>
+                                                        <input type="text" class="col-md-3 form-inline" id="total-peso" name="total_peso">
+                                                 </div>
+                                                <button type="submit" id="emitir-notafiscal-btn" class="btn btn-dark mt-2">Salvar</button>
+                                            </form>
+
+                                        </div>
+                                    </div>
+                          </div>
+                </div>
+
+<main class="main-content position-relative max-height-vh-100 h-100 border-radius-lg ">
+    <!-- Navbar -->
+    <nav class="navbar navbar-main navbar-expand-lg px-0 mx-4 shadow-none border-radius-xl" id="navbarBlur"
+         data-scroll="true">
+        <div class="container-fluid py-1 px-3">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb bg-transparent mb-0 pb-0 pt-1 px-0 me-sm-6 me-5">
+                    <li class="breadcrumb-item text-sm"><a class="opacity-5 text-dark" href="javascript:;">SWConnect</a>
+                    </li>
+                    <li class="breadcrumb-item text-sm text-dark active" aria-current="page">Produção / Expedição</li>
+                </ol>
+                <h6 class="font-weight-bolder mb-0">Produção & Expedição</h6>
+            </nav>
+            <div class="collapse navbar-collapse mt-sm-0 mt-2 me-md-0 me-sm-4" id="navbar">
+                <div class="ms-md-auto pe-md-3 d-flex align-items-center">
+                    <div class="input-group input-group-outline">
+
+                    </div>
+                </div>
+                {% if colaborador.funcao == 'Gerente' %}
+                <ul class="navbar-nav  justify-content-end">
+                    <li class="nav-item d-flex align-items-center">
+                        <a class="btn btn-outline-dark btn-sm mb-0 me-3" target="/pedido/"
+                           href="/meuspedidos/">Painel Pedidos</a>
+                    </li>
+                    <li class="nav-item d-flex align-items-center">
+                        <a class="btn btn-outline-dark btn-sm mb-0 me-3" target="/pedido/"
+                           href="/pedido/">Novo Pedido</a>
+                    </li>
+                    <li class="nav-item d-flex align-items-center">
+                        <a class="btn btn-outline-dark btn-sm mb-0 me-3" target="/pedido/"
+                           href="/cliente/">Novo Cliente</a>
+                    </li>
+                    {% endif %}
+
+
+                    <li class="nav-item d-flex align-items-center">
+                        <a href="/logout/" class="nav-link text-body font-weight-bold px-0">
+                            <i class="fa fa-user me-sm-1"></i>
+                            <span class="d-sm-inline d-none">{{ nome|upper }}</span>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+    <div class="container-fluid py-4">
+        <div class="row">
+             <div class="col-md-3">
+                <h4>PRODUÇÃO</h4>
+            </div>
+        </div>
+        <div class="row mt-4">
+            <div class="col-xl-3 col-sm-6 mb-xl-0 mb-4">
+                <div class="card bg-gradient-secondary shadow-primary">
+                    <div class="card-header bg-gradient-secondary p-3 pt-2">
+                        <div class="icon icon-lg icon-shape bg-gradient-light shadow-dark text-center border-radius-xl mt-n4 position-absolute "
+                             style="color:white;">
+                            <i class="fas fa-industry" style="color:black;"></i>
+                        </div>
+                        <div class="text-end pt-1">
+                            <p class="text-sm mb-0" style="color:white;">TOTAL EM PRODUÇÃO</p>
+                            <h3 class="mb-0" style="color:white;">{{ total_producao }}</h3>
+                        </div>
+                    </div>
+                    <hr class="dark horizontal my-0">
+                    <div class="card-footer p-1">
+                        <div class="d-flex flex-column justify-content-center mt-2">
+                            <a id="btn_producao_total" class="btn bg-gradient-light text-xxs font-weight align-self-end btn-sm" onclick="mostrarIframe('Iframe_producao_total')">detalhes</a>
+
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+            <div class="col-xl-3 col-sm-6 mb-xl-0 mb-4">
+                <div class="card bg-gradient-secondary shadow-primary">
+                    <div class="card-header bg-gradient-secondary p-3 pt-2">
+                        <div class="icon icon-lg icon-shape bg-gradient-light shadow-dark text-center border-radius-xl mt-n4 position-absolute "
+                             style="color:white;">
+                            <i class="fas fa-industry" style="color:black;"></i>
+                        </div>
+                        <div class="text-end pt-1">
+                            <p class="text-sm mb-0" style="color:white;">PRODUÇÃO PRAZO 7 DIAS</p>
+                            <h3 class="mb-0" style="color:white;">{{ t_pedidos_faltando_7dias }}</h3>
+                        </div>
+                    </div>
+                    <hr class="dark horizontal my-0">
+                    <div class="card-footer p-1">
+                        <div class="d-flex flex-column justify-content-center mt-2">
+                            <a id="btn_producao_7" class="btn bg-gradient-light text-xxs font-weight align-self-end btn-sm"
+                               onclick="mostrarIframe('Iframe_producao_7')">detalhes</a>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+            <div class="col-xl-3 col-sm-6 mb-xl-0 mb-4">
+                <div class="card bg-gradient-secondary shadow-primary">
+                    <div class="card-header bg-gradient-secondary p-3 pt-2">
+                        <div class="icon icon-lg icon-shape bg-gradient-light shadow-dark text-center border-radius-xl mt-n4 position-absolute "
+                             style="color:black;">
+                            <i class="fas fa-industry" style="color:black;"></i>
+                        </div>
+                        <div class="text-end pt-1">
+                            <p class="text-sm mb-0" style="color:white;">PRODUÇÃO PRAZO 3 DIAS</p>
+                            <h3 class="mb-0" style="color:white;">{{ t_pedidos_faltando_3dias }}</h3>
+                        </div>
+                    </div>
+                    <hr class="dark horizontal my-0">
+                    <div class="card-footer p-1">
+                        <div class="d-flex flex-column justify-content-center mt-2">
+                            <a id="btn_producao_3" class="btn bg-gradient-light text-xxs font-weight align-self-end btn-sm"
+                               onclick="mostrarIframe('Iframe_producao_3')">detalhes</a>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+            <div class="col-xl-3 col-sm-6 mb-xl-0 mb-4">
+                <div class="card bg-gradient-secondary shadow-primary">
+                    <div class="card-header bg-gradient-secondary p-3 pt-2">
+                        <div class="icon icon-lg icon-shape bg-gradient-light shadow-dark text-center border-radius-xl mt-n4 position-absolute "
+                             style="color:white;">
+                            <i class="fas fa-industry" style="color:black;"></i>
+                        </div>
+                        <div class="text-end pt-1">
+                            <p class="text-sm mb-0" style="color:white;">PRODUÇÃO EM ATRASO </p>
+                            <h3 class="mb-0" style="color:white;">{{ total_atrasado }}</h3>
+                        </div>
+                    </div>
+                    <hr class="dark horizontal my-0">
+                    <div class="card-footer p-1">
+                        <div class="d-flex flex-column justify-content-center mt-2">
+                             <a id="btn_producao_atrasados" class="btn bg-gradient-light text-xxs font-weight align-self-end btn-sm"
+                               onclick="mostrarIframe('Iframe_producao_atrasados')">detalhes</a>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <iframe class="mt-4 " id="Iframe_producao_total" src="/producao_total/" frameborder="0" width="100%" height="800" style="display: none;"></iframe>
+        <iframe class="mt-4 " id="Iframe_producao_7" src="/producao_7/" frameborder="0" width="100%" height="800" style="display: none;"></iframe>
+        <iframe class="mt-4 " id="Iframe_producao_3" src="/producao_3/" frameborder="0" width="100%" height="800" style="display: none;"></iframe>
+        <iframe class="mt-4 " id="Iframe_producao_atrasados" src="/producao_atrasados/" frameborder="0" width="100%" height="800" style="display: none;"></iframe>
+    </div>
+
+
+
+
+
+    <div class="container-fluid py-4">
+        <div class="row">
+             <div class="col-md-3">
+                <h4>EXPEDIÇÃO</h4>
+            </div>
+        </div>
+        <div class="row mt-4">
+
+            <div class="col-xl-3 col-sm-6 mb-xl-0 mb-4">
+                <div class="card bg-gradient-light shadow-primary">
+                    <div class="card-header bg-gradient-light p-3 pt-2">
+                        <div class="icon icon-lg icon-shape bg-gradient-light shadow-dark text-center border-radius-xl mt-n4 position-absolute "
+                             style="color:white;">
+                            <i class="fas fa-industry" style="color:black;"></i>
+                        </div>
+                        <div class="text-end pt-1">
+                            <p class="text-sm mb-0">TOTAL PRONTOS</p>
+                            <h3 class="mb-0" >{{ total_expedicao }}</h3>
+                        </div>
+                    </div>
+                    <hr class="dark horizontal my-0">
+                    <div class="card-footer p-1">
+                        <div class="d-flex flex-column justify-content-center mt-2">
+                            <a id="btn_expedicao_total" class="btn bg-gradient-secondary shadow-primary text-white text-xxs font-weight align-self-end btn-sm" onclick="mostrarIframe('Iframe_expedicao_total')">detalhes</a>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-xl-3 col-sm-6 mb-xl-0 mb-4">
+                <div class="card bg-gradient-light shadow-primary">
+                    <div class="card-header bg-gradient-light p-3 pt-2">
+                        <div class="icon icon-lg icon-shape bg-gradient-light shadow-dark text-center border-radius-xl mt-n4 position-absolute "
+                             style="color:white;">
+                            <i class="fas fa-industry" style="color:black;"></i>
+                        </div>
+                        <div class="text-end pt-1">
+                            <p class="text-sm mb-0">AGUARDANDO FINANCEIRO</p>
+                            <h3 class="mb-0" >{{ total_financeiro }}</h3>
+                        </div>
+                    </div>
+                    <hr class="dark horizontal my-0">
+                    <div class="card-footer p-1">
+                        <div class="d-flex flex-column justify-content-center mt-2">
+                            <a id="btn_expedicao_financeiro" class="btn bg-gradient-secondary shadow-primary text-white text-xxs font-weight align-self-end btn-sm" onclick="mostrarIframe('Iframe_expedicao_financeiro')">detalhes</a>
+
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+            <div class="col-xl-3 col-sm-6 mb-xl-0 mb-4">
+                <div class="card bg-gradient-light shadow-primary">
+                    <div class="card-headerbg-gradient-light p-3 pt-2">
+                        <div class="icon icon-lg icon-shape bg-gradient-light shadow-dark text-center border-radius-xl mt-n4 position-absolute "
+                             style="color:white;">
+                            <i class="fas fa-industry" style="color:black;"></i>
+                        </div>
+                        <div class="text-end pt-1">
+                            <p class="text-sm mb-0">LIBERADOS (Entrega e Coletas)</p>
+                            <h3 class="mb-0">{{ total_liberados }}</h3>
+                        </div>
+                    </div>
+                    <hr class="dark horizontal my-0">
+                    <div class="card-footer p-1">
+                        <div class="d-flex flex-column justify-content-center mt-2">
+                            <a id="btn_liberados" class="btn bg-gradient-secondary shadow-primary text-white text-xxs font-weight align-self-end btn-sm"
+                               onclick="mostrarIframe('Iframe_expedicao_liberados')">detalhes</a>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+             <div class="col-xl-3 col-sm-4 mb-xl-0 mb-4">
+                <div class="card bg-gradient-light shadow-primary">
+                    <div class="card-headerbg-gradient-light p-3 pt-2">
+                        <div class="icon icon-lg icon-shape bg-gradient-light shadow-dark text-center border-radius-xl mt-n4 position-absolute "
+                             style="color:white;">
+                            <i class="fas fa-industry" style="color:black;"></i>
+                        </div>
+                        <div class="text-end pt-1">
+                            <p class="text-sm mb-0">Em Rota de Entrega</p>
+                            <h3 class="mb-0">{{ total_rota }}</h3>
+                        </div>
+                    </div>
+                    <hr class="dark horizontal my-0">
+                    <div class="card-footer p-1">
+                        <div class="d-flex flex-column justify-content-center mt-2">
+                            <a id="btn_rota" class="btn bg-gradient-secondary shadow-primary text-white text-xxs font-weight align-self-end btn-sm"
+                               onclick="mostrarIframe('Iframe_em_rota')">detalhes</a>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <iframe class="mt-4 " id="Iframe_expedicao_total" src="/expedicao_total/" frameborder="0" width="100%" height="800" style="display: none;"></iframe>
+        <iframe class="mt-4 " id="Iframe_expedicao_financeiro" src="/expedicao_financeiro/" frameborder="0" width="100%" height="800" style="display: none;"></iframe>
+        <iframe class="mt-4 " id="Iframe_expedicao_liberados" src="/expedicao_liberados/" frameborder="0" width="100%" height="800" style="display: none;"></iframe>
+        <iframe class="mt-4 " id="Iframe_em_rota" src="/expedicao_rota/" frameborder="0" width="100%" height="800" style="display: none;"></iframe>
+
+    </div>
+
+    <div class="container-fluid py-4">
+        <div class="row">
+             <div class="col-md-3">
+                <h4>REGIÕES</h4>
+            </div>
+        </div>
+        <div class="row mt-4">
+
+            <div class="col-xl-2 col-sm-6 mb-xl-0 mb-4">
+                <div class="card bg-gradient-info shadow-light">
+                    <div class="card-header bg-gradient-info shadow-light p-3 pt-2">
+                        <div class="icon icon-sm icon-shape bg-gradient-light shadow-dark text-center border-radius-xl mt-n4 position-absolute "
+                             style="color:white;">
+                            <i class="fas fa-industry" style="color:black;"></i>
+                        </div>
+                        <div class="text-end pt-1">
+                            <p class="text-sm mb-0 text-white">REGIÃO 1</p>
+                            <h3 class="mb-0 text-white" >{{ total_rota_1 }}</h3>
+                        </div>
+                    </div>
+                    <hr class="dark horizontal my-0">
+                    <div class="card-footer bg-gradient-info shadow-light p-1">
+                        <div class="d-flex flex-column justify-content-center mt-2">
+                            <a id="btn_regiao_1" class="btn bg-gradient-light shadow-light text-xxs font-weight align-self-end btn-sm" onclick="mostrarIframe('Iframe_regiao_1')">detalhes</a>
+
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+            <div class="col-xl-2 col-sm-6 mb-xl-0 mb-4">
+                <div class="card bg-gradient-info shadow-light">
+                    <div class="card-header bg-gradient-info shadow-light p-3 pt-2">
+                        <div class="icon icon-sm icon-shape bg-gradient-light shadow-dark text-center border-radius-xl mt-n4 position-absolute "
+                             style="color:white;">
+                            <i class="fas fa-industry" style="color:black;"></i>
+                        </div>
+                        <div class="text-end pt-1">
+                            <p class="text-sm mb-0 text-white">REGIÃO 2</p>
+                            <h3 class="mb-0 text-white" >{{ total_rota_2 }}</h3>
+                        </div>
+                    </div>
+                    <hr class="dark horizontal my-0">
+                    <div class="card-footer bg-gradient-info shadow-light p-1">
+                        <div class="d-flex flex-column justify-content-center mt-2">
+                            <a id="btn_regiao_2" class="btn bg-gradient-light shadow-light text-xxs font-weight align-self-end btn-sm" onclick="mostrarIframe('Iframe_regiao_2')">detalhes</a>
+
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+            <div class="col-xl-2 col-sm-6 mb-xl-0 mb-4">
+                <div class="card bg-gradient-info shadow-light">
+                    <div class="card-header bg-gradient-info shadow-light p-3 pt-2">
+                        <div class="icon icon-sm icon-shape bg-gradient-light shadow-dark text-center border-radius-xl mt-n4 position-absolute "
+                             style="color:white;">
+                            <i class="fas fa-industry" style="color:black;"></i>
+                        </div>
+                        <div class="text-end pt-1">
+                            <p class="text-sm mb-0 text-white">REGIÃO 3</p>
+                            <h3 class="mb-0 text-white" >{{ total_rota_3 }}</h3>
+                        </div>
+                    </div>
+                    <hr class="dark horizontal my-0">
+                    <div class="card-footer bg-gradient-info shadow-light p-1">
+                        <div class="d-flex flex-column justify-content-center mt-2">
+                            <a id="btn_regiao_3" class="btn bg-gradient-light shadow-light text-xxs font-weight align-self-end btn-sm" onclick="mostrarIframe('Iframe_regiao_3')">detalhes</a>
+
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+            <div class="col-xl-2 col-sm-6 mb-xl-0 mb-4">
+                <div class="card bg-gradient-info shadow-light">
+                    <div class="card-header bg-gradient-info shadow-light p-3 pt-2">
+                        <div class="icon icon-sm icon-shape bg-gradient-light shadow-dark text-center border-radius-xl mt-n4 position-absolute "
+                             style="color:white;">
+                            <i class="fas fa-industry" style="color:black;"></i>
+                        </div>
+                        <div class="text-end pt-1">
+                            <p class="text-sm mb-0 text-white">REGIÃO 4</p>
+                            <h3 class="mb-0 text-white" >{{ total_rota_4 }}</h3>
+                        </div>
+                    </div>
+                    <hr class="dark horizontal my-0">
+                    <div class="card-footer bg-gradient-info shadow-light p-1">
+                        <div class="d-flex flex-column justify-content-center mt-2">
+                            <a id="btn_regiao_4" class="btn bg-gradient-light shadow-light text-xxs font-weight align-self-end btn-sm" onclick="mostrarIframe('Iframe_regiao_4')">detalhes</a>
+
+                        </div>
+
+                    </div>
+
+
+                </div>
+            </div>
+            <div class="col-xl-2 col-sm-6 mb-xl-0 mb-4">
+                <div class="card bg-gradient-info shadow-light">
+                    <div class="card-header bg-gradient-info shadow-light p-3 pt-2">
+                        <div class="icon icon-sm icon-shape bg-gradient-light shadow-dark text-center border-radius-xl mt-n4 position-absolute "
+                             style="color:white;">
+                            <i class="fas fa-industry" style="color:black;"></i>
+                        </div>
+                        <div class="text-end pt-1">
+                            <p class="text-sm mb-0 text-white">REGIÃO 5</p>
+                            <h3 class="mb-0 text-white" >{{ total_rota_5 }}</h3>
+                        </div>
+                    </div>
+                    <hr class="dark horizontal my-0">
+                    <div class="card-footer bg-gradient-info shadow-light p-1">
+                        <div class="d-flex flex-column justify-content-center mt-2">
+                            <a id="btn_regiao_5" class="btn bg-gradient-light shadow-light text-xxs font-weight align-self-end btn-sm" onclick="mostrarIframe('Iframe_regiao_5')">detalhes</a>
+
+                        </div>
+
+                    </div>
+
+
+                </div>
+            </div>
+
+
+
+
+        </div>
+        <div class="row mt-4">
+                <div class="col-xl-2 col-sm-6 mb-xl-0 mb-4">
+                    <div class="card bg-gradient-info shadow-light">
+                        <div class="card-header bg-gradient-info shadow-light p-3 pt-2">
+                            <div class="icon icon-sm icon-shape bg-gradient-light shadow-dark text-center border-radius-xl mt-n4 position-absolute "
+                                 style="color:white;">
+                                <i class="fas fa-industry" style="color:black;"></i>
+                            </div>
+                            <div class="text-end pt-1">
+                                <p class="text-sm mb-0 text-white">REGIÃO 6</p>
+                                <h3 class="mb-0 text-white" >{{ total_rota_6 }}</h3>
+                            </div>
+                        </div>
+                        <hr class="dark horizontal my-0">
+                        <div class="card-footer bg-gradient-info shadow-light p-1">
+                            <div class="d-flex flex-column justify-content-center mt-2">
+                                <a id="btn_regiao_6" class="btn bg-gradient-light shadow-light text-xxs font-weight align-self-end btn-sm" onclick="mostrarIframe('Iframe_regiao_6')">detalhes</a>
+
+                            </div>
+
+                        </div>
+
+
+                    </div>
+                </div>
+                <div class="col-xl-2 col-sm-6 mb-xl-0 mb-4">
+                    <div class="card bg-gradient-info shadow-light">
+                        <div class="card-header bg-gradient-info shadow-light p-3 pt-2">
+                            <div class="icon icon-sm icon-shape bg-gradient-light shadow-dark text-center border-radius-xl mt-n4 position-absolute "
+                                 style="color:white;">
+                                <i class="fas fa-industry" style="color:black;"></i>
+                            </div>
+                            <div class="text-end pt-1">
+                                <p class="text-sm mb-0 text-white">REGIÃO 7</p>
+                                <h3 class="mb-0 text-white" >{{ total_rota_7 }}</h3>
+                            </div>
+                        </div>
+                        <hr class="dark horizontal my-0">
+                        <div class="card-footer bg-gradient-info shadow-light p-1">
+                            <div class="d-flex flex-column justify-content-center mt-2">
+                                <a id="btn_regiao_7" class="btn bg-gradient-light shadow-light text-xxs font-weight align-self-end btn-sm" onclick="mostrarIframe('Iframe_regiao_7')">detalhes</a>
+
+                            </div>
+
+                        </div>
+
+
+                    </div>
+                </div>
+                <div class="col-xl-2 col-sm-6 mb-xl-0 mb-4">
+                    <div class="card bg-gradient-info shadow-light">
+                        <div class="card-header bg-gradient-info shadow-light p-3 pt-2">
+                            <div class="icon icon-sm icon-shape bg-gradient-light shadow-dark text-center border-radius-xl mt-n4 position-absolute "
+                                 style="color:white;">
+                                <i class="fas fa-industry" style="color:black;"></i>
+                            </div>
+                            <div class="text-end pt-1">
+                                <p class="text-sm mb-0 text-white">REGIÃO 8</p>
+                                <h3 class="mb-0 text-white" >{{ total_rota_8 }}</h3>
+                            </div>
+                        </div>
+                        <hr class="dark horizontal my-0">
+                        <div class="card-footer bg-gradient-info shadow-light p-1">
+                            <div class="d-flex flex-column justify-content-center mt-2">
+                                <a id="btn_regiao_8" class="btn bg-gradient-light shadow-light text-xxs font-weight align-self-end btn-sm" onclick="mostrarIframe('Iframe_regiao_8')">detalhes</a>
+
+                            </div>
+
+                        </div>
+
+
+                    </div>
+                </div>
+                <div class="col-xl-2 col-sm-6 mb-xl-0 mb-4">
+                    <div class="card bg-gradient-info shadow-light">
+                        <div class="card-header bg-gradient-info shadow-light p-3 pt-2">
+                            <div class="icon icon-sm icon-shape bg-gradient-light shadow-dark text-center border-radius-xl mt-n4 position-absolute "
+                                 style="color:white;">
+                                <i class="fas fa-industry" style="color:black;"></i>
+                            </div>
+                            <div class="text-end pt-1">
+                                <p class="text-sm mb-0 text-white"><small>Transportadora</small></p>
+                                <h3 class="mb-0 text-white" >{{ total_rota_transportadora }}</h3>
+                            </div>
+                        </div>
+                        <hr class="dark horizontal my-0">
+                        <div class="card-footer bg-gradient-info shadow-light p-1">
+                            <div class="d-flex flex-column justify-content-center mt-2">
+                                <a id="btn_transportadora" class="btn bg-gradient-light shadow-light text-xxs font-weight align-self-end btn-sm" onclick="mostrarIframe('Iframe_transportadora')">detalhes</a>
+
+                            </div>
+
+                        </div>
+
+
+                    </div>
+                </div>
+            <div class="col-xl-2 col-sm-6 mb-xl-0 mb-4">
+                    <div class="card bg-gradient-info shadow-light">
+                        <div class="card-header bg-gradient-info shadow-light p-3 pt-2">
+                            <div class="icon icon-sm icon-shape bg-gradient-light shadow-dark text-center border-radius-xl mt-n4 position-absolute "
+                                 style="color:white;">
+                                <i class="fas fa-industry" style="color:black;"></i>
+                            </div>
+                            <div class="text-end pt-1">
+                                <p class="text-sm mb-0 text-white"><small>Retirada Cliente</small></p>
+                                <h3 class="mb-0 text-white" >{{ total_retirada }}</h3>
+                            </div>
+                        </div>
+                        <hr class="dark horizontal my-0">
+                        <div class="card-footer bg-gradient-info shadow-light p-1">
+                            <div class="d-flex flex-column justify-content-center mt-2">
+                                <a id="btn_retirada" class="btn bg-gradient-light shadow-light text-xxs font-weight align-self-end btn-sm" onclick="mostrarIframe('Iframe_retirada')">detalhes</a>
+
+                            </div>
+
+                        </div>
+
+
+                    </div>
+                </div>
+            </div>
+
+
+        <iframe class="mt-4 " id="Iframe_regiao_1" src="/regiao1/" frameborder="0" width="100%" height="800" style="display: none;"></iframe>
+        <iframe class="mt-4 " id="Iframe_regiao_2" src="/regiao2/" frameborder="0" width="100%" height="800" style="display: none;"></iframe>
+        <iframe class="mt-4 " id="Iframe_regiao_3" src="/regiao3/" frameborder="0" width="100%" height="800" style="display: none;"></iframe>
+        <iframe class="mt-4 " id="Iframe_regiao_4" src="/regiao4/" frameborder="0" width="100%" height="800" style="display: none;"></iframe>
+        <iframe class="mt-4 " id="Iframe_regiao_5" src="/regiao5/" frameborder="0" width="100%" height="800" style="display: none;"></iframe>
+        <iframe class="mt-4 " id="Iframe_regiao_6" src="/regiao6/" frameborder="0" width="100%" height="800" style="display: none;"></iframe>
+        <iframe class="mt-4 " id="Iframe_regiao_7" src="/regiao7/" frameborder="0" width="100%" height="800" style="display: none;"></iframe>
+        <iframe class="mt-4 " id="Iframe_regiao_8" src="/regiao8/" frameborder="0" width="100%" height="800" style="display: none;"></iframe>
+        <iframe class="mt-4 " id="Iframe_transportadora" src="/reg_transportadora/" frameborder="0" width="100%" height="800" style="display: none;"></iframe>
+        <iframe class="mt-4 " id="Iframe_retirada" src="/reg_retirada/" frameborder="0" width="100%" height="800" style="display: none;"></iframe>
+
+    </div>
+
+
+</main>
+
+<!--   Core JS Files   -->
+<script src="{% static 'dashboard/assets/js/core/popper.min.js' %}"></script>
+<script src="{% static 'dashboard/assets/js/core/bootstrap.min.js' %}"></script>
+<script src="{% static 'dashboard/assets/js/plugins/perfect-scrollbar.min.js' %}"></script>
+<script src="{% static 'dashboard/assets/js/plugins/smooth-scrollbar.min.js' %}"></script>
+<script src="{% static 'dashboard/assets/js/plugins/chartjs.min.js' %}"></script>
+<script src="{% static 'meus_pedidos/assets/bootstrap/js/bootstrap.min.js' %}"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.31.2/js/jquery.tablesorter.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.31.2/js/widgets/widget-filter.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.31.2/js/widgets/widget-storage.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+
+<script>
+function filtrarResultados() {
+  // Obter os valores selecionados nos menus select
+  var zona = document.getElementById("selectZona").value;
+  var cidade = document.getElementById("selectCidade").value;
+  var bairro = document.getElementById("selectBairro").value;
+  var dataInicial = document.getElementById("data_entrega_inicial").value;
+  var dataFinal = document.getElementById("data_entrega_final").value;
+
+  // Criar o objeto de dados com os valores selecionados
+  var data = {
+    zona: zona,
+    cidade: cidade,
+    bairro: bairro,
+    dataInicial: dataInicial,
+    dataFinal: dataFinal
+  };
+
+  // Enviar a solicitação JSON para o servidor
+  fetch('/filtrar_expedicao/', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'X-CSRFToken': getCookie('csrftoken') // Adicionar o token CSRF para proteção
+    },
+    body: JSON.stringify(data)
+  })
+  .then(response => response.json())
+  .then(data => {
+    console.log(data);
+    var tabelaPedidos = document.getElementById("tabela-pedidos");
+    tabelaPedidos.innerHTML = ""; // Limpar o conteúdo atual da tabela
+    // Iterar sobre os objetos "pedido" retornados
+      for (var i = 0; i < data.pedidos.length; i++) {
+        var pedido = data.pedidos[i].fields;
+        console.log(pedido);
+        var novaLinha = "<tr style='background: #262a38;'>";
+        novaLinha += "<td style='color: var(--bs-gray-800);background: var(--bs-white);'>" + pedido.numero + "</td>";
+        novaLinha += "<td style='color: var(--bs-gray-800);background: var(--bs-white);'>" + pedido.prazo_entrega + "</td>";
+        novaLinha += "<td style='color: var(--bs-gray-800);background: var(--bs-white);'>" + pedido.Vendedor + "</td>";
+        novaLinha += "<td style='color: var(--bs-gray-800);background: var(--bs-white);'>" + pedido.zona_entrega + "</td>";
+        novaLinha += "<td style='color: var(--bs-gray-800);background: var(--bs-white);'>" + pedido.bairro_entrega + ", " + pedido.cidade_entrega + "-" + pedido.uf_entrega + "</td>";
+
+        novaLinha += "<td style='color: var(--bs-gray-800);background: var(--bs-white);'>" +
+                 "<a class='btn btnMaterial btn-flat success semicircle' id='editar-pedido' role='button' href='/editarpedido/" + pedido.numero + "' style='color: rgb(0,197,179);'>" +
+                 "<i class='fas fa-pen' style='color: var(--bs-black);'></i></a>" +
+                 "<a class='btn btnMaterial btn-flat primary semicircle confirma-pedido-pronto' role='button' data-pedido='" + pedido.numero + "' style='color: var(--bs-table-color);'>" +
+                 "<svg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='currentColor' class='bi bi-check-circle-fill' viewBox='0 0 16 16'>" +
+                 "<path d='M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zm-3.97-3.03a.75.75 0 0 0-1.08.022L7.477 9.417 5.384 7.323a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-.01-1.05z'/>" +
+                 "</svg></a></td>";
+        novaLinha += "</tr style='color: var(--bs-gray-800);background: var(--bs-white);'>";
+
+        tabelaPedidos.innerHTML += novaLinha; // Adicionar a nova linha à tabela
+}
+
+});
+}
+
+// Função para obter o valor do token CSRF do cookie
+function getCookie(name) {
+  var cookieValue = null;
+  if (document.cookie && document.cookie !== '') {
+    var cookies = document.cookie.split(';');
+    for (var i = 0; i < cookies.length; i++) {
+      var cookie = cookies[i].trim();
+      if (cookie.substring(0, name.length + 1) === (name + '=')) {
+        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+        break;
+      }
+    }
+  }
+  return cookieValue;
+}</script>
+
+<script>
+    var btnsGravarFrete = document.querySelectorAll('.registra-pendencia-frete');
+
+// Itera sobre os botões encontrados
+btnsGravarFrete.forEach(function(btns) {
+  btns.addEventListener('click', function() {
+    console.log('entrou clique');
+    // Obtém o número do pedido do atributo de dados 'data-pedido'
+    var numeroPedido = this.getAttribute('data-pedido-frete');
+    document.getElementById('numero_pedido_transportadora').value = numeroPedido;
+    document.getElementById('modal-informacoes-frete').style.display = 'block';
+
+    document.getElementById('modal-transportadora-form').addEventListener('submit', function(event) {
+      // Impede o comportamento padrão de submissão do formulário
+      event.preventDefault();
+      var peso = document.getElementById('total-peso').value;
+      var numeroPedido = document.getElementById('numero_pedido_transportadora').value;
+      var volumes = document.getElementById('total-volumes').value;
+
+      document.getElementById('modal-informacoes-frete').style.display = 'none';
+
+
+    // Cria um objeto de dados para enviar na requisição
+    var data = {
+      numero_pedido: numeroPedido,
+      volume: volumes,
+      peso: peso
+    };
+
+    // Faz a requisição para a view 'emitir_nota' usando fetch
+    fetch('/expedicao_frete/', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-CSRFToken': '{{ csrf_token }}'
+      },
+      body: JSON.stringify(data)
+    })
+    .then(function(response) {
+      if (response.ok) {
+        // Manipule a resposta da requisição conforme necessário
+        alert('Pedido Atualizado Com Sucesso!');
+        window.location.reload();
+        return response.json();
+      } else {
+        alert('Ocorreu um erro: Favor contactar o suporte');
+      }
+    })
+    .then(data => {
+        // Lógica de tratamento da resposta, se necessário
+
+    })
+    .then(function(responseData) {
+       if (responseData.error) {
+        // Realize as ações necessárias para tratar o erro
+        alert('Erro: ' + responseData.error);
+      }else{
+      console.log(responseData); }
+      // Realize as ações necessárias com os dados da resposta
+    })
+    .catch(function(error) {
+      console.error('Erro: ' + error.message);
+    });
+    });
+  });
+});
+document.getElementById('fechar-modal-transportadora').addEventListener('click', function() {
+  document.getElementById('modal-informacoes-frete').style.display = 'none';
+});
+</script>
+
+
+
+
+<script>
+    function mostrarIframe(iframeId) {
+        var iframe = document.getElementById(iframeId);
+
+        if (iframe.style.display === 'none') {
+            iframe.style.display = 'block';
+        } else {
+            iframe.style.display = 'none';
+        }
+    }
+</script>
+
+
+<script>
+  $(document).ready(function() {
+    // Quando o botão "detalhes" for clicado
+    $('a#detalhes-pedido').on('click', function() {
+      // Exiba o modal
+      $('#modal-detalhes-pedido').modal('show');
+    });
+  });
+
+
+
+
+</script>
+<script>
+    var win = navigator.platform.indexOf('Win') > -1;
+    if (win && document.querySelector('#sidenav-scrollbar')) {
+      var options = {
+        damping: '0.5'
+      }
+      Scrollbar.init(document.querySelector('#sidenav-scrollbar'), options);
+    }
+</script>
+<!-- Github buttons -->
+<script async defer src="https://buttons.github.io/buttons.js"></script>
+<!-- Control Center for Material Dashboard: parallax effects, scripts for the example pages etc -->
+<script src="{% static 'dashboard/assets/js/material-dashboard.min.js?v=3.1.0"></script>
+
+</body>
+
+</html>

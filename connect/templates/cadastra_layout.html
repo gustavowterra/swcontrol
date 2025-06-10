@@ -1,0 +1,126 @@
+{% extends "./modelo.html" %}
+{% load static %}
+{% block container %}
+<head xmlns="http://www.w3.org/1999/html">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Untitled</title>
+    <link rel="stylesheet" href="{% static 'PEDIDO/bootstrap.min.css' %}">
+    <link rel="stylesheet" href="{% static 'PEDIDO/fontawesome-all.min.css' %}">
+    <style>
+    /* Estilos personalizados */
+
+    .custom-background1 {
+        background-color: #f2f2f2; /* Cor de fundo cinza claro */
+        padding: 10px; /* Ajuste o valor do preenchimento conforme necessário */
+    }
+
+    .form-control {
+      border: none;
+      border-radius: 0;
+      border-bottom: 1px solid black;
+      font-size: 95%;
+    }
+    .form-control2 {
+      border: none;
+      border-radius: 0;
+      border-bottom: none;
+      font-size: 95%;
+    }
+
+    .form-control::placeholder {
+      color: #999;
+      font-size: 100%;
+    }
+    .form-control2::placeholder {
+      color: #999;
+      font-size: 100%;
+    }
+
+    .custom-margin-top {
+      margin-top: 25px;
+    }
+
+    .gray-bg {
+      background-color: #f8f9fa;
+    }
+
+    .cliente-container {
+      background-color: #000;
+      color: #fff;
+      padding: 2px;
+    }
+
+    .modal-dialog {
+      max-width: 900px; /* Ajuste o valor conforme necessário */
+    }
+
+    .modal-content {
+      height: 400px; /* Ajuste o valor conforme necessário */
+    }
+    .form-wrapper {
+      border: 1px solid black;
+      padding: 10px;
+    }
+
+
+
+
+
+
+
+
+
+
+    </style>
+</head>
+<body>
+<section class="mt-2">
+
+    <div class="container">
+         <form method="post" enctype="multipart/form-data" action="/layout_pedido/">
+            {% csrf_token %}
+            <div class="row">
+                <div class="col-md-6 align-items-center text-center mb-4"
+                     style="margin-left: 200px; margin-right: auto;">
+                    <h4><strong>Cadastrar Layout</strong></h4>
+                </div>
+                <div class="row ">
+                    <div class="col">
+
+                        <div class="row mb-2 custom-background1">
+                            <div class="col-md-4">
+                                <label for="numero_pedido">Pedido</label>
+                                <input type="text" class="form-control text-center" id="numero_pedido"
+                                       name="numero_pedido">
+                            </div>
+                            <div class="col-md-4">
+                                <label for="arquivo">Escolha o arquivo</label>
+                                <input type="file" class="form-control text-center" id="arquivo" name="arquivo">
+                            </div>
+                        </div>
+                        <button id="submit-button" type="submit" class="btn btn-dark">Cadastrar Pedido</button>
+                    </div>
+
+
+
+
+            </div>
+
+
+        </form>
+    </div>
+</section>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+<script src="{% static 'PEDIDO/bootstrap.min.js' %}"></script>
+<script src="{% static 'PEDIDO/script.min.js' %}"></script>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.mask/1.14.16/jquery.mask.min.js"></script>
+</body>
+
+</html>
+{% endblock %}

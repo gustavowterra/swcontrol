@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+   <style>
+        .modal-body .chat-container {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    max-height: 300px; /* Ajuste conforme necessário */
+    overflow-y: auto;
+}
+
+.chat-bubble {
+    padding: 10px 15px;
+    border-radius: 15px;
+    max-width: 75%;
+    position: relative;
+    font-size: 14px;
+}
+
+.chat-bubble.user {
+    background-color: #007bff;
+    color: #fff;
+    align-self: flex-end;
+    border-top-right-radius: 0;
+}
+
+.chat-bubble.other {
+    background-color: #f1f1f1;
+    color: #333;
+    align-self: flex-start;
+    border-top-left-radius: 0;
+}
+
+.timestamp {
+    display: block;
+    font-size: 10px;
+    color: white;
+    margin-top: 5px;
+    text-align: right;
+}
+    </style>
+    <meta charset="UTF-8">
+    <title>Comentarios</title>
+</head>
+<body>
+<div class="chat-container" style="display: flex;flex-direction: column; gap: 10px; max-height: 300px; overflow-y: auto;">
+
+                                          {% for comentario in comentarios %}
+                                            <!-- Exemplo de mensagem do usuário -->
+                                            <div class="chat-bubble user" style="padding: 10px 15px;border-radius: 15px;max-width: 75%; position: relative;
+                                            font-size: 14px; background-color: #007bff; color: #fff; align-self: flex-end; border-top-right-radius: 0;">
+                                                <p><strong>{{vendedor}} diz: </strong></p>
+                                                <p>{{comentario.texto}}</p>
+                                                <span class="timestamp">{{comentario.data|date:'d/m/y'}}</span>
+                                            </div>
+
+                                          {% endfor %}
+</body>
+</html>

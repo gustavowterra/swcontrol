@@ -1,0 +1,309 @@
+{% extends "./modelo.html" %}
+{% load static %}
+{% block container %}
+<head xmlns="http://www.w3.org/1999/html">
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
+    <title>lista_pedidos</title>
+    <link rel="stylesheet" href="{% static 'meus_pedidos/assets/bootstrap/css/bootstrap.min.css' %}">
+    <link rel="stylesheet" href="{% static 'meus_pedidos/assets/fonts/fontawesome-all.min.css' %}">
+    <link rel="stylesheet" href="{% static 'meus_pedidos/assets/fonts/font-awesome.min.css' %}">
+    <link rel="stylesheet" href="{% static 'meus_pedidos/assets/fonts/fontawesome5-overrides.min.css' %}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.31.2/css/theme.bootstrap_4.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.css">
+    <link rel="stylesheet" href="{% static 'meus_pedidos/assets/css/styles.min.css' %}">
+
+</head>
+<body>
+<div id="wrapper">
+    <div class="d-flex flex-column" id="content-wrapper" style="background: white">
+        <div id="content" style="color: #2D2F3E;">
+            <div class="container-fluid" style="margin-bottom: 50px;">
+                <div class="row">
+                    <div class="col-12 col-sm-6 col-md-6 col-lg-6"><h3 class="text-dark mb-4">Meus Pedidos</h3></div>
+                    <div class="col-12 col-sm-6 col-md-6 text-end" style="margin-bottom: 30px;"><a
+                            class="btn btn-dark" role="button"href="/pedido/"><i class="fa fa-plus"></i>&nbsp;Novo Pedido</a></div>
+                </div>
+
+                <div class="card" id="TableSorterCard"
+                     style="border-style: none;border-radius: 6.5px;">
+                    <form method="GET" action="/painel_vendas/">
+                         {% csrf_token %}
+                    <div class="card-header py-3" style="border-width: 0px;background: var(--bs-gray-700);">
+                        <button id="botao-filtrar"  class="btn btn-dark text-black" type="button"
+                                                style="background: var(--bs-white);">
+                                            Filtrar
+                                        </button>
+                        <button id="botao-apagar-filtro"  class="btn btn-dark text-black" type="submit"
+                                                style="background: var(--bs-white);">
+                                            Apagar Filtro
+                                        </button>
+
+                        <div class="row table-topper align-items-center" id="row-form" style="display:none">
+                            <div class="col-md-8">
+                                <div class="row align-items-center">
+                                    <div class="col-md-4">
+                                        <label class="col-form-label text-white"
+                                               style="font-weight: bold;">Período Data do Pedido</label>
+                                    </div>
+                                </div>
+                                <div class="row align-items-center">
+                                    <div class="col-md-2">
+                                        <input type="date"
+                                               class="form-control"
+                                               id="filter-data-pedido-inicial"
+                                               name="filter_data_pedido_inicial"
+                                               style="background: var(--bs-card-cap-bg);color: var(--bs-card-bg);border-style: solid;border-color: white;">
+                                    </div>
+                                    <div class="col-md-2">
+                                        <input type="date"
+                                               class="form-control"
+                                               id="filter-data-pedido-final"
+                                               name="filter_data_pedido_final"
+                                               style="margin-left: 20px;background: var(--bs-card-cap-bg);color: var(--bs-card-bg);border-style: solid;border-color: white;">
+                                    </div>
+                                </div>
+                            </div>
+
+
+                            <div class="col-md-8">
+                                <div class="row align-items-center">
+                                    <div class="col-md-4">
+                                        <label class="col-form-label text-white"
+                                               style="font-weight: bold;">Período Data de Entrega Pedido</label>
+                                    </div>
+                                </div>
+                                <div class="row align-items-center">
+                                    <div class="col-md-2">
+                                        <input type="date"
+                                               class="form-control"
+                                               id="filter-data-pedido-entrega-inicial"
+                                               name="filter_data_pedido_entrega_inicial"
+                                               style="background: var(--bs-card-cap-bg);color: var(--bs-card-bg);border-style: solid;border-color: white;">
+                                    </div>
+                                    <div class="col-md-2">
+                                        <input type="date"
+                                               class="form-control"
+                                               id="filter-data-pedido-entrega-final"
+                                               name="filter_data_pedido_entrega_final"
+                                               style="margin-left: 20px;background: var(--bs-card-cap-bg);color: var(--bs-card-bg);border-style: solid;border-color: white;">
+                                    </div>
+                                </div>
+                            </div>
+                            <! SEGUNDA LINHA DO FILTRO>
+                            <div class="row table-topper align-items-center">
+                                <div class="col-md-3">
+                                    <div class="row align-items-center" style="margin-right: 10px;">
+                                        <div class="col-md-6">
+                                            <label for="numero-pedido-filter" class="col-form-label text-white"
+                                                   style="font-weight: bold;">Número
+                                                do Pedido</label>
+                                            <input type="text"
+                                                   class="form-control text-white"
+                                                   id="numero-pedido-filter"
+                                                   name="numero_pedido_filter"
+                                                   style="background: var(--bs-card-cap-bg);border-color: var(--bs-gray-100);">
+                                        </div>
+                                        <div class="col-md-6">
+                                            <label for="documento-cliente-filter" class="col-form-label text-white"
+                                                   style="font-weight: bold;">CPF / CNPJ Cliente</label>
+                                            <input type="text"
+                                                   class="form-control text-white"
+                                                   id="documento-cliente-filter"
+                                                   name="documento_cliente_filter"
+                                                   style="background: var(--bs-card-cap-bg);border-color: var(--bs-gray-100);">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row table-topper align-items-center">
+                                <div class="col-md-6">
+                                    <div class="row align-items-center" style="margin-right: 10px;">
+                                        <div class="col-md-3">
+                                            <label for="status-pedido-filter" class="col-form-label text-white"
+                                                   style="font-weight: bold;">Status
+                                                do Pedido</label>
+                                            <input type="text"
+                                                   class="form-control text-white"
+                                                   id="status-pedido-filter"
+                                                   list="status-pedidos"
+                                                   name="status_pedido_filter"
+                                                   style="background: var(--bs-card-cap-bg);border-color: var(--bs-gray-100);">
+                                            <datalist id="status-pedidos">
+                                                {% for status, _ in status_choices %}
+                                                <option value="{{ status }}"></option>
+                                                {% endfor %}
+
+                                            </datalist>
+                                        </div>
+                                        <div class="col-md-3">
+                                            <label for="vendedor-pedido-filter" class="col-form-label text-white"
+                                                   style="font-weight: bold;">Vendedor</label>
+                                            <input type="text"
+                                                   class="form-control text-white"
+                                                   list="vendedores"
+                                                   id="vendedor-pedido-filter"
+                                                   name="vendedor_pedido_filter"
+                                                   style="background: var(--bs-card-cap-bg);border-color: var(--bs-gray-100);">
+                                            <datalist id="vendedores">
+                                                {% for vendedor in vendedores %}
+                                                <option value="{{ vendedor.nome }}"></option>
+                                                    {% endfor %}
+                                            </datalist>
+                                        </div>
+                                        <div class="col-md-3">
+                                            <label for="localidade-pedido-filter" class="col-form-label text-white"
+                                                   style="font-weight: bold;">Localidade de Entrega</label>
+                                            <input type="text"
+                                                   class="form-control text-white"
+                                                   list="bairros"
+                                                   id="localidade-pedido-filter"
+                                                   name="localidade_pedido_filter"
+                                                   style="background: var(--bs-card-cap-bg);border-color: var(--bs-gray-100);">
+
+                                            <datalist id="bairros">
+                                                {% for bairro in bairros %}
+                                                <option value="{{ bairro.nome}}, {{ bairro.cidade }}-{{ bairro.uf }}"></option>
+                                                {% endfor %}
+                                            </datalist>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+
+                            <div class="col-md-4">
+                                <div class="row align-items-center">
+                                    <div class="col-md-12">
+                                        <button class="btn btn-dark text-black" type="submit"
+                                                style="background: var(--bs-white);">
+                                            Pesquisar
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+                      </form>
+                    </div>
+
+
+
+                    <div class="row">
+                        <div class="col-12">
+                            <div class="table-responsive" style="border-top-style: none;background: #171921;">
+                                <table class="table table-striped table tablesorter" id="ipi-table">
+                                    <thead class="thead-dark"
+                                           style="background: rgb(33,37,48);border-width: 0px;border-color: rgb(0,0,0);border-bottom-color: #21252F;">
+                                        <tr style="border-style: none;border-color: rgba(255,255,255,0);background: #21252f;">
+                                            <th class="text-center"
+                                                style="background: var(--bs-gray-300);color: var(--bs-black);border-style: none;">
+                                                Numero
+                                            </th>
+                                            <th class="text-center"
+                                                style="background: var(--bs-gray-300);color: var(--bs-black);border-style: none;">
+                                                Nome do Cliente
+                                            </th>
+                                            <th class="text-center"
+                                                style="background: var(--bs-gray-300);color: var(--bs-black);border-style: none;">
+                                                Prazo de Entrega
+                                            </th>
+                                            <th class="text-center"
+                                                style="background: var(--bs-gray-300);color: var(--bs-black);border-style: none;">
+                                                Vendedor
+                                            </th>
+                                            <th class="text-center"
+                                                style="background: var(--bs-gray-300);color: var(--bs-black);border-style: none;">
+                                                Valor Total
+                                            </th>
+                                            <th class="text-center"
+                                                style="background: var(--bs-gray-300);color: var(--bs-black);border-style: none;">
+                                                Bairro
+                                            </th>
+                                            <th class="text-center"
+                                                style="background: var(--bs-gray-300);color: var(--bs-black);border-style: none;">
+                                                Status
+                                            </th>
+                                            <th class="text-center filter-false sorter-false"
+                                                style="background: var(--bs-gray-300);color: var(--bs-black);border-style: none;">
+                                                Ações
+                                            </th>
+                                        </tr>
+                                    </thead>
+                                    <tbody class="text-center" style="border-top-width: 0px;">
+                                        {% for pedido in pedidos %}
+                                        <tr style="background: #262a38;">
+                                            <td style="color: var(--bs-gray-800);background: var(--bs-white);">{{ pedido.numero }}
+                                            </td>
+                                            <td style="color: var(--bs-gray-800);background: var(--bs-white);">{{ pedido.nome_cliente }}
+                                            </td>
+                                            <td style="color: var(--bs-gray-800);background: var(--bs-white);">{{ pedido.prazo_entrega }}
+                                            </td>
+                                            <td style="color: var(--bs-gray-800);background: var(--bs-white);">{{ pedido.Vendedor }}
+                                            </td>
+                                            <td style="color: var(--bs-gray-800);background: var(--bs-white);">R${{ pedido.valorTotal }}
+                                            </td>
+                                            <td style="color: var(--bs-gray-800);background: var(--bs-white);">{{ pedido.bairro_entrega }}, {{ pedido.cidade_entrega }}-{{ pedido.uf_entrega }}</td>
+                                            <td style="color: var(--bs-gray-800);background: var(--bs-white);">{{ pedido.status }}</td>
+                                            <td class="text-center align-middle"
+                                                style="max-height: 60px;height: 60px;background: var(--bs-white);color: var(--bs-gray-800);">
+                                                <a class="btn btnMaterial btn-flat btnNoBorders" id="bt-gerarecibo" role="button" href="/gerarecibo/{{ pedido.numero }}/">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-file-earmark-text" viewBox="0 0 16 16">
+                                                        <path d="M5.5 7a.5.5 0 0 0 0 1h5a.5.5 0 0 0 0-1h-5zM5 9.5a.5.5 0 0 1 .5-.5h5a.5.5 0 0 1 0 1h-5a.5.5 0 0 1-.5-.5zm0 2a.5.5 0 0 1 .5-.5h2a.5.5 0 0 1 0 1h-2a.5.5 0 0 1-.5-.5z"/>
+                                                        <path d="M9.5 0H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2V4.5L9.5 0zm0 1v2A1.5 1.5 0 0 0 11 4.5h2V14a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1h5.5z"/>
+                                                    </svg>
+                                                </a>
+
+
+                                                <a class="btn btnMaterial btn-flat primary semicircle" id="consultar-pedido" role="button"
+                                                   href="/consultarpedido/{{ pedido.numero }}" style="color: var(--bs-table-color);"><i class="far fa-eye"></i></a>
+                                                </td>
+                                        </tr>
+
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <footer class="bg-white sticky-footer" style="background: linear-gradient(#1f232d 0%, #1f232d 100%);">
+        <div class="container my-auto">
+            <div class="text-center my-auto copyright text-gray-100" style="font-size: 13.5px;"><span>Copyright © Conectiva Soluções Tecnologicas&nbsp;<span
+                    id="year">2022</span></span></div>
+        </div>
+    </footer>
+    <a class="border rounded d-inline scroll-to-top" href="#page-top"><i class="fas fa-angle-up"></i></a>
+</div>
+<script src="{% static 'meus_pedidos/assets/bootstrap/js/bootstrap.min.js' %}"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.31.2/js/jquery.tablesorter.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.31.2/js/widgets/widget-filter.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.31.2/js/widgets/widget-storage.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
+<script src="{% static 'meus_pedidos/assets/js/script.min.js' %}"></script>
+<script>
+    // Obtém referência ao botão e à div
+    const botaoFiltrar = document.getElementById('botao-filtrar');
+    const rowForm = document.getElementById('row-form');
+
+    // Adiciona o manipulador de evento ao botão
+    botaoFiltrar.addEventListener('click', function() {
+        // Verifica o status de exibição atual da div
+        const displayStatus = rowForm.style.display;
+
+        // Altera o status de exibição com base no status atual
+        if (displayStatus === 'none') {
+            rowForm.style.display = 'block';
+        } else {
+            rowForm.style.display = 'none';
+        }
+    });
+</script>
+</body>
+</html>
+{% endblock %}

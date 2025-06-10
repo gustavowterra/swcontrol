@@ -1,0 +1,89 @@
+
+{% load static %}
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Registrar Entrega</title>
+    <style>
+        /* Estilos CSS para o formulário */
+
+        body {
+            background-image: url("{%static 'registra/5722-route-des-bois-WallFizz.jpg' %}");
+            background-repeat: no-repeat;
+            background-size: cover;
+            background-color: rgba(255, 255, 255, 1.0); /* Ajuste o valor '0.5' para definir a transparência desejada */
+            font-family: 'Poppins', sans-serif;
+        }
+        h2 {
+            color: white;
+            font-weight: bold;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        .form-container {
+
+            max-width: 400px;
+            margin: 0 auto;
+            padding: 20px;
+            text-white;
+
+        }
+
+        .form-label {
+            color: white;
+            font-weight: bold;
+        }
+
+        .form-control {
+            width: 100%;
+            margin-bottom: 30px;
+            padding: 10px;
+            font-size: 16px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            background-color: rgba(255, 255, 255, 0.2); /* Ajuste o valor '0.5' para definir a transparência desejada */
+            color: white;
+            font-weight: bold;
+        }
+
+        .submit-btn {
+            padding: 10px 20px;
+            font-size: 16px;
+            background-color: #000;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .submit-btn:hover {
+            background-color: #45a049;
+        }
+    </style>
+</head>
+<body>
+    <div class="form-container">
+        <h2 class="text-center" style="text-white">Registrar Entrega / Coleta</h2>
+        <form method="POST">
+            {% csrf_token %}
+            <div class="form-group">
+                <label for="nome_recebedor" class="form-label">Nome Recebedor:</label>
+                <input type="text" name="nome_recebedor" id="nome_recebedor" class="form-control" required>
+            </div>
+
+            <div class="form-group">
+                <label for="documento_recebedor" class="form-label">Documento Recebedor:</label>
+                <input type="text" name="documento_recebedor" id="documento_recebedor" class="form-control" required>
+            </div>
+
+            <div class="form-group">
+                <label for="data_entrega" class="form-label">Data e Hora da Entrega:</label>
+                <input type="datetime-local" name="data_entrega" id="data_entrega" class="form-control"  value="{{ hora_atual|date:'Y-m-d\\TH:i' }}" required>
+            </div>
+
+            <button type="submit" class="submit-btn">Registrar</button>
+        </form>
+    </div>
+</body>
+</html>

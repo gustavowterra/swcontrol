@@ -1,0 +1,50 @@
+.formulario-container {
+
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+
+
+}
+.meu-input {
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  font-size: 16px;
+  margin-bottom: 10px;
+}
+
+/* Adicione estilos para o botão de envio do formulário */
+button[type="submit"] {
+  background-color: #4CAF50;
+  color: white;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+.formulario-centralizado {
+  margin: 0 auto;
+  width: 50%;
+
+}
+.form-group {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+}
+
+.col {
+  flex-basis: 50%;
+  padding: 0 10px;
+}
+label {
+  display: inline-block;
+  width: 100px; /* ajuste o valor para a largura desejada */
+  text-align: right;
+}
+
+label + * {
+  padding-left: 10px;
+}

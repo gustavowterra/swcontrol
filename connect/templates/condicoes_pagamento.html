@@ -1,0 +1,434 @@
+{% extends "./modelo.html" %}
+{% load static %}
+{% block container %}
+<head xmlns="http://www.w3.org/1999/html">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Condições Pagamento</title>
+    <link rel="stylesheet" href="{% static 'PEDIDO/fontawesome-all.min.css' %}">
+    <style>
+    /* Estilos personalizados */
+    .modal-dialog {
+      max-width: 900px; /* Ajuste o valor conforme necessário */
+    }
+
+    .modal-content {
+      height: 500px; /* Ajuste o valor conforme necessário */
+    }
+
+    .custom-background1 {
+        background-color: #f2f2f2; /* Cor de fundo cinza claro */
+        padding: 10px; /* Ajuste o valor do preenchimento conforme necessário */
+    }
+
+        .form-control {
+      border: 1px solid black;
+      border-radius: 5px;
+      font-size: 90%;
+       background-color: #f8f9fa;
+    }
+    .form-control2 {
+      border: none;
+      border-radius: 0;
+      border-bottom: none;
+      font-size: 95%;
+    }
+
+    .form-control::placeholder {
+      color: #999;
+      font-size: 80%;
+    }
+    .form-control2::placeholder {
+      color: #999;
+      font-size: 80%;
+    }
+
+    .custom-margin-top {
+      margin-top: 35px;
+      margin-left:10px;
+    }
+
+    .gray-bg {
+      background-color: #f8f9fa;
+
+    }
+
+    .cliente-container {
+      background-color: #000;
+      color: #fff;
+      padding: 2px;
+    }
+
+    .modal-dialog {
+      max-width: 1200px; /* Ajuste o valor conforme necessário */
+    }
+
+    .modal-content {
+      height: 500px; /* Ajuste o valor conforme necessário */
+    }
+    .form-wrapper {
+
+      padding: 10px;
+    }
+
+
+
+
+    </style>
+</head>
+<body>
+<section class="mt-2">
+    <div class="container">
+        <div class="modal" id="modal-cadastro-fornecedor" tabindex="-1" role="dialog">
+        <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Cadastro de Fornecedor</h5>
+                    <button id="fechar-modal-fornecedor" class="close" data-dismiss="modal" aria-label="Fechar">
+                      <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <!-- Aqui será exibido o formulário de cadastro do cliente -->
+                </div>
+            </div>
+        </div>
+    </div>
+        <div class="row">
+            <div class="row">
+                  <div class="row">
+                    <div class="col-md-4 mt-5">
+                        <h5><strong>Nova Condição de Pagamento</strong></h5>
+                    </div>
+                  </div>
+                    <form method="post" enctype="multipart/form-data" >
+                        {% csrf_token %}
+
+                        <div class="row mt-4">
+
+
+                            <div class="col-md-5">
+                                <label for="descricao">Descrição:</label>
+                                <input type="text" name="descricao" id="descricao"
+                                       placeholder="Digite os Dias Separados por Virgula Ex. 10, 20, 30"
+                                       class="form-control text-center">
+                            </div>
+
+
+                        </div>
+
+
+
+                        <div class="row mt-2">
+                             <div class="col-md-3">
+                                <button id="submit-button" type="submit" class=" btn btn-dark">Salvar</button>
+                            </div>
+
+                        </div>
+
+                        </form>
+                    </div>
+
+
+
+            </div>
+        <div class="row" style="margin-top:100px;">
+
+            <h3 class="text-center">TABELA DE CONDIÇÕES DE PAGAMENTO</h3>
+            <table class="table table-bordered" style="margin-top:20px;" >
+                <thead>
+                <tr>
+                    <th class="text-center">ID</th>
+                    <th class="text-center">DESCRIÇÃO</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for t in condicoes_pagamento %}
+                <tr>
+                    <td class="text-center">{{ t.id }}</td>
+                    <td class="text-center"> {{ t.descricao }}</td>
+                </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+    </div>
+
+</section>
+
+
+
+
+<!-- Importação do jQuery -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+<!-- Importação do Bootstrap -->
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+<script>
+    document.getElementById('gerar-tabela-btn').addEventListener('click', function() {
+    // Obter o número de parcelas digitado pelo usuário
+    var quantidadeParcelas = parseInt(document.getElementById('quantidade-parcelas').value);
+
+    // Verificar se o valor é um número válido
+    if (isNaN(quantidadeParcelas) || quantidadeParcelas <= 0) {
+        alert('Digite um número válido de parcelas.');
+        return;
+    }
+
+    // Construir a tabela com base no número de parcelas
+    var tabelaHTML = '<table class="table table-bordered">';
+    tabelaHTML += '<thead><tr><th>Número da Parcela</th><th>Valor</th><th>Data de Vencimento</th><th>Anexar Boleto</th></tr></thead>';
+    tabelaHTML += '<tbody>';
+
+    var dataVencimento = new Date(); // Data de vencimento inicial (pode ser ajustada conforme sua necessidade)
+    var valorTotal = parseFloat(document.getElementById('valor').value);
+    var valorParcela = valorTotal / quantidadeParcelas;
+
+    for (var i = 1; i <= quantidadeParcelas; i++) {
+        tabelaHTML += '<tr>';
+        tabelaHTML += '<td>' + i + '</td>';
+         tabelaHTML += '<td><input type="number" name="valor_parcela_' + i + '" class="form-control" value="' + valorParcela.toFixed(2) + '" required></td>';
+        tabelaHTML += '<td><input type="date" name="data_vencimento_' + i + '" class="form-control" value="' + dataVencimento.toISOString().slice(0, 10) + '" required></td>';
+        tabelaHTML += '<td><input type="file" name="anexar_boleto_' + i + '" class="form-control-file"></td>';
+        tabelaHTML += '</tr>';
+
+        // Incrementar a data de vencimento para a próxima parcela (por exemplo, 1 mês após a data atual)
+        dataVencimento.setMonth(dataVencimento.getMonth() + 1);
+    }
+
+    tabelaHTML += '</tbody></table>';
+
+    // Exibir a tabela gerada na div
+    document.getElementById('tabela-parcelas').innerHTML = tabelaHTML;
+});
+</script>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        function calcularVTotal() {
+            var inputs = document.querySelectorAll("input[name='valor_parcela']");
+            var total = 0;
+
+            for (var i = 0; i < inputs.length; i++) {
+                var valorParcela = parseFloat(inputs[i].value) || 0;
+                total += valorParcela;
+            }
+
+            var valorTotalElement = document.getElementById("pedido-total");
+            valorTotalElement.textContent = "Valor Total do Pedido: R$ " + total.toFixed(2);
+        }
+
+        // Chama a função inicialmente para exibir o valor total com os valores existentes
+        calcularVTotal();
+
+        // Adiciona um event listener para calcular o valor total sempre que houver alterações nos inputs
+        var valorParcelaInputs = document.querySelectorAll("input[name='valor_parcela']");
+        for (var i = 0; i < valorParcelaInputs.length; i++) {
+            valorParcelaInputs[i].addEventListener("input", calcularVTotal);
+        }
+          $(document).on('click', '.del-row', function() {
+    $(this).closest('tr').remove();
+
+    calcularVTotal(); // Chamando a função para recalcular o valor total
+});
+
+function calcularVTotal() {
+    var total = 0;
+
+    $('input[name="valor_parcela"]').each(function() {
+        var valorParcela = parseFloat($(this).val()) || 0;
+        total += valorParcela;
+    });
+
+    $('#pedido-total').text('Valor Total do Pedido: R$ ' + total.toFixed(2));
+}
+    });
+
+
+
+
+
+
+
+
+
+</script>
+<script>
+    $(document).ready(function() {
+  $("#novo-fornecedor").click(function() {
+    document.getElementById('modal-cadastro-fornecedor').style.display = 'block';
+    // Fazer uma requisição AJAX para obter o formulário de cadastro do fornecedor
+    $.ajax({
+      url: "/cadastrar_fornecedor/",
+      type: "GET",
+      success: function(response) {
+        $(".modal-body").html(response);
+      },
+      error: function(error) {
+        console.error(error);
+      }
+    });
+  });
+  $("#modal-cadastro-fornecedor").on("click", "#salvar-fornecedor", function (event) {
+    event.preventDefault(); // Impede o envio do formulário tradicional
+
+    var formData = $("#form-cadastro-fornecedor").serialize(); // Obtém os dados do formulário
+
+    $.ajax({
+      type: "POST",
+      url: "/cadastrar_fornecedor/",
+      data: formData,
+      success: function (response) {
+        // Processar a resposta, se necessário
+        // Por exemplo, exibir uma mensagem de sucesso
+
+        // Fechar o modal de cadastro do fornecedor
+        document.getElementById('modal-cadastro-fornecedor').style.display = 'none';
+        window.location.reload();
+
+      },
+      error: function (xhr, errmsg, err) {
+        console.log(xhr.status + ": " + xhr.responseText);
+      }
+    });
+  });
+
+  $("#fechar-modal-fornecedor").click(function() {
+    console.log('fechar');
+    document.getElementById('modal-cadastro-fornecedor').style.display = 'none';
+  });
+});
+</script>
+
+<!-- SCRIPT PARA BUSCAR CLIENTE PELO CPF / CNPJ -->
+<script>
+$(document).ready(function () {
+  $("#buscar-cliente").click(function () {
+    var documentoCliente = $("#documento-cliente").val();
+
+    $.ajax({
+      type: "GET",
+      url: "/get-cliente/",
+      data: {
+        documento: documentoCliente
+      },
+      success: function (response) {
+        if (response.cliente) {
+          // Cliente encontrado, exiba os dados na mesma tela
+          exibirDadosCliente(response.cliente);
+          document.getElementById('mensagem-cliente-nao-encontrado').style.display = 'none';
+        } else {
+          // Cliente não encontrado, exiba o modal para cadastrar um novo cliente
+          document.getElementById('mensagem-cliente-nao-encontrado').style.display = 'block';
+          exibirFormularioCadastroCliente(documentoCliente);
+          $("#modal-cadastro-cliente").modal("show");
+        }
+      },
+      error: function (xhr, errmsg, err) {
+        console.log(xhr.status + ": " + xhr.responseText);
+      }
+    });
+  });
+
+  $("#modal-cadastro-cliente").on("click", "#salvar-cliente", function (event) {
+    event.preventDefault(); // Impede o envio do formulário tradicional
+
+    var formData = $("#form-cadastro-cliente").serialize(); // Obtém os dados do formulário
+
+    $.ajax({
+      type: "POST",
+      url: "/cadastrar_cliente/",
+      data: formData,
+      success: function (response) {
+        // Processar a resposta, se necessário
+        // Por exemplo, exibir uma mensagem de sucesso
+
+        // Fechar o modal de cadastro do cliente
+        $("#modal-cadastro-cliente").modal("hide");
+
+        // Atualizar os dados na tela de pedido com os dados do cliente cadastrado
+        exibirDadosCliente(response.cliente);
+
+        // Remover a mensagem de erro
+        document.getElementById('mensagem-cliente-nao-encontrado').style.display = 'none';
+
+        // Executar automaticamente o botão de busca
+        buscarCliente();
+      },
+      error: function (xhr, errmsg, err) {
+        console.log(xhr.status + ": " + xhr.responseText);
+      }
+    });
+  });
+
+  $("#fechar-modal").click(function () {
+    $("#modal-cadastro-cliente").modal("hide");
+  });
+});
+
+function exibirDadosCliente(cliente) {
+  // Atualizar os campos na tela de pedido com os dados do cliente
+  $("#nome-cliente").text(cliente.nome);
+  $("#email-cliente").text(cliente.email);
+  $("#documento_cliente").text(cliente.documento);
+  $("#telefone1-cliente").text(cliente.telefone1);
+  $("#telefone2-cliente").text(cliente.telefone2);
+  $("#cep-cliente").text(cliente.CEP);
+  $("#estado-cliente").text(cliente.estado);
+  $("#cidade-cliente").text(cliente.cidade);
+  $("#bairro-cliente").text(cliente.bairro);
+  $("#endereco-cliente").text(cliente.endereco);
+  $("#numero-endereco-cliente").text(cliente.numero_endereco);
+  $("#complemento-cliente").text(cliente.complemento);
+
+  $("#dados-cliente").show();
+}
+
+function exibirFormularioCadastroCliente(documento) {
+  fetch('/cadastrar_cliente/')
+    .then(response => response.text())
+    .then(data => {
+      // Exiba o formulário de cadastro de cliente na tela
+      const formulario = $(data);
+      formulario.find('#documento').val(documento); // Define o valor do campo "documento"
+      $("#modal-cadastro-cliente .modal-body").html(formulario);
+    })
+    .catch(error => {
+      console.error('Erro ao carregar o formulário de cadastro de cliente:', error);
+    });
+}
+function buscarCliente() {
+  var documentoCliente = $("#documento-cliente").val();
+
+  $.ajax({
+    type: "GET",
+    url: "/get-cliente/",
+    data: {
+      documento: documentoCliente
+    },
+    success: function (response) {
+      if (response.cliente) {
+        // Cliente encontrado, exiba os dados na mesma tela
+        exibirDadosCliente(response.cliente);
+        document.getElementById('mensagem-cliente-nao-encontrado').style.display = 'none';
+      } else {
+        // Cliente não encontrado, exiba o modal para cadastrar um novo cliente
+        document.getElementById('mensagem-cliente-nao-encontrado').style.display = 'block';
+        exibirFormularioCadastroCliente(documentoCliente);
+        $("#modal-cadastro-cliente").modal("show");
+      }
+    },
+    error: function (xhr, errmsg, err) {
+      console.log(xhr.status + ": " + xhr.responseText);
+    }
+  });
+}
+
+</script>
+
+
+</body>
+
+{% endblock %}

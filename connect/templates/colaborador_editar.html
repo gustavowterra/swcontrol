@@ -1,0 +1,270 @@
+{% extends "./modelo.html" %}
+{% load static %}
+{% block container %}
+<head xmlns="http://www.w3.org/1999/html">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Untitled</title>
+    <link rel="stylesheet" href="{% static 'PEDIDO/fontawesome-all.min.css' %}">
+    <style>
+    /* Estilos personalizados */
+    .modal-dialog {
+      max-width: 900px; /* Ajuste o valor conforme necessário */
+    }
+
+    .modal-content {
+      height: 500px; /* Ajuste o valor conforme necessário */
+    }
+
+    .custom-background1 {
+        background-color: #f2f2f2; /* Cor de fundo cinza claro */
+        padding: 10px; /* Ajuste o valor do preenchimento conforme necessário */
+    }
+
+        .form-control {
+      border: 1px solid black;
+      border-radius: 5px;
+      font-size: 90%;
+       background-color: #f8f9fa;
+    }
+    .form-control2 {
+      border: none;
+      border-radius: 0;
+      border-bottom: none;
+      font-size: 95%;
+    }
+
+    .form-control::placeholder {
+      color: #999;
+      font-size: 80%;
+    }
+    .form-control2::placeholder {
+      color: #999;
+      font-size: 80%;
+    }
+
+    .custom-margin-top {
+      margin-top: 35px;
+      margin-left:10px;
+    }
+
+    .gray-bg {
+      background-color: #f8f9fa;
+
+    }
+
+    .cliente-container {
+      background-color: #000;
+      color: #fff;
+      padding: 2px;
+    }
+
+    .modal-dialog {
+      max-width: 1200px; /* Ajuste o valor conforme necessário */
+    }
+
+    .modal-content {
+      height: 500px; /* Ajuste o valor conforme necessário */
+    }
+    .form-wrapper {
+
+      padding: 10px;
+    }
+
+
+
+
+
+    </style>
+</head>
+<body>
+<section class="mt-2">
+    <div class="container">
+
+
+
+                <div class="row">
+                    <div class="col-md-4 mt-5">
+                        <h5><strong>Edita Colaborador</strong></h5>
+                    </div>
+                </div>
+                <form method="POST" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    <div class="row mt-4">
+                        <div class="col-md-5">
+                            <label for="nome">Nome:</label>
+                            <input type="text" name="nome" id="nome" value="{{colaborador.nome}}"
+                                   class="form-control text-center" required>
+                        </div>
+                        <div class="col-md-3">
+                            <label for="data_nascimento">Data Nascimento:</label>
+                            <input type="date" name="data" id="data_nascimento"
+                                   value="{{colaborador.data_nascimento|date:'Y-m-d'}}"
+                                   class="form-control text-center" required>
+                        </div>
+                        <div class="col-md-3">
+                            <label for="data_admissão">Data Admissão:</label>
+                            <input type="date" name="data_admissao" id="data_admissão"
+                                   value="{{colaborador.data_admissao|date:'Y-m-d'}}"
+                                   class="form-control text-center" required>
+                        </div>
+                    </div>
+                    <div class="row mt-4">
+                        <label for="empresa">Empresa:</label>
+                        <div class="d-flex align-items-center ">
+                            <select class="form-control text-center" name="empresa" id="empresa" required>
+                                <option value="{{ colaborador.empresa.id }}">{{ colaborador.empresa.nome}}</option>
+                                {% for empresa in empresas %}
+                                <option value="{{ empresa.nome }}">{{empresa.nome}}</option>
+                                {% endfor %}
+                            </select>
+
+                        </div>
+                    </div>
+                    <div class="row mt-4">
+                        <div class="col-md-4">
+                            <label for="email">Email:</label>
+                            <input type="email" name="email" id="email" value="{{colaborador.email}}"
+                                   class="form-control text-center" required>
+                        </div>
+                        <div class="col-md-4">
+                            <label for="telefone">Telefone:</label>
+                            <input type="text" name="telefone" id="telefone" value="{{colaborador.telefone}}"
+                                   class="form-control text-center" required>
+                        </div>
+                         <div class="col-md-4">
+                            <label for="telefone">Telefone Comercial:</label>
+                            <input type="text" name="telefone_comercial" id="telefone2" value="{{colaborador.telefone_comercial }}"
+                                   class="form-control text-center">
+                        </div>
+                        <div class="col-md-4">
+                            <label for="cpf">CPF:</label>
+                            <input type="text" name="cpf" id="cpf" value="{{colaborador.cpf}}"
+                                   class="form-control text-center" required>
+                        </div>
+                    </div>
+                    <div class="row mt-4">
+                        <div class="col-md-12">
+                            <label for="endereco">Endereço Completo:</label>
+                            <input type="text" name="endereco" id="endereco" value="{{colaborador.endereco}}"
+                                   class="form-control text-center" required>
+                        </div>
+                    </div>
+                    <div class="row mt-4">
+                        <div class="col-md-4">
+                            <label for="funcao">Função:</label>
+                            <div class="d-flex align-items-center ">
+                                <select class="form-control text-center" name="funcao" id="funcao">
+                                    <option value="{{ colaborador.funcao }}">{{ colaborador.funcao }}</option>
+                                    {% for funcao in funcoes %}
+                                    <option value="{{ funcao.0 }}">{{ funcao.1 }}</option>
+                                    {% endfor %}
+                                </select>
+
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <label for="status">Status:</label>
+                            <div class="d-flex align-items-center">
+                                <select class="form-control text-center" name="status" id="status">
+                                    <option value="{{ colaborador.status.id }}">{{ colaborador.status.descricao }}
+                                    </option>
+                                    {% for s in status %}
+                                    <option value="{{ s.id }}">{{ s.descricao }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+                        {% if colaborador.status.descricao == 'ATIVO'%}
+                        <div class="data-desligamento" style="display:none;">
+                            {% else %}
+                            <div class="data-desligamento" style="display:block;">
+                            {% endif %}
+                            <div class="row mt-4">
+                            <div class="col-md-3">
+                                <label for="data_desligamento">Data Desligamento:</label>
+                                <input type="date" name="data_desligamento" id="data_desligamento"
+                                       value="{{colaborador.data_desligamento|date:'Y-m-d'}}"
+                                       class="form-control text-center" value="{{colaborador.data_desligamento}}">
+                            </div>
+                             <div class="col-md-3">
+                            <label for="motivo_desligamento">Motivo Desligamento:</label>
+                            <div class="d-flex align-items-center">
+                                <select class="form-control text-center" name="motivo_desligamento" id="motivo_desligamento">
+                                    <option value="{{ colaborador.motivo_desligamento.id }}">{{ colaborador.motivo_desligamento.descricao }}
+                                    </option>
+                                    {% for motivo in motivos %}
+                                    <option value="{{ motivo.id }}">{{ motivo.descricao }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+
+
+                        </div>
+                            </div>
+
+
+                    </div>
+
+
+            <div class="row mt-2">
+                <div class="col-md-3">
+                    <button id="submit-button" type="submit" class="btn btn-dark">Salvar</button>
+                </div>
+
+            </div>
+
+            </form>
+        </div>
+
+
+
+
+</section>
+
+
+<!-- Importação do jQuery -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+<!-- Importação do Bootstrap -->
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const statusField = document.getElementById('status');
+    const dataDesligamentoDiv = document.querySelector('.data-desligamento');
+
+    // Função para verificar o valor do status
+    function toggleDataDesligamento() {
+        // Verifica se o status selecionado é "INATIVO"
+        const selectedStatus = statusField.options[statusField.selectedIndex].text.trim();
+        if (selectedStatus === 'INATIVO') {
+            // Exibe o campo Data Desligamento
+            dataDesligamentoDiv.style.display = 'block';
+        } else {
+            // Oculta o campo Data Desligamento
+            dataDesligamentoDiv.style.display = 'none';
+        }
+    }
+
+    // Executa a verificação inicial ao carregar a página
+    toggleDataDesligamento();
+
+    // Adiciona o evento de mudança no select de status
+    statusField.addEventListener('change', toggleDataDesligamento);
+});
+</script>
+
+
+
+
+
+
+
+
+
+
+</body>
+
+{% endblock %}

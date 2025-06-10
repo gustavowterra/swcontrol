@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Relatório</title>
+    <style>
+        @page {
+            size: A4 portrait;
+            margin: 20mm;
+        }
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            border-bottom: 1px solid #ddd;
+            padding-bottom: 10px;
+        }
+        .header img {
+            width: 100px;
+            height: auto;
+        }
+        .header .title {
+            text-align: center;
+            flex: 1;
+            font-size: 18px;
+            font-weight: bold;
+        }
+        .header .date {
+            font-size: 10px;
+            text-align: right;
+        }
+        .table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        .table th, .table td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+            font-size: 12px;
+        }
+        .table th {
+            background-color: #f2f2f2;
+            font-weight: bold;
+        }
+        .table tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <img src="logo.png" alt="Logomarca">
+        <div class="title">Relatorio de Logs</div>
+        <div class="date">Data de Geração: {{ data_geracao }}</div>
+    </div>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Data</th>
+                <th>Colaborador Nome</th>
+                <th>Execução</th>
+
+            </tr>
+        </thead>
+        <tbody>
+        {% for log in logs %}
+            <tr>
+
+                <td>{{ log.data|date:'d/m/Y H:i' }}</td>
+                <td>{{log.colaborador.nome}}</td>
+                <td>{{log.operacao}}</td>
+
+            </tr>
+         {% endfor %}
+        </tbody>
+    </table>
+</body>
+</html>

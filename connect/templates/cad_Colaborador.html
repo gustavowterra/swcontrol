@@ -1,0 +1,126 @@
+{% extends "./modelo.html" %}
+{% load static %}
+
+{% block container %}
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
+    <title>formcliente</title>
+    <link rel="stylesheet" href="{% static 'colaborador/bootstrap.min.css' %}">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Advent+Pro&amp;display=swap">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Anek+Tamil&amp;display=swap">
+    <link rel="stylesheet" href="{% static 'colaborador/styles.min.css' %}">
+</head>
+<body style="padding-right: 0px;">
+<section class="py-4 py-xl-5"><h1 style="margin-right: 10px;font-family: 'Anek Tamil', sans-serif;">&nbsp;<img
+        src="{% static 'colaborador/OIP.jpg' %}" width="71" height="64">Cadastro de Colaborador</h1></section>
+<div class="container">
+    <form method="POST" action="/consulta_colaboradores/">
+        {% csrf_token %}
+        <div class="row">
+            <div class="col-md-4">
+                <div class="mb-3"><small>&nbsp;</small>
+                    <div class="input-group"><input class="form-control InputBorder" type="text" placeholder="Nome"
+                                                    style="/*border: 0;*//*border-width: 0 0 1px 0;*//*border-color: black;*//*border-radius: 0;*/margin-top: 8px;"
+                                                    name="nome"></div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="mb-3"><small>&nbsp;</small><label class="form-label"
+                                                              style="font-family: 'Anek Tamil', sans-serif;">Data de
+                    Nascimento</label>
+                    <div class="input-group"><input class="form-control InputBorder" id="data"
+                                                    placeholder="Data de Nascimento"
+                                                    type="date"
+                                                    style="/*border: 0;*//*border-width: 0 0 1px 0;*//*border-color: black;*//*border-radius: 0;*/font-family: 'Anek Tamil', sans-serif;"
+                                                    name="data"></div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="mb-3"><small>&nbsp;</small><label class="form-label"
+                                                              style="font-family: 'Anek Tamil', sans-serif;">Data de
+                    Admissão</label>
+                    <div class="input-group"><input class="form-control InputBorder" id="data_admissao"
+                                                    placeholder="Data de Nascimento"
+                                                    type="date"
+                                                    style="/*border: 0;*//*border-width: 0 0 1px 0;*//*border-color: black;*//*border-radius: 0;*/font-family: 'Anek Tamil', sans-serif;"
+                                                    name="data_admissao"></div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="mb-3"><small>&nbsp;</small>
+                    <div class="input-group"><input class="form-control InputBorder" type="text" placeholder="CPF"
+                                                    style="/*border: 0;*//*border-width: 0 0 1px 0;*//*border-color: black;*//*border-radius: 0;*/margin-top: 8px;"
+                                                    name="cpf"></div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="mb-3"><small>&nbsp;</small>
+                    <div class="input-group"><input class="form-control InputBorder" type="text" id="email"
+                                                    placeholder="EMAIL"
+                                                    style="/*border: 0;*//*border-width: 0 0 1px 0;*//*border-color: black;*//*border-radius: 0;*/margin-top: 8px;"
+                                                    name="email"></div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-3">
+                <div class="mb-3"><small>&nbsp;</small>
+                    <div class="input-group"><input class="form-control InputBorder" type="text" placeholder="Telefone"
+                                                    style="/*border: 0;*//*border-width: 0 0 1px 0;*//*border-color: black;*//*border-radius: 0;*/margin-top: 7px;"
+                                                    name="telefone"></div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="mb-3"><small>&nbsp;</small>
+                    <div class="input-group"><input class="form-control InputBorder" type="text"
+                                                    placeholder="Salario Base"
+                                                    style="/*border: 0;*//*border-width: 0 0 1px 0;*//*border-color: black;*//*border-radius: 0;*/margin-top: 7px;"
+                                                    name="salario"></div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="select" style="margin-top: 20px;"><select
+                        style="margin-top: -10px;border-top-style: hidden;border-right-style: hidden;border-bottom-color: var(--bs-black);border-left-style: hidden;padding-top: -10px;"
+                        name="funcao">
+                    <option disabled="true" selected>Função</option>
+                    {% for funcao in funcoes %}
+                    <option value="{{ funcao.id }}">{{ funcao.descricao }}</option>
+                    {% endfor %}
+
+                </select></div>
+            </div>
+            <div class="row">
+                <div class="col-md-3 col-xl-9">
+                    <div class="mb-3"><small>&nbsp;</small>
+                        <div class="input-group"><input class="form-control InputBorder" type="text"
+                                                        placeholder="Endereço"
+                                                        style="/*border: 0;*//*border-width: 0 0 1px 0;*//*border-color: black;*//*border-radius: 0;*/"
+                                                        name="endereco"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col">
+                    <button class="btn btn-primary" type="SALVAR"
+                            style="color: var(--bs-btn-color);border-color: var(--bs-btn-color);background: var(--bs-gray-dark);margin-top: 20px;margin-left: 0px;">
+                        SALVAR
+                    </button>
+                </div>
+            </div>
+        </div>
+        <script src="{% static 'colaborador/bootstrap.min.js' %}"></script>
+</body>
+</html>
+{% endblock %}
+
+<script>
+document.getElementById('btnSalvar').addEventListener('click', function() {
+
+    alert('Salvo com sucesso!');
+    window.location.href = '/consulta-colaborador/';
+
+});
+
+</script>

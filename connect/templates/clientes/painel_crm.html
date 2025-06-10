@@ -1,0 +1,1228 @@
+{% load static %}
+<head>
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link rel="apple-touch-icon" sizes="76x76" href="{% static 'dashboard/assets/img/apple-icon.png' %}">
+    <link rel="icon" type="image/png" href="{% static 'dashboard/assets/img/favicon.png' %}">
+    <title>
+        swconnect - tem & guerma
+    </title>
+    <!--     Fonts and icons     -->
+    <link rel="stylesheet" type="text/css"
+          href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700,900|Roboto+Slab:400,700"/>
+    <!-- Nucleo Icons -->
+    <link href="{% static 'dashboard/assets/css/nucleo-icons.css' %}" rel="stylesheet"/>
+    <link href="{% static 'dashboard/assets/css/nucleo-svg.css' %}" rel="stylesheet"/>
+    <!-- Font Awesome Icons -->
+    <script src="https://kit.fontawesome.com/42d5adcbca.js" crossorigin="anonymous"></script>
+    <!-- Material Icons -->
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
+    <!-- CSS Files -->
+    <link id="pagestyle" href="{% static 'dashboard/assets/css/material-dashboard.css?v=3.1.0' %}" rel="stylesheet"/>
+
+
+    <style>
+      .margem-direita {
+        margin-right: 10px;
+      }
+    </style>
+</head>
+
+<body class="g-sidenav-show  bg-gray-200">
+<aside class="sidenav navbar navbar-vertical navbar-expand-xs border-0 border-radius-xl my-3 fixed-start ms-3   bg-gradient-dark"
+       id="sidenav-main">
+    <div class="sidenav-header">
+        <i class="fas fa-times p-3 cursor-pointer text-white opacity-5 position-absolute end-0 top-0 d-none d-xl-none"
+           aria-hidden="true" id="iconSidenav"></i>
+        <a class="navbar-brand m-0" href=" /#/"
+           target="_blank">
+            <img src="{% static 'dashboard/assets/img/logo-ct.png' %}" class="navbar-brand-img h-100" alt="main_logo">
+            <span class="ms-1 font-weight-bold text-white">Dashboard Gerente</span>
+        </a>
+    </div>
+    <hr class="horizontal light mt-0 mb-2">
+    <div class="collapse navbar-collapse  w-auto " id="sidenav-collapse-main">
+        <ul class="navbar-nav">
+            <li class="nav-item">
+                <a class="nav-link text-white " href="/dashboard/">
+                    <div class="text-white text-center me-2 d-flex align-items-center justify-content-center">
+                        <i class="material-icons opacity-10">dashboard</i>
+                    </div>
+                    <span class="nav-link-text ms-1">Dashboard</span>
+                </a>
+            </li>
+            <li class="nav-item mt-3">
+                <h6 class="ps-4 ms-2 text-uppercase text-xs text-white font-weight-bolder opacity-8">Financeiro</h6>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link text-white " href="/comissoes/">
+                    <div class="text-white text-center me-2 d-flex align-items-center justify-content-center">
+                        <i class="material-icons opacity-10">table_view</i>
+                    </div>
+                    <span class="nav-link-text ms-1">Comissões</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link text-white " href="/contas_receber/">
+                    <div class="text-white text-center me-2 d-flex align-items-center justify-content-center">
+                        <i class="material-icons opacity-10">receipt_long</i>
+                    </div>
+                    <span class="nav-link-text ms-1">Contas a Receber</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link text-white " href="/contas_pagar/">
+                    <div class="text-white text-center me-2 d-flex align-items-center justify-content-center">
+                        <i class="material-icons opacity-10">receipt_long</i>
+                    </div>
+                    <span class="nav-link-text ms-1">Contas a Pagar</span>
+                </a>
+            </li>
+                        <li class="nav-item mt-3">
+                <h6 class="ps-4 ms-2 text-uppercase text-xs text-white font-weight-bolder opacity-8">VENDAS</h6>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link text-white " href="/painel_orcamento/">
+                    <div class="text-white text-center me-2 d-flex align-items-center justify-content-center">
+                        <i class="material-icons opacity-10">view_in_ar</i>
+                    </div>
+                    <span class="nav-link-text ms-1">Orçamentos</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link text-white " href="/meuspedidos/">
+                    <div class="text-white text-center me-2 d-flex align-items-center justify-content-center">
+                        <i class="material-icons opacity-10">view_in_ar</i>
+                    </div>
+                    <span class="nav-link-text ms-1">Pedidos</span>
+                </a>
+            </li>
+                        <li class="nav-item mt-3">
+                <h6 class="ps-4 ms-2 text-uppercase text-xs text-white font-weight-bolder opacity-8">Produção</h6>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link text-white " href="/producao/">
+                    <div class="text-white text-center me-2 d-flex align-items-center justify-content-center">
+                        <i class="material-icons opacity-10">view_in_ar</i>
+                    </div>
+                    <span class="nav-link-text ms-1">Produção</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link text-white " href="/expedicao/">
+                    <div class="text-white text-center me-2 d-flex align-items-center justify-content-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-boxes" viewBox="0 0 16 16">
+                          <path d="M7.752.066a.5.5 0 0 1 .496 0l3.75 2.143a.5.5 0 0 1 .252.434v3.995l3.498 2A.5.5 0 0 1 16 9.07v4.286a.5.5 0 0 1-.252.434l-3.75 2.143a.5.5 0 0 1-.496 0l-3.502-2-3.502 2.001a.5.5 0 0 1-.496 0l-3.75-2.143A.5.5 0 0 1 0 13.357V9.071a.5.5 0 0 1 .252-.434L3.75 6.638V2.643a.5.5 0 0 1 .252-.434L7.752.066ZM4.25 7.504 1.508 9.071l2.742 1.567 2.742-1.567L4.25 7.504ZM7.5 9.933l-2.75 1.571v3.134l2.75-1.571V9.933Zm1 3.134 2.75 1.571v-3.134L8.5 9.933v3.134Zm.508-3.996 2.742 1.567 2.742-1.567-2.742-1.567-2.742 1.567Zm2.242-2.433V3.504L8.5 5.076V8.21l2.75-1.572ZM7.5 8.21V5.076L4.75 3.504v3.134L7.5 8.21ZM5.258 2.643 8 4.21l2.742-1.567L8 1.076 5.258 2.643ZM15 9.933l-2.75 1.571v3.134L15 13.067V9.933ZM3.75 14.638v-3.134L1 9.933v3.134l2.75 1.571Z"/>
+                        </svg>
+                    </div>
+                    <span class="nav-link-text ms-1">Expedição</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link text-white " href="/painel_guias/">
+                    <div class="text-white text-center me-2 d-flex align-items-center justify-content-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                             class="bi bi-tools" viewBox="0 0 16 16">
+                            <path d="M1 0 0 1l2.2 3.081a1 1 0 0 0 .815.419h.07a1 1 0 0 1 .708.293l2.675 2.675-2.617 2.654A3.003 3.003 0 0 0 0 13a3 3 0 1 0 5.878-.851l2.654-2.617.968.968-.305.914a1 1 0 0 0 .242 1.023l3.27 3.27a.997.997 0 0 0 1.414 0l1.586-1.586a.997.997 0 0 0 0-1.414l-3.27-3.27a1 1 0 0 0-1.023-.242L10.5 9.5l-.96-.96 2.68-2.643A3.005 3.005 0 0 0 16 3q0-.405-.102-.777l-2.14 2.141L12 4l-.364-1.757L13.777.102a3 3 0 0 0-3.675 3.68L7.462 6.46 4.793 3.793a1 1 0 0 1-.293-.707v-.071a1 1 0 0 0-.419-.814zm9.646 10.646a.5.5 0 0 1 .708 0l2.914 2.915a.5.5 0 0 1-.707.707l-2.915-2.914a.5.5 0 0 1 0-.708M3 11l.471.242.529.026.287.445.445.287.026.529L5 13l-.242.471-.026.529-.445.287-.287.445-.529.026L3 15l-.471-.242L2 14.732l-.287-.445L1.268 14l-.026-.529L1 13l.242-.471.026-.529.445-.287.287-.445.529-.026z"/>
+                        </svg>
+                    </div>
+                    <span class="nav-link-text ms-1">Guia de Reparo</span>
+                </a>
+            </li>
+            <li class="nav-item mt-3">
+                <h6 class="ps-4 ms-2 text-uppercase text-xs text-white font-weight-bolder opacity-8">Clientes</h6>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link text-white " href="/consulta_cliente/">
+                    <div class="text-white text-center me-2 d-flex align-items-center justify-content-center">
+                        <i class="material-icons opacity-10">person</i>
+                    </div>
+                    <span class="nav-link-text ms-1">Clientes</span>
+                </a>
+            </li>
+                        <li class="nav-item">
+                <a class="nav-link text-white active bg-gradient-primary " href="/painel_crm/">
+                    <div class="text-white text-center me-2 d-flex align-items-center justify-content-center">
+                        <i class="material-icons opacity-10">assignment</i>
+                    </div>
+                    <span class="nav-link-text ms-1">Relatorio Clientes</span>
+                </a>
+            </li>
+                        <li class="nav-item mt-3">
+                <h6 class="ps-4 ms-2 text-uppercase text-xs text-white font-weight-bolder opacity-8">Equipe</h6>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link text-white " href="/consulta_colaboradores/">
+                    <div class="text-white text-center me-2 d-flex align-items-center justify-content-center">
+                        <i class="material-icons opacity-10">person</i>
+                    </div>
+                    <span class="nav-link-text ms-1">Colaboradores</span>
+                </a>
+            </li>
+            <li class="nav-item mt-3">
+                <h6 class="ps-4 ms-2 text-uppercase text-xs text-white font-weight-bolder opacity-8">Integrações</h6>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link text-white " href="/painel-notas/Tem">
+                    <div class="text-white text-center me-2 d-flex align-items-center justify-content-center">
+                        <i class="material-icons opacity-10">payments</i>
+                    </div>
+                    <span class="nav-link-text ms-1">Nota Fiscal | Tem</span>
+                </a>
+            </li>
+             <li class="nav-item">
+                <a class="nav-link text-white " href="/painel-notas/GRF">
+                    <div class="text-white text-center me-2 d-flex align-items-center justify-content-center">
+                        <i class="material-icons opacity-10">payments</i>
+                    </div>
+                    <span class="nav-link-text ms-1">Nota Fiscal | GRF</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link text-white " href="/painel-boletos/TEM">
+                    <div class="text-white text-center me-2 d-flex align-items-center justify-content-center">
+                        <i class="material-icons opacity-10">assignment</i>
+                    </div>
+                    <span class="nav-link-text ms-1">Boletos TEM TAPETES</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link text-white " href="/painel-boletos/GRF">
+                    <div class="text-white text-center me-2 d-flex align-items-center justify-content-center">
+                        <i class="material-icons opacity-10">assignment</i>
+                    </div>
+                    <span class="nav-link-text ms-1">Boletos GRF</span>
+                </a>
+            </li>
+
+        </ul>
+    </div>
+</aside>
+<main class="main-content position-relative max-height-vh-100 h-100 border-radius-lg ">
+    <!-- Navbar -->
+    <nav class="navbar navbar-main navbar-expand-lg px-0 mx-4 shadow-none border-radius-xl" id="navbarBlur"
+         data-scroll="true">
+        <div class="container-fluid py-1 px-3">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb bg-transparent mb-0 pb-0 pt-1 px-0 me-sm-6 me-5">
+                    <li class="breadcrumb-item text-sm"><a class="opacity-5 text-dark" href="javascript:;">Dashboard</a>
+                    </li>
+                    <li class="breadcrumb-item text-sm text-dark active" aria-current="page">Painel CRM Base</li>
+                </ol>
+                <h6 class="font-weight-bolder mb-0">Crm Base</h6>
+            </nav>
+            <div class="collapse navbar-collapse mt-sm-0 mt-2 me-md-0 me-sm-4" id="navbar">
+                <div class="ms-md-auto pe-md-3 d-flex align-items-center">
+                    <div class="input-group input-group-outline">
+
+                    </div>
+                </div>
+                <ul class="navbar-nav  justify-content-end">
+                    <li class="nav-item d-flex align-items-center">
+                        <a class="btn btn-outline-dark btn-sm mb-0 me-3" target="/pedido/"
+                           href="/pedido/">Novo Pedido</a>
+                    </li>
+                    <li class="nav-item d-flex align-items-center">
+                        <a class="btn btn-outline-dark btn-sm mb-0 me-3" target="/pedido/"
+                           href="/cliente/">Novo Cliente</a>
+                    </li>
+
+
+                    <li class="nav-item d-flex align-items-center">
+                        <a href=/logout/" class="nav-link text-body font-weight-bold px-0">
+                            <i class="fa fa-user me-sm-1"></i>
+                            <span class="d-sm-inline d-none">{{ nome }}</span>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+    <!-- End Navbar -->
+
+    <div class="modal" id="comissaoModal" tabindex="-1" role="dialog" aria-labelledby="comissaoModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Ajuste de Comissao</h5>
+                    <button type="button" class="close" data-dismiss="modal" id="fechar-modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <!-- Conteúdo do formulário de Ajuste de Comissao -->
+                    <form method="post" enctype="multipart/form-data" id="comissao-form">
+                        {% csrf_token %}
+                        <div class="form-group">
+                            <label for="pedidoInput">Número do Pedido</label>
+                            <input type="text" class="form-inline" id="pedidoInput" name="numero_pedido" readonly>
+                        </div>
+                        <div class="form-group">
+                            <label for="vendedorInput">Tipo Origem</label>
+                            <input type="text" class="form-inline" id="vendedorInput" name="vendedor" readonly>
+                        </div>
+                        <div class="form-group">
+                            <label for="comissaoInput">Digite a Nova Comissao</label>
+                            <input type="text" class="form-inline" id="comissaoInput" name="comissao">
+                        </div>
+                         <div class="form-group">
+                            <label for="justificativaInput">Justificativa Comissão Zero</label>
+                            <input type="text" class="form-inline" id="justificativaInput" name="justificativa">
+                        </div>
+                        <button type="submit" id="atualizar-pedido-btn" class="btn btn-dark">Salvar Arquivo</button>
+                    </form>
+                    <div id="mensagem-sucesso" class="d-none text-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="icon" viewBox="0 0 16 16" fill="#155724">
+                            <path d="M2 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2H2zm10.03 4.97a.75.75 0 0 1 .011 1.05l-3.992 4.99a.75.75 0 0 1-1.08.02L4.324 8.384a.75.75 0 1 1 1.06-1.06l2.094 2.093 3.473-4.425a.75.75 0 0 1 1.08-.022z"/>
+                        </svg>
+                        <span>Pedido Atualizado</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal" id="relatoriomodal" tabindex="-1" role="dialog" aria-labelledby="relatoriomodal" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Relatorio Comissao Por Periodo</h5>
+                    <button type="button" class="close" data-dismiss="modal" id="fechar-modal-comissao" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <!-- Conteúdo do formulário de Ajuste de Comissao -->
+                    <form method="post" enctype="multipart/form-data" id="relatorio-form">
+                        {% csrf_token %}
+                        <div class="form-group">
+                            <label for="data-inicial">Data Inicial</label>
+                            <input type="date" class="form-inline" id="data-inicial" name="data_inicial">
+                        </div>
+                        <div class="form-group">
+                            <label for="data_final">Vendedor</label>
+                            <input type="date" class="form-inline" id="data_final" name="data_final">
+                        </div>
+
+                        <button type="submit" id="download-exel-btn" class="btn btn-dark">Download Arquivo</button>
+                    </form>
+                    <div id="mensagem-sucesso-report" class="d-none text-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="icon" viewBox="0 0 16 16" fill="#155724">
+                            <path d="M2 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2H2zm10.03 4.97a.75.75 0 0 1 .011 1.05l-3.992 4.99a.75.75 0 0 1-1.08.02L4.324 8.384a.75.75 0 1 1 1.06-1.06l2.094 2.093 3.473-4.425a.75.75 0 0 1 1.08-.022z"/>
+                        </svg>
+                        <span>Download Realizado</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+    <div class="container-fluid py-4">
+
+
+        <div class="row mb-4">
+            <div class="col-lg-4 col-md-6 mb-md-0 mb-4">
+                <div class="card">
+                    <div class="card-header pb-0">
+                        <div class="row">
+                            <div class="col-lg-6 col-7">
+                                <h6>Relatorio Clientes Origem Total - GRF</h6>
+
+                            </div>
+                            <div class="col-lg-6 col-5 my-auto text-end">
+                                <div class="dropdown float-lg-end pe-4">
+                                    <a class="cursor-pointer" id="dropdownTable" data-bs-toggle="dropdown"
+                                       aria-expanded="false">
+                                        <i class="fa fa-ellipsis-v text-secondary"></i>
+                                    </a>
+                                    <ul class="dropdown-menu px-2 py-3 ms-sm-n4 ms-n5" aria-labelledby="dropdownTable">
+                                        <li><a class="dropdown-item border-radius-md" href="javascript:;">Action</a>
+                                        </li>
+                                        <li><a class="dropdown-item border-radius-md" href="javascript:;">Another
+                                            action</a></li>
+                                        <li><a class="dropdown-item border-radius-md" href="javascript:;">Something else
+                                            here</a></li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-body px-0 pb-2">
+                        <div class="table-responsive">
+                            <table class="table align-items-center mb-0">
+                                <thead>
+                                <tr>
+                                    <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">
+                                       Tipo Origem
+                                    </th>
+                                    <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">
+                                       Total Clientes
+                                    </th>
+                                    <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">
+                                       Total Vendido
+                                    </th>
+
+                                </tr>
+                                </thead>
+                                <tbody>
+                                {% for item in clientes_por_tipo %}
+                                <tr>
+                                    <td>
+                                        <div class="d-flex px-2 py-1">
+
+                                            <div class="d-flex flex-column justify-content-center">
+                                                <h6 class="text-xxs font-weight-bold numero-pedido">{{ item.cliente_pedido__tipo_entrada__descricao|default:"Sem Registro" }}</h6>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="d-flex px-2 py-1">
+
+                                            <div class="d-flex flex-column justify-content-center">
+                                                <h6 class="text-xxs font-weight-bold comissao-vendedor">{{ item.total_clientes }}</h6>
+
+                                            </div>
+                                        </div>
+                                    </td>
+                                     <td>
+                                        <div class="d-flex px-2 py-1">
+
+                                            <div class="d-flex flex-column justify-content-center">
+                                                <h6 class="text-xxs font-weight-bold valor-total">{{ item.valorTotal }}</h6>
+
+                                            </div>
+                                        </div>
+                                    </td>
+
+
+
+                                </tr>
+                                {% endfor %}
+
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-4 col-md-6 mb-md-0 mb-4">
+                <div class="card">
+                    <div class="card-header pb-0">
+                        <div class="row">
+                            <div class="col-lg-6 col-7">
+                                <h6>Relatorio Clientes Mês Atual- GRF</h6>
+
+                            </div>
+                            <div class="col-lg-6 col-5 my-auto text-end">
+                                <div class="dropdown float-lg-end pe-4">
+                                    <a class="cursor-pointer" id="dropdownTable" data-bs-toggle="dropdown"
+                                       aria-expanded="false">
+                                        <i class="fa fa-ellipsis-v text-secondary"></i>
+                                    </a>
+                                    <ul class="dropdown-menu px-2 py-3 ms-sm-n4 ms-n5" aria-labelledby="dropdownTable">
+                                        <li><a class="dropdown-item border-radius-md" href="javascript:;">Action</a>
+                                        </li>
+                                        <li><a class="dropdown-item border-radius-md" href="javascript:;">Another
+                                            action</a></li>
+                                        <li><a class="dropdown-item border-radius-md" href="javascript:;">Something else
+                                            here</a></li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-body px-0 pb-2">
+                        <div class="table-responsive">
+                            <table class="table align-items-center mb-0">
+                                <thead>
+                                <tr>
+                                    <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">
+                                       Tipo Origem
+                                    </th>
+                                    <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">
+                                       Total Clientes
+                                    </th>
+                                     <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">
+                                       Total Venda
+                                    </th>
+
+                                </tr>
+                                </thead>
+                                <tbody>
+                                {% for item in clientes_mes_atual %}
+                                <tr>
+                                    <td>
+                                        <div class="d-flex px-2 py-1">
+
+                                            <div class="d-flex flex-column justify-content-center">
+                                                <h6 class="text-xxs font-weight-bold numero-pedido">{{ item.cliente_pedido__tipo_entrada__descricao|default:"Sem Registro" }}</h6>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="d-flex px-2 py-1">
+
+                                            <div class="d-flex flex-column justify-content-center">
+                                                <h6 class="text-xxs font-weight-bold comissao-vendedor">{{ item.total_clientes }}</h6>
+
+                                            </div>
+                                        </div>
+                                    </td>
+                                     <td>
+                                        <div class="d-flex px-2 py-1">
+
+                                            <div class="d-flex flex-column justify-content-center">
+                                                <h6 class="text-xxs font-weight-bold valor-total">{{ item.valorTotal }}</h6>
+
+                                            </div>
+                                        </div>
+                                    </td>
+
+
+
+                                </tr>
+                                {% endfor %}
+
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-4 col-md-6 mb-md-0 mb-4">
+                <div class="card">
+                    <div class="card-header pb-0">
+                        <div class="row">
+                            <div class="col-lg-6 col-7">
+                                <h6>Relatorio Clientes Mês Anterior - GRF</h6>
+
+                            </div>
+                            <div class="col-lg-6 col-5 my-auto text-end">
+                                <div class="dropdown float-lg-end pe-4">
+                                    <a class="cursor-pointer" id="dropdownTable" data-bs-toggle="dropdown"
+                                       aria-expanded="false">
+                                        <i class="fa fa-ellipsis-v text-secondary"></i>
+                                    </a>
+                                    <ul class="dropdown-menu px-2 py-3 ms-sm-n4 ms-n5" aria-labelledby="dropdownTable">
+                                        <li><a class="dropdown-item border-radius-md" href="javascript:;">Action</a>
+                                        </li>
+                                        <li><a class="dropdown-item border-radius-md" href="javascript:;">Another
+                                            action</a></li>
+                                        <li><a class="dropdown-item border-radius-md" href="javascript:;">Something else
+                                            here</a></li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-body px-0 pb-2">
+                        <div class="table-responsive">
+                            <table class="table align-items-center mb-0">
+                                <thead>
+                                <tr>
+                                    <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">
+                                       Tipo Origem
+                                    </th>
+                                    <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">
+                                       Total Clientes
+                                    </th>
+                                     <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">
+                                       Total Vendido
+                                    </th>
+
+                                </tr>
+                                </thead>
+                                <tbody>
+                                {% for item in clientes_mes_anterior %}
+                                <tr>
+                                    <td>
+                                        <div class="d-flex px-2 py-1">
+
+                                            <div class="d-flex flex-column justify-content-center">
+                                                <h6 class="text-xxs font-weight-bold numero-pedido">{{ item.cliente_pedido__tipo_entrada__descricao|default:"Sem Registro" }}</h6>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="d-flex px-2 py-1">
+
+                                            <div class="d-flex flex-column justify-content-center">
+                                                <h6 class="text-xxs font-weight-bold comissao-vendedor">{{ item.total_clientes }}</h6>
+
+                                            </div>
+                                        </div>
+                                    </td>
+                                     <td>
+                                        <div class="d-flex px-2 py-1">
+
+                                            <div class="d-flex flex-column justify-content-center">
+                                                <h6 class="text-xxs font-weight-bold valor-total">{{ item.valorTotal }}</h6>
+
+                                            </div>
+                                        </div>
+                                    </td>
+
+
+
+                                </tr>
+                                {% endfor %}
+
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+                <div class="row mb-4">
+            <div class="col-lg-4 col-md-6 mb-md-0 mb-4">
+                <div class="card">
+                    <div class="card-header pb-0">
+                        <div class="row">
+                            <div class="col-lg-6 col-7">
+                                <h6>Relatorio Clientes Origem Total - TEM</h6>
+
+                            </div>
+                            <div class="col-lg-6 col-5 my-auto text-end">
+                                <div class="dropdown float-lg-end pe-4">
+                                    <a class="cursor-pointer" id="dropdownTable" data-bs-toggle="dropdown"
+                                       aria-expanded="false">
+                                        <i class="fa fa-ellipsis-v text-secondary"></i>
+                                    </a>
+                                    <ul class="dropdown-menu px-2 py-3 ms-sm-n4 ms-n5" aria-labelledby="dropdownTable">
+                                        <li><a class="dropdown-item border-radius-md" href="javascript:;">Action</a>
+                                        </li>
+                                        <li><a class="dropdown-item border-radius-md" href="javascript:;">Another
+                                            action</a></li>
+                                        <li><a class="dropdown-item border-radius-md" href="javascript:;">Something else
+                                            here</a></li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-body px-0 pb-2">
+                        <div class="table-responsive">
+                            <table class="table align-items-center mb-0">
+                                <thead>
+                                <tr>
+                                    <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">
+                                       Tipo Origem
+                                    </th>
+                                    <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">
+                                       Total Clientes
+                                    </th>
+                                    <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">
+                                       Total Vendido
+                                    </th>
+
+                                </tr>
+                                </thead>
+                                <tbody>
+                                {% for item in clientes_por_tipo_tem %}
+                                <tr>
+                                    <td>
+                                        <div class="d-flex px-2 py-1">
+
+                                            <div class="d-flex flex-column justify-content-center">
+                                                <h6 class="text-xxs font-weight-bold numero-pedido">{{ item.cliente_pedido__tipo_entrada__descricao|default:"Sem Registro" }}</h6>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="d-flex px-2 py-1">
+
+                                            <div class="d-flex flex-column justify-content-center">
+                                                <h6 class="text-xxs font-weight-bold comissao-vendedor">{{ item.total_clientes }}</h6>
+
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="d-flex px-2 py-1">
+
+                                            <div class="d-flex flex-column justify-content-center">
+                                                <h6 class="text-xxs font-weight-bold valor-total">{{ item.valorTotal }}</h6>
+
+                                            </div>
+                                        </div>
+                                    </td>
+
+
+
+                                </tr>
+                                {% endfor %}
+
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-4 col-md-6 mb-md-0 mb-4">
+                <div class="card">
+                    <div class="card-header pb-0">
+                        <div class="row">
+                            <div class="col-lg-6 col-7">
+                                <h6>Relatorio Clientes Mês Atual - TEM</h6>
+
+                            </div>
+                            <div class="col-lg-6 col-5 my-auto text-end">
+                                <div class="dropdown float-lg-end pe-4">
+                                    <a class="cursor-pointer" id="dropdownTable" data-bs-toggle="dropdown"
+                                       aria-expanded="false">
+                                        <i class="fa fa-ellipsis-v text-secondary"></i>
+                                    </a>
+                                    <ul class="dropdown-menu px-2 py-3 ms-sm-n4 ms-n5" aria-labelledby="dropdownTable">
+                                        <li><a class="dropdown-item border-radius-md" href="javascript:;">Action</a>
+                                        </li>
+                                        <li><a class="dropdown-item border-radius-md" href="javascript:;">Another
+                                            action</a></li>
+                                        <li><a class="dropdown-item border-radius-md" href="javascript:;">Something else
+                                            here</a></li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-body px-0 pb-2">
+                        <div class="table-responsive">
+                            <table class="table align-items-center mb-0">
+                                <thead>
+                                <tr>
+                                    <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">
+                                       Tipo Origem
+                                    </th>
+                                    <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">
+                                       Total Clientes
+                                    </th>
+                                    <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">
+                                       Total Vendido
+                                    </th>
+
+                                </tr>
+                                </thead>
+                                <tbody>
+                                {% for item in clientes_mes_atual_tem %}
+                                <tr>
+                                    <td>
+                                        <div class="d-flex px-2 py-1">
+
+                                            <div class="d-flex flex-column justify-content-center">
+                                                <h6 class="text-xxs font-weight-bold numero-pedido">{{ item.cliente_pedido__tipo_entrada__descricao|default:"Sem Registro" }}</h6>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="d-flex px-2 py-1">
+
+                                            <div class="d-flex flex-column justify-content-center">
+                                                <h6 class="text-xxs font-weight-bold comissao-vendedor">{{ item.total_clientes }}</h6>
+
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="d-flex px-2 py-1">
+
+                                            <div class="d-flex flex-column justify-content-center">
+                                                <h6 class="text-xxs font-weight-bold valor-total">{{ item.valorTotal }}</h6>
+
+                                            </div>
+                                        </div>
+                                    </td>
+
+
+
+                                </tr>
+                                {% endfor %}
+
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-4 col-md-6 mb-md-0 mb-4">
+                <div class="card">
+                    <div class="card-header pb-0">
+                        <div class="row">
+                            <div class="col-lg-6 col-7">
+                                <h6>Relatorio Clientes Mês Anterior -TEM</h6>
+
+                            </div>
+                            <div class="col-lg-6 col-5 my-auto text-end">
+                                <div class="dropdown float-lg-end pe-4">
+                                    <a class="cursor-pointer" id="dropdownTable" data-bs-toggle="dropdown"
+                                       aria-expanded="false">
+                                        <!-- -->
+                                        <i class="fa fa-ellipsis-v text-secondary"></i>
+                                    </a>
+                                    <ul class="dropdown-menu px-2 py-3 ms-sm-n4 ms-n5" aria-labelledby="dropdownTable">
+                                        <li><a class="dropdown-item border-radius-md" href="javascript:;">Action</a>
+                                        </li>
+                                        <li><a class="dropdown-item border-radius-md" href="javascript:;">Another
+                                            action</a></li>
+                                        <li><a class="dropdown-item border-radius-md" href="javascript:;">Something else
+                                            here</a></li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-body px-0 pb-2">
+                        <div class="table-responsive">
+                            <table class="table align-items-center mb-0">
+                                <thead>
+                                <tr>
+                                    <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">
+                                       Tipo Origem
+                                    </th>
+                                    <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">
+                                       Total Clientes
+                                    </th>
+                                     <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">
+                                       Total Vendido
+                                    </th>
+
+                                </tr>
+                                </thead>
+                                <tbody>
+                                {% for item in clientes_mes_anterior_tem %}
+                                <tr>
+                                    <td>
+                                        <div class="d-flex px-2 py-1">
+
+                                            <div class="d-flex flex-column justify-content-center">
+                                                <h6 class="text-xxs font-weight-bold numero-pedido">{{ item.cliente_pedido__tipo_entrada__descricao|default:"Sem Registro" }}</h6>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="d-flex px-2 py-1">
+
+                                            <div class="d-flex flex-column justify-content-center">
+                                                <h6 class="text-xxs font-weight-bold comissao-vendedor">{{ item.total_clientes }}</h6>
+
+                                            </div>
+                                        </div>
+                                    </td>
+                                     <td>
+                                        <div class="d-flex px-2 py-1">
+
+                                            <div class="d-flex flex-column justify-content-center">
+                                                <h6 class="text-xxs font-weight-bold valor-total">{{ item.valorTotal }}</h6>
+
+                                            </div>
+                                        </div>
+                                    </td>
+
+
+
+                                </tr>
+                                {% endfor %}
+
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <footer class="footer py-4  ">
+            <div class="container-fluid">
+                <div class="row align-items-center justify-content-lg-between">
+                    <div class="col-lg-6 mb-lg-0 mb-4">
+                        <div class="copyright text-center text-sm text-muted text-lg-start">
+                            ©
+                            <script>
+                  document.write(new Date().getFullYear())
+
+
+
+
+
+
+
+                            </script>
+                            ,
+                            made with <i class="fa fa-heart"></i> by
+                            <a href="https://www.conectivasolucoes.com.br" class="font-weight-bold" target="_blank">Conectiva
+                                Soluções</a>
+                            for a better web.
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </footer>
+    </div>
+</main>
+<div class="fixed-plugin">
+    <a class="fixed-plugin-button text-dark position-fixed px-3 py-2">
+        <i class="material-icons py-2">settings</i>
+    </a>
+    <div class="card shadow-lg">
+        <div class="card-header pb-0 pt-3">
+            <div class="float-start">
+                <h5 class="mt-3 mb-0">Material UI Configurator</h5>
+                <p>See our dashboard options.</p>
+            </div>
+            <div class="float-end mt-4">
+                <button class="btn btn-link text-dark p-0 fixed-plugin-close-button">
+                    <i class="material-icons">clear</i>
+                </button>
+            </div>
+            <!-- End Toggle Button -->
+        </div>
+        <hr class="horizontal dark my-1">
+        <div class="card-body pt-sm-3 pt-0">
+            <!-- Sidebar Backgrounds -->
+            <div>
+                <h6 class="mb-0">Sidebar Colors</h6>
+            </div>
+            <a href="javascript:void(0)" class="switch-trigger background-color">
+                <div class="badge-colors my-2 text-start">
+                    <span class="badge filter bg-gradient-primary active" data-color="primary"
+                          onclick="sidebarColor(this)"></span>
+                    <span class="badge filter bg-gradient-dark" data-color="dark" onclick="sidebarColor(this)"></span>
+                    <span class="badge filter bg-gradient-info" data-color="info" onclick="sidebarColor(this)"></span>
+                    <span class="badge filter bg-gradient-success" data-color="success"
+                          onclick="sidebarColor(this)"></span>
+                    <span class="badge filter bg-gradient-warning" data-color="warning"
+                          onclick="sidebarColor(this)"></span>
+                    <span class="badge filter bg-gradient-danger" data-color="danger"
+                          onclick="sidebarColor(this)"></span>
+                </div>
+            </a>
+            <!-- Sidenav Type -->
+            <div class="mt-3">
+                <h6 class="mb-0">Sidenav Type</h6>
+                <p class="text-sm">Choose between 2 different sidenav types.</p>
+            </div>
+            <div class="d-flex">
+                <button class="btn bg-gradient-dark px-3 mb-2 active" data-class="bg-gradient-dark"
+                        onclick="sidebarType(this)">Dark
+                </button>
+                <button class="btn bg-gradient-dark px-3 mb-2 ms-2" data-class="bg-transparent"
+                        onclick="sidebarType(this)">Transparent
+                </button>
+                <button class="btn bg-gradient-dark px-3 mb-2 ms-2" data-class="bg-white" onclick="sidebarType(this)">
+                    White
+                </button>
+            </div>
+            <p class="text-sm d-xl-none d-block mt-2">You can change the sidenav type just on desktop view.</p>
+            <!-- Navbar Fixed -->
+            <div class="mt-3 d-flex">
+                <h6 class="mb-0">Navbar Fixed</h6>
+                <div class="form-check form-switch ps-0 ms-auto my-auto">
+                    <input class="form-check-input mt-1 ms-auto" type="checkbox" id="navbarFixed"
+                           onclick="navbarFixed(this)">
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+<!--   Core JS Files   -->
+<script src="{% static 'dashboard/assets/js/core/popper.min.js' %}"></script>
+<script src="{% static 'dashboard/assets/js/core/bootstrap.min.js' %}"></script>
+<script src="{% static 'dashboard/assets/js/plugins/perfect-scrollbar.min.js' %}"></script>
+<script src="{% static 'dashboard/assets/js/plugins/smooth-scrollbar.min.js' %}"></script>
+<script src="{% static 'dashboard/assets/js/plugins/chartjs.min.js' %}"></script>
+<script async defer src="https://buttons.github.io/buttons.js"></script>
+<!-- Control Center for Material Dashboard: parallax effects, scripts for the example pages etc -->
+<script src="{% static 'dashboard/assets/js/material-dashboard.min.js?v=3.1.0' %}"></script>
+<script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+<script>
+  $(document).ready(function() {
+    // Quando o botão "detalhes" for clicado
+    $('#detalhes-pedido').on('click', function() {
+      // Exiba o modal
+      $('#modal-detalhes-pedido').modal('show');
+    });
+  });
+
+</script>
+<script>
+    var win = navigator.platform.indexOf('Win') > -1;
+    if (win && document.querySelector('#sidenav-scrollbar')) {
+      var options = {
+        damping: '0.5'
+      }
+      Scrollbar.init(document.querySelector('#sidenav-scrollbar'), options);
+    }
+</script>
+
+
+<script>
+  // Obtém o botão e o elemento card_resumo pelo ID
+  const expandirResumoBtn = document.getElementById('expandir_resumo');
+  const cardResumo = document.getElementById('card_resumo');
+
+  // Adiciona um evento de clique ao botão
+  expandirResumoBtn.addEventListener('click', function() {
+    // Verifica se o card_resumo está visível
+    if (cardResumo.style.display === 'none') {
+      // Se estiver oculto, exibe o card_resumo
+      cardResumo.style.display = 'block';
+    } else {
+      // Se estiver visível, oculta o card_resumo
+      cardResumo.style.display = 'none';
+    }
+  });
+</script>
+<script>
+document.getElementById('btn-buscar-comissoes').addEventListener('click', function(event) {
+  event.preventDefault();
+
+  var mes = document.getElementById('select-mes').value;
+
+  var data = {
+    mes: mes
+  };
+
+
+  fetch('get_resumo_comissao_mes/', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'X-CSRFToken': '{{ csrf_token }}'
+    },
+    body: JSON.stringify(data)
+  })
+    .then(response => response.json())
+    .then(data => {
+      var tbody = document.getElementById('tabela-comissao-body');
+      tbody.innerHTML = ''; // Limpa o conteúdo atual da tabela
+
+      data.forEach(function(vendedor) {
+        if (vendedor.vendedor) {
+          var row = document.createElement('tr');
+
+          var vendedorCell = document.createElement('td');
+          vendedorCell.innerHTML = '<div class="d-flex px-2 py-1"><h6 class="text-xxs font-weight-bold margem-direita" style="margin-right: 20px;">' + vendedor.vendedor.toUpperCase() + '</h6></div>';
+          row.appendChild(vendedorCell);
+
+          var quantidadePedidosCell = document.createElement('td');
+          quantidadePedidosCell.innerHTML = '<div class="d-flex px-2 py-1"><div class="d-flex flex-column justify-content-center"><h6 class="text-xxs font-weight-bold">' + vendedor.quantidade_pedidos + '</h6></div></div>';
+          row.appendChild(quantidadePedidosCell);
+
+          var totalVendidoCell = document.createElement('td');
+          totalVendidoCell.innerHTML = '<div class="d-flex px-2 py-1"><div class="d-flex flex-column justify-content-center"><h6 class="text-xxs font-weight-bold">' + vendedor.total_vendido + '</h6></div></div>';
+          row.appendChild(totalVendidoCell);
+
+          var comissaoTotalCell = document.createElement('td');
+          comissaoTotalCell.innerHTML = '<div class="d-flex px-2 py-1"><div class="d-flex flex-column justify-content-center"><h6 class="text-xxs font-weight-bold">' + vendedor.comissao_total + '</h6></div></div>';
+          row.appendChild(comissaoTotalCell);
+
+          var detalhesComissaoCell = document.createElement('td');
+          detalhesComissaoCell.innerHTML = '<div class="d-flex px-2 py-1"><div class="d-flex flex-column justify-content-center detalhes-comissao-vendedor"><a class="btn bg-gradient-dark text-xxs font-weight" href="/consultarpedido/' + vendedor.numero + '">detalhes</a></div></div>';
+          row.appendChild(detalhesComissaoCell);
+
+          tbody.appendChild(row);
+        }
+      });
+    })
+    .catch(error => {
+      console.error(error);
+    });
+});
+
+
+</script>
+<!-- MODAL PERIODO EXCEL -->
+<script>
+        $(document).ready(function() {
+            // Abrir o modal ao clicar no botão
+            $('#download_relatorio_mensal').on('click', function() {
+                $('#relatoriomodal').modal('show');
+            });
+
+            // Enviar o formulário via AJAX
+            $('#relatorio-form').on('submit', function(event) {
+                event.preventDefault(); // Impede o envio padrão do formulário
+
+                var dataInicial = $('#data-inicial').val();
+                var dataFinal = $('#data_final').val();
+
+                // Validação básica
+                if (!dataInicial || !dataFinal) {
+                    alert('Por favor, preencha as datas.');
+                    return;
+                }
+
+                // Enviar dados via AJAX para o servidor
+                $.ajax({
+                    url: '/download-comissao-excel-mensal/',  // Altere para o caminho correto da sua view Django
+                    type: 'POST',
+                    data: {
+                        'data_inicial': dataInicial,
+                        'data_final': dataFinal,
+                        'csrfmiddlewaretoken': '{{ csrf_token }}'  // Inclua o CSRF token se necessário
+                    },
+                    xhrFields: {
+                        responseType: 'blob'  // Importante para receber o arquivo como blob
+                    },
+                    success: function(response) {
+                        var blob = new Blob([response], {type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'});
+                        var link = document.createElement('a');
+                        link.href = window.URL.createObjectURL(blob);
+                        link.download = 'relatorio_comissoes.xlsx';
+                        link.click();
+
+                        // Exibe a mensagem de sucesso
+                        $('#mensagem-sucesso-report').removeClass('d-none').addClass('d-block');
+
+
+                    },
+                    error: function() {
+                        alert('Erro ao gerar o relatório.');
+                    }
+                });
+            });
+        });
+        document.getElementById('fechar-modal-comissao').addEventListener('click', function(event) {
+            var modal = document.getElementById('relatoriomodal');
+            modal.style.display = 'none';
+            window.location.reload();
+        });
+    </script>
+<script>
+  function abrirModal(event, vendedor) {
+    var botaoAjustarComissao = event.target;
+    var tr = botaoAjustarComissao.closest('tr');
+    var textoCompleto  = tr.querySelector('.numero-pedido').textContent;
+    var primeiroEspaco = textoCompleto.indexOf(' ');
+    var numeroPedido = primeiroEspaco !== -1 ? textoCompleto.slice(0, primeiroEspaco) : textoCompleto;
+    var comissao = tr.querySelector('.comissao-vendedor').textContent;
+
+    // Preencher os campos do modal com os valores fornecidos
+    var modal = document.getElementById('comissaoModal');
+    modal.querySelector('#pedidoInput').value = numeroPedido;
+    modal.querySelector('#vendedorInput').value = vendedor;
+    modal.querySelector('#comissaoInput').value = comissao;
+
+    // Abrir o modal
+    modal.style.display = 'block';
+}
+
+// Atribuir o evento de clique aos botões "Ajustar Comissão"
+var botoesAjustarComissao = document.getElementsByClassName('ajustar-comissao');
+for (var i = 0; i < botoesAjustarComissao.length; i++) {
+    var vendedor = document.querySelector('.vendedor').textContent;
+    botoesAjustarComissao[i].addEventListener('click', function(event) {
+        abrirModal(event, vendedor);
+    });
+}
+
+// Ação do formulário de envio do modal
+document.getElementById('comissao-form').addEventListener('submit', function(event) {
+    // Impedir o envio do formulário (pode adicionar lógica de envio aqui)
+    event.preventDefault();
+
+    // Fechar o modal
+    var modal = document.getElementById('comissaoModal');
+    modal.style.display = 'none';
+});
+
+// Ação do botão de fechar modal
+document.getElementById('fechar-modal').addEventListener('click', function(event) {
+    var modal = document.getElementById('comissaoModal');
+    modal.style.display = 'none';
+});
+
+// Fechar o modal se o usuário clicar fora dele
+window.addEventListener('click', function(event) {
+    var modal = document.getElementById('comissaoModal');
+    if (event.target == modal) {
+        modal.style.display = 'none';
+    }
+});
+
+
+</script>
+<script>
+  document.getElementById('atualizar-pedido-btn').addEventListener('click', function(event) {
+    event.preventDefault(); // Impedir o envio do formulário tradicional
+
+    // Obter os valores dos campos do formulário
+    var numeroPedido = document.getElementById('pedidoInput').value;
+    var vendedor = document.querySelector('.vendedor').innerText.trim();
+    var comissao = document.getElementById('comissaoInput').value;
+    var justificativa = document.getElementById('justificativaInput').value;
+
+    // Criar um objeto com os dados do pedido
+    var data = {
+      'numero_pedido': numeroPedido,
+      'vendedor': vendedor,
+      'comissao': comissao,
+      'justificativa': justificativa
+    };
+
+    // Enviar os dados via JSON para a função ajusta_comissao no backend
+    fetch('/ajusta_comissao/', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-CSRFToken': getCookie('csrftoken') // Inclua o token CSRF no cabeçalho
+      },
+      body: JSON.stringify(data)
+    })
+    .then(function(response) {
+      // Tratar a resposta do servidor, se necessário
+
+      return response.json();
+    })
+    .then(function(data) {
+      // Lógica após a resposta do servidor
+      alert('Pedido Atualizado!');
+      window.location.reload();
+
+    })
+    .catch(function(error) {
+      // Tratar erros de requisição
+      console.error('Erro na requisição:', error);
+    });
+  });
+
+  // Função para obter o valor do cookie do token CSRF
+  function getCookie(name) {
+    var cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+      var cookies = document.cookie.split(';');
+      for (var i = 0; i < cookies.length; i++) {
+        var cookie = cookies[i].trim();
+        if (cookie.substring(0, name.length + 1) === (name + '=')) {
+          cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+          break;
+        }
+      }
+    }
+    return cookieValue;
+  }
+</script>
+<script>
+// Função para formatar o valor em moeda brasileira (R$)
+function formatarMoeda(valor) {
+  return valor.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+}
+
+// Seleciona todos os elementos da tabela com a classe 'valor-total'
+var elementosValorTotal = document.querySelectorAll('.valor-total');
+
+// Percorre os elementos e formata o valor em moeda brasileira
+elementosValorTotal.forEach(function(elemento) {
+  var valor = parseFloat(elemento.textContent.replace(',', '.'));
+  if (!isNaN(valor)) {
+    elemento.textContent = formatarMoeda(valor);
+  }
+});
+</script>
+
+
+</body>
+
+</html>

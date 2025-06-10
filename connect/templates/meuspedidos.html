@@ -1,0 +1,1818 @@
+{% extends "./modelo.html" %}
+{% load static %}
+
+<head xmlns="http://www.w3.org/1999/html">
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
+    <link rel="stylesheet" href="{% static 'meus_pedidos/assets/bootstrap/css/bootstrap.min.css' %}">
+    <link rel="stylesheet" href="{% static 'meus_pedidos/assets/fonts/fontawesome-all.min.css' %}">
+    <link rel="stylesheet" href="{% static 'meus_pedidos/assets/fonts/font-awesome.min.css' %}">
+    <link rel="stylesheet" href="{% static 'meus_pedidos/assets/fonts/fontawesome5-overrides.min.css' %}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css">
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.31.2/css/theme.bootstrap_4.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.css">
+    <link rel="stylesheet" href="{% static 'meus_pedidos/assets/css/styles.min.css' %}">
+        <!--     Fonts and icons     -->
+    <link rel="stylesheet" type="text/css"
+          href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700,900|Roboto+Slab:400,700"/>
+    <!-- Nucleo Icons -->
+    <link href="{% static 'dashboard/assets/css/nucleo-icons.css' %}" rel="stylesheet"/>
+    <link href="{% static 'dashboard/assets/css/nucleo-svg.css' %}" rel="stylesheet"/>
+    <!-- Font Awesome Icons -->
+    <script src="https://kit.fontawesome.com/42d5adcbca.js" crossorigin="anonymous"></script>
+    <!-- Material Icons -->
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
+    <!-- CSS Files -->
+
+    <link id="pagestyle" href="{% static 'dashboard/assets/css/material-dashboard.css?v=3.1.0' %}" rel="stylesheet"/>
+
+
+
+</head>
+<style>
+    .form-control{
+        font-size:80%
+
+    }
+
+
+</style>
+
+
+{% block container %}
+
+<body>
+
+<div class="modal" id="modal-informacoes-nfe" tabindex="-1" role="dialog" aria-hidden="true">
+                                <div class="modal-dialog modal-dialog-centered">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h5 class="modal-title">Emissão de NFE</h5>
+                                            <button type="button" class="close" data-dismiss="modal" id="fechar-modal-nfe" aria-label="Close">
+                                                <span aria-hidden="true">&times;</span>
+                                            </button>
+                                        </div>
+                                        <div class="modal-body">
+                                            <!-- Conteúdo do formulário de cadastro de layout -->
+                                            <form method="post" enctype="multipart/form-data"  id="modal-nfe-form">
+                                                {% csrf_token %}
+                                                <div class="form-group">
+                                                    <label for="numero_pedido">Número do Pedido</label>
+                                                    <input type="text" class="form-control" id="numero_pedido_nf" name="numero_pedido_nf">
+                                                </div>
+                                                <div class="form-group">
+                                                    <label for="informacoes_complementares">Informações Adicionais</label>
+                                                    <input type="text" class="form-control" id="informacoes_complementares" name="informacoes_complementares">
+                                                </div>
+                                                <div class="form-group">
+                                                    <label for="inscricao">Inscricao Estadual</label>
+                                                    <input type="text" class="form-control" id="inscricao" name="inscricao">
+                                                </div>
+                                                <button type="submit" id="emitir-notafiscal-btn" class="btn btn-dark mt-2">Emitir NFe</button>
+                                            </form>
+
+                                        </div>
+                                    </div>
+                          </div>
+                </div>
+
+<div class="modal" id="modal-pendente-financeiro" tabindex="-1" role="dialog" aria-hidden="true">
+                                <div class="modal-dialog modal-dialog-centered">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h5 class="modal-title">Informações Pedido</h5>
+                                            <button type="button" class="close" data-dismiss="modal" id="fechar-modal-pf" aria-label="Close">
+                                                <span aria-hidden="true">&times;</span>
+                                            </button>
+                                        </div>
+                                        <div class="modal-body">
+                                            <!-- Conteúdo do formulário de cadastro de layout -->
+                                            <form method="post" enctype="multipart/form-data"  id="modal-pf-form">
+                                                {% csrf_token %}
+                                                <div class="form-group">
+                                                    <label for="numero_pedido_pf" style="font-weight: bold;" >Número do Pedido</label>
+                                                    <input type="text" class="form-control text-dark" id="numero_pedido_pf" name="numero_pedido_pf" style="border-style: solid; border-width: 2px; border-color: black; padding-left: 5px;"  readonly>
+                                                </div>
+                                                <div class="form-group mt-3">
+                                                    <label for="data-pa" style="font-weight: bold;">Data Pagamento Antecipado</label>
+                                                    <input type="date" class="form-control" id="data-pa" name="data_pa" style="padding-left: 5px; border-style: solid; border-width: 2px; border-color: black;">
+                                                </div>
+                                                <div class="form-group mt-3">
+                                                    <label for="data-pa" style="font-weight: bold;">Banco</label>
+                                                    <select class="form-control" id="banco-pa" name="banco_pa" style="padding-left: 5px; border-style: solid; border-width: 2px; border-color: black;">
+
+                                                        <option value="BRADESCO">BRADESCO</option>
+                                                        <option value="SANTANDER">SANTANDER</option>
+                                                        <option value="PAGBANK">PAGBANK</option>
+                                                        <option value="ITAU">ITAU</option>
+
+
+                                                    </select>
+                                                </div>
+                                                <div class="form-group mt-3">
+                                                    <label for="empresa-pa" style="font-weight: bold;">Empresas</label>
+                                                    <select class="form-control" id="empresa-pa" name="empresa-pa" style="padding-left: 5px; border-style: solid; border-width: 2px; border-color: black;">
+                                                        {% for empresa in empresas %}
+                                                        <option value="{{empresa.nome}}">{{empresa.nome}}</option>
+                                                        {% endfor %}
+
+                                                    </select>
+                                                </div>
+                                                <div class="form-group mt-3">
+                                                    <label for="valor-pa" style="font-weight: bold;">Valor Antecipado</label>
+                                                    <input type="text" class="form-control" id="valor-pa" name="valor_pa" style="padding-left: 5px; border-style: solid; border-width: 2px; border-color: black;">
+                                                </div>
+                                                <button type="submit" id="atualizar-pedido" class="btn btn-dark mt-2">Confirmar Pagamento</button>
+                                            </form>
+
+                                        </div>
+                                    </div>
+                          </div>
+                </div>
+
+<div class="modal" id="modal-status-pedidos" tabindex="-1" role="dialog" aria-hidden="true">
+                                <div class="modal-dialog modal-dialog-centered">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h5 class="modal-title">Alteração de Status</h5>
+                                            <button type="button" class="close" data-dismiss="modal" id="fechar-modal-status" aria-label="Close">
+                                                <span aria-hidden="true">&times;</span>
+                                            </button>
+                                        </div>
+                                        <div class="modal-body">
+
+                                            <form method="post" enctype="multipart/form-data"  id="modal-status-form">
+                                                {% csrf_token %}
+                                                <div class="form-group">
+                                                    <label for="numero_pedido">Número do Pedido</label>
+                                                    <input type="text" class="form-control" id="numero_pedido_status" name="numero_pedido_nf">
+                                                </div>
+                                                <div class="form-group">
+                                                    <label for="status-pedido">Novo Status do Pedido</label>
+                                                    <select id="status-pedido" name="status-pedido" class="form-control">
+
+                                                        {% for status, _ in status_choices %}
+                                                        <option value="{{ status }}">{{ status }}</option>
+                                                        {% endfor %}
+                                                    </select>
+                                                </div>
+                                                <div class="form-group">
+                                                    <label for="data-entrega-pedido">Nova Data de Entrega</label>
+                                                    <input type="date" id="data-entrega-pedido"
+                                                           name="data-entrega-pedido" class="form-control">
+
+                                                </div>
+                                                <button type="submit" id="edita-status-btn" class="btn btn-dark mt-2">Salvar</button>
+                                            </form>
+
+                                        </div>
+                                    </div>
+                          </div>
+                </div>
+
+<div class="modal" id="modal-cadastro-layout" tabindex="-1" role="dialog" aria-hidden="true">
+                                <div class="modal-dialog modal-dialog-centered">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h5 class="modal-title">Cadastro de Layout</h5>
+                                            <button type="button" class="close" data-dismiss="modal" id="fechar-modal" aria-label="Close">
+                                                <span aria-hidden="true">&times;</span>
+                                            </button>
+                                        </div>
+                                        <div class="modal-body">
+                                            <!-- Conteúdo do formulário de cadastro de layout -->
+                                            <form method="post" enctype="multipart/form-data" action="/cadastrar_layout/" id="modal-form">
+                                                {% csrf_token %}
+                                                <div class="form-group">
+                                                    <label for="numero_pedido">Número do Pedido</label>
+                                                    <input type="text" class="form-control" id="numero_pedido" name="numero_pedido">
+                                                </div>
+                                                <div class="form-group">
+                                                    <label for="arquivo">Escolha o Arquivo</label>
+                                                    <input type="file" class="form-control" id="arquivo" name="arquivo">
+                                                </div>
+                                                <button type="submit" id="cadastrar-pedido-btn" class="btn btn-dark">Salvar Arquivo</button>
+                                            </form>
+                                            <div id="mensagem-sucesso" class="d-none text-center">
+                                                <svg xmlns="http://www.w3.org/2000/svg" class="icon" viewBox="0 0 16 16" fill="#155724">
+                                                    <path d="M2 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2H2zm10.03 4.97a.75.75 0 0 1 .011 1.05l-3.992 4.99a.75.75 0 0 1-1.08.02L4.324 8.384a.75.75 0 1 1 1.06-1.06l2.094 2.093 3.473-4.425a.75.75 0 0 1 1.08-.022z"/>
+                                                </svg>
+                                                <span>LAYOUT CADASTRADO COM SUCESSO</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                          </div>
+                </div>
+
+<div class="modal" id="modal-transporte" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Cadastro Transportadora NFe</h5>
+                    <button type="button" class="close" data-dismiss="modal" id="fechar-modal-transporte" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <!-- Conteúdo do formulário de cadastro de Frete -->
+                    <form method="post" enctype="multipart/form-data"  id="modal-transporte-form">
+                        {% csrf_token %}
+                        <div class="form-group">
+                            <label for="numero_pedido">Número do Pedido</label>
+                            <input type="text" class="form-control" id="numero_pedido_transporte" name="pedido_transporte" readonly>
+                        </div>
+                        <div class="form-group col-md-6">
+
+                            <label for="select-transportadora">Transportadora</label>
+                            <div class="d-flex align-items-center ">
+                                <select type="text" class="form-control col-md-6" id="select-transportadora" name="transportadora">
+                                    {% for frete in fretes %}
+                                    <option value="{{ frete.nome }}">{{ frete.nome }}</option>
+                                    {% endfor %}
+                                </select>
+                                <a href="/cadastrar_fornecedor/" class="col md-3 btn sm-btn-primary text-end">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-plus-circle-fill" viewBox="0 0 16 16">
+                                        <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zM8.5 4.5a.5.5 0 0 0-1 0v3h-3a.5.5 0 0 0 0 1h3v3a.5.5 0 0 0 1 0v-3h3a.5.5 0 0 0 0-1h-3v-3z"/>
+                                    </svg>
+                                </a>
+
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="valor-frete">Valor do Frete</label>
+                            <input type="text" class="form-control" id="valor-frete" name="valor_frete" value="0.00">
+                            <label for="valor-frete">Peso</label>
+                            <input type="text" class="form-control" id="peso-frete" name="peso_frete" value="0.00">
+                            <label for="volumes-frete">Volumes</label>
+                            <input type="text" class="form-control" id="volumes-frete" name="volumes_frete" value="0.00">
+                            <label for="valor-frete">Adicionar no Contas a Pagar</label>
+                            <select class="form-control" id="opcao-conta-pagar" name="conta-pagar">
+                                <option value="sim">SIM</option>
+                                <option value="nao" selected>NAO</option>
+                            </select>
+                        </div>
+
+
+                        <button type="submit" id="cadastrar-transporte-btn" class="btn btn-dark mt-2">Salvar</button>
+                    </form>
+
+                </div>
+            </div>
+    </div>
+</div>
+
+<div class="modal" id="modal-reparo" tabindex="-1" role="dialog" aria-hidden="true">
+                                <div class="modal-dialog modal-dialog-centered">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h5 class="modal-title">Solicitação Reparo</h5>
+                                            <button type="button" class="close" data-dismiss="modal" id="fechar-modal-reparo" aria-label="Close">
+                                                <span aria-hidden="true">&times;</span>
+                                            </button>
+                                        </div>
+                                        <div class="modal-body">
+
+                                            <form method="post" enctype="multipart/form-data"  id="modal-reparo-form">
+                                                {% csrf_token %}
+                                                <div class="form-group">
+                                                    <label for="numero_pedido">Número do Pedido</label>
+                                                    <input type="text" class="form-control" id="numero_pedido_reparo" name="numero_pedido_reparo">
+                                                </div>
+                                                <div class="form-group">
+                                                    <label for="observacao-reparo">Detalhes da Solicitação do Reparo:</label>
+                                                    <textarea id="observacao-reparo" maxlength="255" class="form-control" required>
+
+                                                    </textarea>
+
+                                                </div>
+                                                <button type="submit" id="envia-reparo-btn" class="btn btn-dark mt-2">Enviar</button>
+                                            </form>
+
+                                        </div>
+                                    </div>
+                          </div>
+                </div>
+<div class="modal" id="modal-guia-reparo" tabindex="-1" role="dialog" aria-hidden="true">
+
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content" style="width: 100vw; height: 100vh;">
+            <div class="modal-header">
+                <h5 class="modal-title">Guia Reparo</h5>
+                <button type="button" class="close" data-dismiss="modal" id="fechar-modal-guia-reparo"
+                        aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <iframe id="guia-reparo-iframe" width="100%" height="100%" style="border: none;"></iframe>
+            </div>
+
+
+        </div>
+    </div>
+</div>
+
+
+<div id="wrapper">
+    <div class="d-flex flex-column" id="content-wrapper" style="background: white">
+        <div id="content" style="color: #2D2F3E;">
+            <div class="container-fluid" style="margin-bottom: 50px;">
+                <div class="row">
+                    <div class="col-12 col-sm-6 col-md-6 col-lg-6 mt-2"><h4 class="text-dark mr-4 mb-4 mt-2" style="padding:20px;">Meus Pedidos</h4></div>
+                    <div class="col-12 col-sm-6 col-md-6 text-end" >
+                        <a class="btn btn-dark mt-4" role="button" href="/pedido/" style="margin-bottom: 30px;"><i class="fa fa-plus"></i>&nbsp;Novo
+                        Pedido</a>
+                        {% if colaborador.funcao == 'Gerente' %}
+                        <a
+                            class="btn btn-dark mt-4" role="button" href="/download-relatorio-pedidos/"
+                            style="margin-bottom: 30px;"><i
+                            class="fa fa-plus"></i>&nbsp;Download Pedidos</a>
+                        {% endif %}
+
+                    </div>
+                </div>
+                {% if colaborador.funcao == 'Vendedor Interno' or colaborador.funcao == 'Vendedor Externo' %}
+                    <div class="row">
+                    <div class="container-fluid py-4">
+                            <div class="row">
+                                <div class="col-xl-3 col-sm-6 mb-xl-0 mb-4" style="display:none;">
+                                    <div class="card" style="display:none;">
+                                        <div class="card-header p-3 pt-2">
+                                            <div class="icon icon-lg icon-shape bg-gradient-dark shadow-dark text-center border-radius-xl mt-n4 position-absolute">
+
+                                            </div>
+                                            <div class="text-center pt-1">
+                                                <h4 class="text mb-0 text-capitalize">Minhas Comissões </h4>
+                                                 <table class="mt-4 pt-1" style="margin-left:100px;" >
+                                                    <thead>
+                                                        <tr>
+                                                            <th class="col-md-3 text-center">Periodo</th>
+                                                            <th class=" col-md-4 text-center">Total</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        {% for resultado in resultados %}
+                                                        <tr>
+                                                            <td class="text-center">{{ resultado.datapedido__month }} / {{ resultado.datapedido__year }} </td>
+                                                            <td class="valor-total text-center">{{ resultado.total_comissao }}</td>
+                                                        </tr>
+                                                        {% endfor %}
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                        </div>
+                                        <hr class="dark horizontal my-0">
+                                        <div class="card-footer p-3">
+
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-xl-3 col-sm-6 mb-xl-0 mb-4" style="display:none;">
+                                    <div class="card rounded shadow-sm collapse" id="card-vendas" >
+                                        <div class="card-header p-3 pt-2">
+                                            <div class="icon icon-lg icon-shape bg-gradient-dark shadow-dark text-center border-radius-xl mt-n4 position-absolute">
+
+                                            </div>
+                                            <div class="text-end pt-1">
+                                                <p class="text-sm mb-0 text-capitalize">Total Vendido </p>
+                                                <h4 class="text mb-0 valor-total text-capitalize">{{ total_venda }} </h4>
+                                                <p class="text-sm mb-0 text-capitalize mt-4">Total Pedidos</p>
+                                                <h4 class="text mb-0 text-capitalize">{{ total_pedidos_vendedor }} </h4>
+
+
+                                            </div>
+                                        </div>
+                                        <hr class="dark horizontal my-0">
+                                        <div class="card-footer p-3">
+
+                                        </div>
+                                    </div>
+                                    <button class="btn btn-primary mt-3" type="button" data-bs-toggle="collapse" data-bs-target="#card-vendas" aria-expanded="false" aria-controls="card-vendas">
+                                        Mostrar/Esconder Informações
+                                    </button>
+                                </div>
+                                <div class="col-xl-3 col-sm-6 mb-xl-0 mb-4">
+                                    <div class="card">
+                                        <div class="card-header p-3 pt-2">
+                                            <div class="icon icon-lg icon-shape bg-gradient-dark shadow-dark text-center border-radius-xl mt-n4 position-absolute">
+
+                                            </div>
+                                            <div class="text-end pt-1">
+                                                <p class="text-sm mb-0 text-capitalize"> Total Mês <h4 class="text mb-0 valor-total text-capitalize">{{ total_mes }} </h4> </p>
+
+                                                <p class="text-sm mb-0 text-capitalize mt-4">Total Pedidos</p>
+                                                <h4 class="text mb-0 text-capitalize">{{ cpedidos_mes }} </h4>
+                                                <p class="text-sm mb-0 text-capitalize mt-4">Total Comissão Parcial</p>
+                                                <h4 class="valor-total text mb-0 text-capitalize">{{ comissao_parcial }} </h4>
+                                                <p class="text-sm mb-0 text-capitalize mt-4">Total Comissão Mes Anterior</p>
+                                                <h4 class="valor-total text mb-0 text-capitalize">{{ comissao_mes_anterior }} </h4>
+\
+
+                                            </div>
+                                        </div>
+                                        <hr class="dark horizontal my-0">
+                                        <div class="card-footer p-3">
+
+                                        </div>
+                                    </div>
+                                </div>
+
+                            </div>
+
+                            </div>
+                        </div>
+                    <div class="row">
+                        <p>Olá {{colaborador.nome}} </p>
+                    </div>
+
+                    {% endif %}
+                {% if colaborador.funcao == 'Gerente' %}
+                    <div class="row">
+                    <div class="container-fluid py-4">
+                            <div class="row">
+                                <div class="col-xl-3 col-sm-6 mb-xl-0 mb-4">
+                                    <div class="card">
+                                        <div class="card-header p-3 pt-2">
+                                            <div class="icon icon-lg icon-shape bg-gradient-dark shadow-dark text-center border-radius-xl mt-n4 position-absolute">
+
+                                            </div>
+                                            <div class="text-center pt-1">
+                                                <h4 class="text mb-0 text-capitalize">GRF </h4>
+                                                 <table class="mt-4 pt-1" style="margin-left:100px;" >
+                                                    <thead>
+                                                        <tr>
+                                                            <th class="col-md-3 text-center">Periodo</th>
+                                                            <th class=" col-md-4 text-center">Total</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        {% for resultado in resultados_grf %}
+                                                        <tr>
+                                                            <td class="text-center">{{ resultado.datapedido__month }} / {{ resultado.datapedido__year }} </td>
+                                                            <td class="valor-total text-center">{{ resultado.total_venda }}</td>
+                                                        </tr>
+                                                        {% endfor %}
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                        </div>
+                                        <hr class="dark horizontal my-0">
+                                        <div class="valor-total text-center card-footer p-3">
+                                           {{ total_vendido_grf }}
+
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-xl-3 col-sm-6 mb-xl-0 mb-4">
+                                    <div class="card">
+                                        <div class="card-header p-3 pt-2">
+                                            <div class="icon icon-lg icon-shape bg-gradient-dark shadow-dark text-center border-radius-xl mt-n4 position-absolute">
+
+                                            </div>
+                                            <div class="text-center pt-1">
+                                                <h4 class="text mb-0 text-capitalize">TEM </h4>
+                                                 <table class="mt-4 pt-1" style="margin-left:100px;" >
+                                                    <thead>
+                                                        <tr>
+                                                            <th class="col-md-3 text-center">Periodo</th>
+                                                            <th class=" col-md-4 text-center">Total</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        {% for resultado in resultados_tem %}
+                                                        <tr>
+                                                            <td class="text-center">{{ resultado.datapedido__month }} / {{ resultado.datapedido__year }} </td>
+                                                            <td class="valor-total text-center">{{ resultado.total_venda }}</td>
+                                                        </tr>
+                                                        {% endfor %}
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                        </div>
+                                        <hr class="dark horizontal my-0">
+                                        <div class="valor-total text-center card-footer p-3">
+                                           {{ total_vendido_tem }}
+
+                                        </div>
+                                    </div>
+                                </div>
+
+
+                            </div>
+
+                            </div>
+                        </div>
+                    <div class="row">
+                        <p>Olá {{colaborador.nome}} </p>
+                    </div>
+
+                    {% endif %}
+
+                <div class="card" id="TableSorterCard"
+                     style="border-style: none;border-radius: 6.5px;">
+                    <form method="GET" action="/meuspedidos/">
+                        {% csrf_token %}
+                        <div class="card-header py-3" style="border-width: 0px;background: var(--bs-gray-700);">
+                            <button id="botao-filtrar" class="btn btn-dark text-black" type="button"
+                                    style="background: var(--bs-white);">
+                                Filtrar
+                            </button>
+                            <button id="botao-apagar-filtro" class="btn btn-dark text-black" type="submit"
+                                    style="background: var(--bs-white);">
+                                Apagar Filtro
+                            </button>
+
+                            <div class="row table-topper align-items-center" id="row-form" style="display:none">
+                                <div class="col-md-8">
+                                    <div class="row align-items-center">
+                                        <div class="col-md-4">
+                                            <label class="col-form-label text-white"
+                                                   style="font-weight: bold;">Período Data do Pedido</label>
+                                        </div>
+                                    </div>
+                                    <div class="row align-items-center">
+                                        <div class="col-md-2">
+                                            <input type="date"
+                                                   class="form-control"
+                                                   id="filter-data-pedido-inicial"
+                                                   name="filter_data_pedido_inicial"
+                                                   style="color: var(--bs-card-bg);border-style: solid;border-color: white; text:black;">
+                                        </div>
+                                        <div class="col-md-2">
+                                            <input type="date"
+                                                   class="form-control"
+                                                   id="filter-data-pedido-final"
+                                                   name="filter_data_pedido_final"
+                                                   style="margin-left: 20px;color: var(--bs-card-bg);border-style: solid;border-color: white; text:black;">
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-8">
+                                    <div class="row align-items-center">
+                                        <div class="col-md-4">
+                                            <label class="col-form-label text-white"
+                                                   style="font-weight: bold;">Período Data de Entrega Pedido</label>
+                                        </div>
+                                    </div>
+                                    <div class="row align-items-center">
+                                        <div class="col-md-2">
+                                            <input type="date"
+                                                   class="form-control"
+                                                   id="filter-data-pedido-entrega-inicial"
+                                                   name="filter_data_pedido_entrega_inicial"
+                                                   style="color: var(--bs-card-bg);border-style: solid;border-color: white;">
+                                        </div>
+                                        <div class="col-md-2">
+                                            <input type="date"
+                                                   class="form-control"
+                                                   id="filter-data-pedido-entrega-final"
+                                                   name="filter_data_pedido_entrega_final"
+                                                   style="margin-left: 20px;color: var(--bs-card-bg);border-style: solid;border-color: white;">
+                                        </div>
+                                    </div>
+                                </div>
+                                <! SEGUNDA LINHA DO FILTRO>
+                                <div class="row table-topper align-items-center">
+                                    <div class="col-md-3">
+                                        <div class="row align-items-center" style="margin-right: 10px;">
+                                            <div class="col-md-6">
+                                                <label for="numero-pedido-filter" class="col-form-label text-white"
+                                                       style="font-weight: bold;">Número
+                                                    do Pedido</label>
+                                                <input type="text"
+                                                       class="form-control text-center"
+                                                       id="numero-pedido-filter"
+                                                       name="numero_pedido_filter"
+                                                       style="color: var(--bs-card-bg);border-style: solid;border-color: white">
+                                            </div>
+                                            <div class="col-md-6">
+                                                <label for="documento-cliente-filter" class="col-form-label text-white"
+                                                       style="font-weight: bold;">CPF / CNPJ Cliente</label>
+                                                <input type="text"
+                                                       class="form-control text-center"
+                                                       id="documento-cliente-filter"
+                                                       name="documento_cliente_filter"
+                                                       style="color: var(--bs-card-bg);border-style: solid;border-color: white">
+                                            </div>
+                                            <div class="col-md-6">
+                                                <label for="nome-cliente-filter" class="col-form-label text-white"
+                                                       style="font-weight: bold;">Nome Cliente</label>
+                                                <input type="text"
+                                                       class="form-control text-center"
+                                                       id="nome-cliente-filter"
+                                                       name="nome_cliente_filter"
+                                                       style="color: var(--bs-card-bg);border-style: solid;border-color: white">
+                                            </div>
+                                            <div class="col-md-6">
+                                                <label for="nome-comprador-filter" class="col-form-label text-white"
+                                                       style="font-weight: bold;">Nome Comprador</label>
+                                                <input type="text"
+                                                       class="form-control text-center"
+                                                       id="nome-comprador-filter"
+                                                       name="nome_comprador_filter"
+                                                       style="color: var(--bs-card-bg);border-style: solid;border-color: white">
+                                            </div>
+                                             <div class="col-md-6">
+                                                <label for="valorpedido" class="col-form-label text-white"
+                                                       style="font-weight: bold;">Valor do Pedido</label>
+                                                <input type="text"
+                                                       class="form-control valorpedido text-center"
+                                                       id="valorpedido"
+                                                       name="valorpedido"
+                                                       style="color: var(--bs-card-bg);border-style: solid;border-color: white">
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="row table-topper align-items-center">
+                                    <div class="col-md-6">
+                                        <div class="row align-items-center" style="margin-right: 10px;">
+                                            <div class="col-md-3">
+                                                <label for="status-pedido-filter" class="text-center col-form-label text-white"
+                                                       style="font-weight: bold;">Status
+                                                    do Pedido</label>
+                                                <input type="text"
+                                                       class="form-control text-center"
+                                                       id="status-pedido-filter"
+                                                       list="status-pedidos"
+                                                       name="status_pedido_filter"
+                                                       style="color: var(--bs-card-bg);border-style: solid;border-color: white">
+                                                <datalist id="status-pedidos">
+
+                                                    {% for status, _ in status_choices %}
+                                                    <option value="{{ status }}"></option>
+                                                    {% endfor %}
+
+                                                </datalist>
+                                            </div>
+                                            <div class="col-md-3">
+                                                <label for="vendedor-pedido-filter" class="col-form-label text-white"
+                                                       style="font-weight: bold;">Vendedor</label>
+                                                <input type="text"
+                                                       class="form-control text-center"
+                                                       list="vendedores"
+                                                       id="vendedor-pedido-filter"
+                                                       name="vendedor_pedido_filter"
+                                                       style="color: var(--bs-card-bg);border-style: solid;border-color: white">
+                                                <datalist id="vendedores">
+                                                    {% for vendedor in vendedores %}
+                                                    <option value="{{ vendedor.nome }}"></option>
+                                                    {% endfor %}
+                                                </datalist>
+                                            </div>
+                                            <div class="col-md-3">
+                                                <label for="localidade-pedido-filter" class="col-form-label text-white"
+                                                       style="font-weight: bold;">Local de Entrega</label>
+                                                <input type="text"
+                                                       class="form-control text-center"
+                                                       list="bairros"
+                                                       id="localidade-pedido-filter"
+                                                       name="localidade_pedido_filter"
+                                                       style="color: var(--bs-card-bg);border-style: solid;border-color: white">
+
+                                                <datalist id="bairros">
+                                                    {% for bairro in bairros %}
+                                                    <option value="{{ bairro.nome}}, {{ bairro.cidade }}-{{ bairro.uf }}"></option>
+                                                    {% endfor %}
+                                                </datalist>
+                                            </div>
+                                          <div class="col-md-6">
+                                            <label for="empresa-pedido"class="col-form-label text-white"
+                                                       style="font-weight: bold;">Empresa</label>
+                                            <select type="text" class="form-control text-center" id="empresa-pedido"
+                                                    style="color: var(--bs-card-bg);border-style: solid;border-color: white"
+                                                    name="filter_empresa" >
+                                                <option value="" selected></option>
+                                                {% for empresa in empresas %}
+                                                <option class="form-control text-center" style="background: var(--bs-card-cap-bg);border-color: var(--bs-gray-100);" value="{{ empresa.nome }}">{{ empresa.nome }}</option>
+                                                {% endfor %}
+                                            </select>
+                                          </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row align-items-center">
+                                    <div class="col-md-1">
+                                         <label for="bonificado" class="col-form-label text-white"
+                                                       style="font-weight: bold;"><small>C/ Bonus</small></label>
+                                        <input type="checkbox" id="bonificado" name="bonificado" value="sim" >
+
+                                    </div>
+                                    <div class="col-md-1">
+                                         <label for="nfe" class="col-form-label text-white"
+                                                       style="font-weight: bold;"><small>C/ NFe</small></label>
+                                        <input type="checkbox" id="nfe" name="nfe" value="sim" >
+
+                                    </div>
+                                    <div class="col-md-1">
+                                         <label for="nfe" class="col-form-label text-white"
+                                                       style="font-weight: bold;"><small>PEDIDO REPARO</small></label>
+                                        <input type="checkbox" id="reparo" name="reparo" value="sim" >
+
+                                    </div>
+
+                                </div>
+
+
+                                <div class="col-md-4">
+                                    <div class="row align-items-center">
+                                        <div class="row"></div>
+                                        <div class="col-md-12">
+                                            <button class="btn btn-dark text-black" type="submit"
+                                                    style="background: var(--bs-white);">
+                                                Pesquisar
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+
+                            </div>
+                    </form>
+                </div>
+
+
+
+                <div class="row">
+                    <div class="col-12">
+                        <div class=" table-container" style="overflow-x: auto; border-top-style: none;background: #171921;">
+                            <table class="table table-striped table tablesorter" id="ipi-table">
+                                <thead class="thead-dark"
+                                       style="background: rgb(33,37,48);border-width: 0px;border-color: rgb(0,0,0);border-bottom-color: #21252F;">
+                                <tr style="border-style: none;border-color: rgba(255,255,255,0);background: #21252f;">
+                                    <th class="text-center"
+                                        style="background: var(--bs-gray-300);color: var(--bs-black);border-style: none;">
+                                        Pedido
+                                    </th>
+                                    <th class="text-center"
+                                        style="background: var(--bs-gray-300);color: var(--bs-black);border-style: none; ">
+                                        Nome do Cliente
+                                    </th>
+                                    <th class="text-center"
+                                        style="background: var(--bs-gray-300);color: var(--bs-black);border-style: none;">
+                                        Prazo de Entrega
+                                    </th>
+                                    {% if colaborador.funcao == 'Gerente' or colaborador.funcao == 'Financeiro' %}
+                                    <th class="text-center"
+                                        style="background: var(--bs-gray-300);color: var(--bs-black);border-style: none;">
+                                        Vendedor
+                                    </th>
+                                    {% endif %}
+
+                                    <th class="text-center"
+                                        style="background: var(--bs-gray-300);color: var(--bs-black);border-style: none;">
+                                        Valor Total
+                                    </th>
+                                    {% if colaborador.funcao == 'Vendedor Interno' or colaborador.funcao == 'Gerente' %}
+                                     <th class="text-center"
+                                        style="background: var(--bs-gray-300);color: var(--bs-black);border-style: none;">
+                                        Base R$
+                                    </th>
+                                    <th class="text-center"
+                                        style="background: var(--bs-gray-300);color: var(--bs-black);border-style: none;">
+                                        Comis. %
+                                    </th>
+                                    <th class="text-center"
+                                        style="background: var(--bs-gray-300);color: var(--bs-black);border-style: none;">
+                                        Comis. R$
+                                    </th>
+                                    {% endif %}
+                                    <th class="text-center"
+                                        style="background: var(--bs-gray-300);color: var(--bs-black);border-style: none;">
+                                        Bairro
+                                    </th>
+
+                                    <th class="text-center"
+                                        style="background: var(--bs-gray-300);color: var(--bs-black);border-style: none;">
+                                        Status
+                                    </th>
+                                    <th class="text-center filter-false sorter-false"
+                                        style="background: var(--bs-gray-300);color: var(--bs-black);border-style: none;">
+                                        Ações
+                                    </th>
+
+
+                                    <th class="text-center filter-false sorter-false"
+                                        style="background: var(--bs-gray-300);color: var(--bs-black);border-style: none;">
+                                        Nota Fiscal
+                                    </th>
+
+                                </tr>
+                                </thead>
+                                <tbody class="text-center" style="border-top-width: 0px; font-size:80%">
+                                {% for pedido in pedidos %}
+                                <tr style="background: #262a38;">
+                                    {% if pedido.flag_impressao == 1%}
+                                    <td style="color: var(--bs-gray-800);background: var(--bs-white); white-space: normal;">{{ pedido.numero }}</td>
+                                    {% else %}
+                                    <td style="color: red;background: var(--bs-white); white-space: normal;">{{ pedido.numero }}</td>
+                                    {% endif %}
+                                    <td style="color: var(--bs-gray-800);background: var(--bs-white); white-space: normal;">{{ pedido.cliente_pedido.nome }}</td>
+                                    <td style="color: var(--bs-gray-800);background: var(--bs-white);">{{ pedido.prazo_entrega|date:'d/m/Y' }}</td>
+                                    {% if colaborador.funcao == 'Gerente' or colaborador.funcao == 'Financeiro' %}
+                                    <td style="color: var(--bs-gray-800);background: var(--bs-white);">{{ pedido.Vendedor }}</td>
+                                    {% endif %}
+                                    <td class="valor-total" style="color: var(--bs-gray-800);background: var(--bs-white);">{{ pedido.valorTotal }}</td>
+                                    {% if colaborador.funcao == 'Vendedor Interno' or colaborador.funcao == 'Gerente' %}
+                                    <td class="valor-total" style="color: var(--bs-gray-800);background: var(--bs-white);">{{ pedido.valorTotalParcial }}</td>
+                                    <td style="color: var(--bs-gray-800);background: var(--bs-white);">{{ pedido.vendedor_comissao }} %</td>
+                                    <td class="valor-total" style="color: var(--bs-gray-800);background: var(--bs-white);">{{ pedido.vendedor_comissaov }}</td>
+                                    {% endif %}
+
+                                    <td style="color: var(--bs-gray-800);background: var(--bs-white); white-space: normal;">{{ pedido.bairro_entrega }}, {{ pedido.cidade_entrega }}-{{ pedido.uf_entrega }}</td>
+
+                                    <td style="color: var(--bs-gray-800);background: var(--bs-white); display:none;">{{ pedido.frete_flag }}</td>
+                                    <td style="color: var(--bs-gray-800);background: var(--bs-white); white-space: normal;">
+                                        {% if pedido.status == 'Pendente Financeiro' or pedido.status == 'PENDENTE FINANCEIRO' %}
+                                            <button class="btn bg-gradient-danger btn-pendente-financeiro text-xxs font-weight" data-pedido="{{ pedido.numero }}" data-valor-antecipado="{{ pedido.pagamento_antecipado }}" data-pagamento-antecipado="{{ pedido.datapg_antecipado|date:'Y-m-d' }}" style="color: white; background-color: #dc3545; font-size: 10px; font-weight: bold;">
+                                                {{ pedido.status }}
+                                            </button>
+                                        {% elif pedido.status == 'Confirma os Valores' %}
+                                            <button class="btn btn-confirma-valores bg-gradient-info text-xxs font-weight" data-pedido="{{ pedido.numero }}" data-status="{{ pedido.status }}" style="color: white; background-color: #17a2b8; font-size: 10px; font-weight: bold;">
+                                                {{ pedido.status }}
+                                            </button>
+                                        {% elif pedido.status == 'Producao' %}
+                                            <button class="btn bg-gradient-info text-xxs font-weight" style="color: white; background-color: #17a2b8; font-size: 10px; font-weight: bold;">
+                                                {{ pedido.status }}
+                                            </button>
+                                        {% elif pedido.status == 'Nfe Antecipada' %}
+                                            <button class="btn bg-gradient-warning text-xxs font-weight" style="color: white; background-color: #ffc107; font-size: 10px; font-weight: bold;">
+                                                {{ pedido.status }}
+                                            </button>
+                                        {% elif pedido.status == 'Liberado para Entrega' %}
+                                            <button class="btn bg-gradient-success text-xxs font-weight" style="color: white; background-color: #28a745; font-size: 10px; font-weight: bold;">
+                                                {{ pedido.status }}
+                                            </button>
+                                        {% elif pedido.status == 'Em Rota de Entrega' %}
+                                            <button class="btn bg-gradient-primary text-xxs font-weight" style="color: white; background-color: #007bff; font-size: 10px; font-weight: bold;">
+                                                {{ pedido.status }}
+                                            </button>
+                                        {% elif pedido.status == 'Finalizado' %}
+                                            <button class="btn bg-gradient-success text-xxs font-weight" style="color: white; background-color: #28a745; font-size: 10px; font-weight: bold;">
+                                                {{ pedido.status }}
+                                            </button>
+                                        {% else %}
+                                            <button class="btn bg-gradient-dark text-xxs font-weight" style="color: white; background-color: #343a40; font-size: 10px; font-weight: bold;">
+                                                {{ pedido.status }}
+                                            </button>
+                                        {% endif %}
+                                        </td>
+                                    <td class="text-center align-middle"
+                                        style="max-height: 60px;height: 60px;background: var(--bs-white);color: var(--bs-gray-800); white-space: normal;">
+                                        <a class="btn btnMaterial btn-flat btnNoBorders" id="bt-docpedido" title="Documento Pedido"
+                                           role="button" href="/geradocpedido/{{ pedido.numero }}/">
+                                            <img src="{% static 'PEDIDO/svg_doc.svg' %}" width="16" height="16"
+                                                    class="bi" alt="ícone de arquivo" />
+                                        </a>
+                                        <a class="btn btnMaterial btn-flat btnNoBorders" id="bt-whatsapp" title="Whatsapp 1 {{pedido.cliente_pedido.telefone1}}"
+                                           role="button" href="https://wa.me/55{{pedido.cliente_pedido.telefone1}}">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-whatsapp" viewBox="0 0 16 16">
+                                              <path d="M13.601 2.326A7.85 7.85 0 0 0 7.994 0C3.627 0 .068 3.558.064 7.926c0 1.399.366 2.76 1.057 3.965L0 16l4.204-1.102a7.9 7.9 0 0 0 3.79.965h.004c4.368 0 7.926-3.558 7.93-7.93A7.9 7.9 0 0 0 13.6 2.326zM7.994 14.521a6.6 6.6 0 0 1-3.356-.92l-.24-.144-2.494.654.666-2.433-.156-.251a6.56 6.56 0 0 1-1.007-3.505c0-3.626 2.957-6.584 6.591-6.584a6.56 6.56 0 0 1 4.66 1.931 6.56 6.56 0 0 1 1.928 4.66c-.004 3.639-2.961 6.592-6.592 6.592m3.615-4.934c-.197-.099-1.17-.578-1.353-.646-.182-.065-.315-.099-.445.099-.133.197-.513.646-.627.775-.114.133-.232.148-.43.05-.197-.1-.836-.308-1.592-.985-.59-.525-.985-1.175-1.103-1.372-.114-.198-.011-.304.088-.403.087-.088.197-.232.296-.346.1-.114.133-.198.198-.33.065-.134.034-.248-.015-.347-.05-.099-.445-1.076-.612-1.47-.16-.389-.323-.335-.445-.34-.114-.007-.247-.007-.38-.007a.73.73 0 0 0-.529.247c-.182.198-.691.677-.691 1.654s.71 1.916.81 2.049c.098.133 1.394 2.132 3.383 2.992.47.205.84.326 1.129.418.475.152.904.129 1.246.08.38-.058 1.171-.48 1.338-.943.164-.464.164-.86.114-.943-.049-.084-.182-.133-.38-.232"/>
+                                            </svg>
+                                        </a>
+                                        {% if pedido.cliente_pedido.telefone2 %}
+                                        <a class="btn btnMaterial btn-flat btnNoBorders" id="bt-whatsapp2" title="Whatsapp 2 {{pedido.cliente_pedido.telefone2}}"
+                                           role="button" href="https://wa.me/55{{pedido.cliente_pedido.telefone2}}">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-whatsapp" viewBox="0 0 16 16">
+                                              <path d="M13.601 2.326A7.85 7.85 0 0 0 7.994 0C3.627 0 .068 3.558.064 7.926c0 1.399.366 2.76 1.057 3.965L0 16l4.204-1.102a7.9 7.9 0 0 0 3.79.965h.004c4.368 0 7.926-3.558 7.93-7.93A7.9 7.9 0 0 0 13.6 2.326zM7.994 14.521a6.6 6.6 0 0 1-3.356-.92l-.24-.144-2.494.654.666-2.433-.156-.251a6.56 6.56 0 0 1-1.007-3.505c0-3.626 2.957-6.584 6.591-6.584a6.56 6.56 0 0 1 4.66 1.931 6.56 6.56 0 0 1 1.928 4.66c-.004 3.639-2.961 6.592-6.592 6.592m3.615-4.934c-.197-.099-1.17-.578-1.353-.646-.182-.065-.315-.099-.445.099-.133.197-.513.646-.627.775-.114.133-.232.148-.43.05-.197-.1-.836-.308-1.592-.985-.59-.525-.985-1.175-1.103-1.372-.114-.198-.011-.304.088-.403.087-.088.197-.232.296-.346.1-.114.133-.198.198-.33.065-.134.034-.248-.015-.347-.05-.099-.445-1.076-.612-1.47-.16-.389-.323-.335-.445-.34-.114-.007-.247-.007-.38-.007a.73.73 0 0 0-.529.247c-.182.198-.691.677-.691 1.654s.71 1.916.81 2.049c.098.133 1.394 2.132 3.383 2.992.47.205.84.326 1.129.418.475.152.904.129 1.246.08.38-.058 1.171-.48 1.338-.943.164-.464.164-.86.114-.943-.049-.084-.182-.133-.38-.232"/>
+                                            </svg>
+                                        </a>
+                                        {% endif %}
+
+
+                                          <a class="btn btnMaterial btn-flat primary semicircle btn-enviar-email" id="btn-enviar-email" data-cancela-pedido="{{ pedido.numero }}"
+                                           role="button"
+                                           title="Enviar Email" href="mailto:{{pedido.comprador_email}};{{pedido.cliente_pedido.email}};"
+                                           style="color: var(--bs-table-color);">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-envelope-at-fill" viewBox="0 0 16 16">
+                                              <path d="M2 2A2 2 0 0 0 .05 3.555L8 8.414l7.95-4.859A2 2 0 0 0 14 2H2Zm-2 9.8V4.698l5.803 3.546L0 11.801Zm6.761-2.97-6.57 4.026A2 2 0 0 0 2 14h6.256A4.493 4.493 0 0 1 8 12.5a4.49 4.49 0 0 1 1.606-3.446l-.367-.225L8 9.586l-1.239-.757ZM16 9.671V4.697l-5.803 3.546.338.208A4.482 4.482 0 0 1 12.5 8c1.414 0 2.675.652 3.5 1.671Z"/>
+                                              <path d="M15.834 12.244c0 1.168-.577 2.025-1.587 2.025-.503 0-1.002-.228-1.12-.648h-.043c-.118.416-.543.643-1.015.643-.77 0-1.259-.542-1.259-1.434v-.529c0-.844.481-1.4 1.26-1.4.585 0 .87.333.953.63h.03v-.568h.905v2.19c0 .272.18.42.411.42.315 0 .639-.415.639-1.39v-.118c0-1.277-.95-2.326-2.484-2.326h-.04c-1.582 0-2.64 1.067-2.64 2.724v.157c0 1.867 1.237 2.654 2.57 2.654h.045c.507 0 .935-.07 1.18-.18v.731c-.219.1-.643.175-1.237.175h-.044C10.438 16 9 14.82 9 12.646v-.214C9 10.36 10.421 9 12.485 9h.035c2.12 0 3.314 1.43 3.314 3.034v.21Zm-4.04.21v.227c0 .586.227.8.581.8.31 0 .564-.17.564-.743v-.367c0-.516-.275-.708-.572-.708-.346 0-.573.245-.573.791Z"/>
+                                            </svg></a>
+                                        <a class="btn btnMaterial btn-solicita-reparo btnNoBorders" id="bt-reparo" title="Solicitar Reparo" data-pedido-status="{{ pedido.numero }} " data-status="{{ pedido.status }}" data-data="{{ pedido.prazo_entrega }}"
+                                           role="button" style="display:none;">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-tools" viewBox="0 0 16 16">
+                                          <path d="M1 0 0 1l2.2 3.081a1 1 0 0 0 .815.419h.07a1 1 0 0 1 .708.293l2.675 2.675-2.617 2.654A3.003 3.003 0 0 0 0 13a3 3 0 1 0 5.878-.851l2.654-2.617.968.968-.305.914a1 1 0 0 0 .242 1.023l3.27 3.27a.997.997 0 0 0 1.414 0l1.586-1.586a.997.997 0 0 0 0-1.414l-3.27-3.27a1 1 0 0 0-1.023-.242L10.5 9.5l-.96-.96 2.68-2.643A3.005 3.005 0 0 0 16 3c0-.269-.035-.53-.102-.777l-2.14 2.141L12 4l-.364-1.757L13.777.102a3 3 0 0 0-3.675 3.68L7.462 6.46 4.793 3.793a1 1 0 0 1-.293-.707v-.071a1 1 0 0 0-.419-.814L1 0Zm9.646 10.646a.5.5 0 0 1 .708 0l2.914 2.915a.5.5 0 0 1-.707.707l-2.915-2.914a.5.5 0 0 1 0-.708ZM3 11l.471.242.529.026.287.445.445.287.026.529L5 13l-.242.471-.026.529-.445.287-.287.445-.529.026L3 15l-.471-.242L2 14.732l-.287-.445L1.268 14l-.026-.529L1 13l.242-.471.026-.529.445-.287.287-.445.529-.026L3 11Z"/>
+                                        </svg>
+                                        </a>
+                                        <a class="btn btnMaterial btn-reparo-novo btnNoBorders" id="bt-reparo-novo"
+                                           title="Solicitar Reparo" data-pedido-numero="{{ pedido.numero }} "
+                                           data-url="/nova_guia_reparo/{{pedido.numero}}/" data-data="{{ pedido.prazo_entrega }}"
+
+                                           role="button">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
+                                                 fill="currentColor" class="bi bi-tools" viewBox="0 0 16 16">
+                                                <path d="M1 0 0 1l2.2 3.081a1 1 0 0 0 .815.419h.07a1 1 0 0 1 .708.293l2.675 2.675-2.617 2.654A3.003 3.003 0 0 0 0 13a3 3 0 1 0 5.878-.851l2.654-2.617.968.968-.305.914a1 1 0 0 0 .242 1.023l3.27 3.27a.997.997 0 0 0 1.414 0l1.586-1.586a.997.997 0 0 0 0-1.414l-3.27-3.27a1 1 0 0 0-1.023-.242L10.5 9.5l-.96-.96 2.68-2.643A3.005 3.005 0 0 0 16 3c0-.269-.035-.53-.102-.777l-2.14 2.141L12 4l-.364-1.757L13.777.102a3 3 0 0 0-3.675 3.68L7.462 6.46 4.793 3.793a1 1 0 0 1-.293-.707v-.071a1 1 0 0 0-.419-.814L1 0Zm9.646 10.646a.5.5 0 0 1 .708 0l2.914 2.915a.5.5 0 0 1-.707.707l-2.915-2.914a.5.5 0 0 1 0-.708ZM3 11l.471.242.529.026.287.445.445.287.026.529L5 13l-.242.471-.026.529-.445.287-.287.445-.529.026L3 15l-.471-.242L2 14.732l-.287-.445L1.268 14l-.026-.529L1 13l.242-.471.026-.529.445-.287.287-.445.529-.026L3 11Z"/>
+                                            </svg>
+                                        </a>
+
+                                        <a class="btn btnMaterial btn-flat btnNoBorders" id="bt-gerarecibo" title="Recibo"
+                                           role="button" href="/gerarecibo/{{ pedido.numero }}/"  target="_blank">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
+                                                 fill="currentColor" class="bi bi-file-earmark-text"
+                                                 viewBox="0 0 16 16">
+                                                <path d="M5.5 7a.5.5 0 0 0 0 1h5a.5.5 0 0 0 0-1h-5zM5 9.5a.5.5 0 0 1 .5-.5h5a.5.5 0 0 1 0 1h-5a.5.5 0 0 1-.5-.5zm0 2a.5.5 0 0 1 .5-.5h2a.5.5 0 0 1 0 1h-2a.5.5 0 0 1-.5-.5z"/>
+                                                <path d="M9.5 0H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2V4.5L9.5 0zm0 1v2A1.5 1.5 0 0 0 11 4.5h2V14a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1h5.5z"/>
+                                            </svg>
+                                        </a>
+                                         {% if colaborador.funcao == 'Gerente' or colaborador.funcao == 'Financeiro' or colaborador.funcao == 'Expedicao' %}
+                                        <a class="btn btnMaterial btn-altera-status btnNoBorders" id="bt-status" title="Alterar Status" data-pedido-status="{{ pedido.numero }} " data-status="{{ pedido.status }}" data-data="{{ pedido.prazo_entrega }}"
+                                           role="button">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-pencil-square" viewBox="0 0 16 16">
+                                              <path d="M15.502 1.94a.5.5 0 0 1 0 .706L14.459 3.69l-2-2L13.502.646a.5.5 0 0 1 .707 0l1.293 1.293zm-1.75 2.456-2-2L4.939 9.21a.5.5 0 0 0-.121.196l-.805 2.414a.25.25 0 0 0 .316.316l2.414-.805a.5.5 0 0 0 .196-.12l6.813-6.814z"/>
+                                              <path fill-rule="evenodd" d="M1 13.5A1.5 1.5 0 0 0 2.5 15h11a1.5 1.5 0 0 0 1.5-1.5v-6a.5.5 0 0 0-1 0v6a.5.5 0 0 1-.5.5h-11a.5.5 0 0 1-.5-.5v-11a.5.5 0 0 1 .5-.5H9a.5.5 0 0 0 0-1H2.5A1.5 1.5 0 0 0 1 2.5v11z"/>
+                                            </svg>
+                                        </a>
+
+                                         {% endif %}
+                                        {% if 'Reparo' in pedido.status %}
+                                        <a class="btn btnMaterial btn-flat btnNoBorders" id="bt-guiareparo" style="color:red;" title="Guia Reparo"
+                                           role="button" href="/guia_reparo/{{ pedido.numero }}/">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
+                                                 fill="currentColor" class="bi bi-file-earmark-text"
+                                                 viewBox="0 0 16 16">
+                                                <path d="M5.5 7a.5.5 0 0 0 0 1h5a.5.5 0 0 0 0-1h-5zM5 9.5a.5.5 0 0 1 .5-.5h5a.5.5 0 0 1 0 1h-5a.5.5 0 0 1-.5-.5zm0 2a.5.5 0 0 1 .5-.5h2a.5.5 0 0 1 0 1h-2a.5.5 0 0 1-.5-.5z"/>
+                                                <path d="M9.5 0H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2V4.5L9.5 0zm0 1v2A1.5 1.5 0 0 0 11 4.5h2V14a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1h5.5z"/>
+                                            </svg>
+                                        </a>
+                                        {% endif %}
+
+                                        <a class="btn btnMaterial btn-flat primary semicircle" id="consultar-pedido"
+                                           role="button"
+                                           href="/consultarpedido/{{ pedido.numero }}" title="Visualizar Pedido"
+                                           style="color: var(--bs-table-color);">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-eye-fill" viewBox="0 0 16 16">
+                                              <path d="M10.5 8a2.5 2.5 0 1 1-5 0 2.5 2.5 0 0 1 5 0"/>
+                                              <path d="M0 8s3-5.5 8-5.5S16 8 16 8s-3 5.5-8 5.5S0 8 0 8m8 3.5a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7"/>
+                                            </svg>
+
+
+                                        </a>
+                                        {% if colaborador.funcao == 'Gerente' %}
+
+                                        <a class="btn btnMaterial btn-flat success semicircle" id="editar-pedido" title="Editar Pedido"
+                                           role="button"
+                                           href="/editarpedidob/{{ pedido.numero }}">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-pencil-fill" viewBox="0 0 16 16">
+                                              <path d="M12.854.146a.5.5 0 0 0-.707 0L10.5 1.793 14.207 5.5l1.647-1.646a.5.5 0 0 0 0-.708zm.646 6.061L9.793 2.5 3.293 9H3.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.207zm-7.468 7.468A.5.5 0 0 1 6 13.5V13h-.5a.5.5 0 0 1-.5-.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.5-.5V10h-.5a.5.5 0 0 1-.175-.032l-.179.178a.5.5 0 0 0-.11.168l-2 5a.5.5 0 0 0 .65.65l5-2a.5.5 0 0 0 .168-.11z"/>
+                                            </svg>
+                                        </a>
+                                        {% endif %}
+                                        {% if colaborador.funcao == 'Gerente' or colaborador.funcao == 'Vendedor Interno' %}
+                                        <a class="btn btnMaterial btn-flat btnNoBorders" role="button" id="btn-upload-layout-{{ pedido.numero }}" data-pedido="{{ pedido.numero }}" title="Cadastrar Novo Layot">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-upload" viewBox="0 0 16 16">
+                                              <path d="M.5 9.9a.5.5 0 0 1 .5.5v2.5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.5a.5.5 0 0 1 1 0v2.5a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2v-2.5a.5.5 0 0 1 .5-.5z"/>
+                                              <path d="M7.646 1.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1-.708.708L8.5 2.707V11.5a.5.5 0 0 1-1 0V2.707L5.354 4.854a.5.5 0 1 1-.708-.708l3-3z"/>
+                                            </svg>
+                                        </a>
+                                        {% endif %}
+
+
+                                        {% if pedido.caminho_layout %}
+                                            <a class="btn btnMaterial btn-flat btnNoBorders" id="bt-download"
+                                               role="button" href="{{ pedido.caminho_layout }}" title="Baixar Layout">
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-download" viewBox="0 0 16 16">
+                                                  <path d="M.5 9.9a.5.5 0 0 1 .5.5v2.5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.5a.5.5 0 0 1 1 0v2.5a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2v-2.5a.5.5 0 0 1 .5-.5z"/>
+                                                  <path d="M7.646 11.854a.5.5 0 0 0 .708 0l3-3a.5.5 0 0 0-.708-.708L8.5 10.293V1.5a.5.5 0 0 0-1 0v8.793L5.354 8.146a.5.5 0 1 0-.708.708l3 3z"/>
+                                                </svg>
+                                            </a>
+                                        {% endif %}
+                                        {% if colaborador.funcao == 'Gerente' %}
+                                            <a class="btn btnMaterial btn-delete btnNoBorders" id="bt-delete"
+                                               role="button" data-pedido="{{ pedido.numero }}" title="Deletar Pedido {{ pedido.numero }}">
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-x-circle-fill" viewBox="0 0 16 16">
+                                                  <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zM5.354 4.646a.5.5 0 1 0-.708.708L7.293 8l-2.647 2.646a.5.5 0 0 0 .708.708L8 8.707l2.646 2.647a.5.5 0 0 0 .708-.708L8.707 8l2.647-2.646a.5.5 0 0 0-.708-.708L8 7.293 5.354 4.646z"/>
+                                                </svg>
+                                            </a>
+                                        {% endif %}
+                                        {% if pedido.tipo_entrega == 'retirada' %}
+                                        <a class="btn btnMaterial btn-flat primary semicircle" id="retirada-cliente"
+                                           role="button"
+                                           href="/registra_entrega/{{ pedido.numero }}"
+                                           style="color: var(--bs-table-color);"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-hand-thumbs-up-fill" viewBox="0 0 16 16">
+                                          <path d="M6.956 1.745C7.021.81 7.908.087 8.864.325l.261.066c.463.116.874.456 1.012.965.22.816.533 2.511.062 4.51a9.84 9.84 0 0 1 .443-.051c.713-.065 1.669-.072 2.516.21.518.173.994.681 1.2 1.273.184.532.16 1.162-.234 1.733.058.119.103.242.138.363.077.27.113.567.113.856 0 .289-.036.586-.113.856-.039.135-.09.273-.16.404.169.387.107.819-.003 1.148a3.163 3.163 0 0 1-.488.901c.054.152.076.312.076.465 0 .305-.089.625-.253.912C13.1 15.522 12.437 16 11.5 16H8c-.605 0-1.07-.081-1.466-.218a4.82 4.82 0 0 1-.97-.484l-.048-.03c-.504-.307-.999-.609-2.068-.722C2.682 14.464 2 13.846 2 13V9c0-.85.685-1.432 1.357-1.615.849-.232 1.574-.787 2.132-1.41.56-.627.914-1.28 1.039-1.639.199-.575.356-1.539.428-2.59z"/>
+                                        </svg></a>
+                                        {% endif %}
+
+                                    </td>
+                                    {% if colaborador.funcao == 'Vendedor Interno' or colaborador.funcao == 'Vendedor Externo' %}
+                                    <td style="color: var(--bs-gray-800);background: var(--bs-white);">
+
+                                        {% if pedido.caminho_nfe %}
+                                        <a class="btn btnMaterial btn-flat primary semicircle" id="visualizar-nfe-pdf-vendedor"
+                                           role="button"
+                                           href="{{pedido.caminho_nfe}}" title="Nota Fiscal PDF" target="_blank"
+                                           style="color: var(--bs-table-color);">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-file-earmark-pdf" viewBox="0 0 16 16">
+                                              <path d="M14 14V4.5L9.5 0H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2zM9.5 3A1.5 1.5 0 0 0 11 4.5h2V14a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1h5.5v2z"/>
+                                              <path d="M4.603 14.087a.81.81 0 0 1-.438-.42c-.195-.388-.13-.776.08-1.102.198-.307.526-.568.897-.787a7.68 7.68 0 0 1 1.482-.645 19.697 19.697 0 0 0 1.062-2.227 7.269 7.269 0 0 1-.43-1.295c-.086-.4-.119-.796-.046-1.136.075-.354.274-.672.65-.823.192-.077.4-.12.602-.077a.7.7 0 0 1 .477.365c.088.164.12.356.127.538.007.188-.012.396-.047.614-.084.51-.27 1.134-.52 1.794a10.954 10.954 0 0 0 .98 1.686 5.753 5.753 0 0 1 1.334.05c.364.066.734.195.96.465.12.144.193.32.2.518.007.192-.047.382-.138.563a1.04 1.04 0 0 1-.354.416.856.856 0 0 1-.51.138c-.331-.014-.654-.196-.933-.417a5.712 5.712 0 0 1-.911-.95 11.651 11.651 0 0 0-1.997.406 11.307 11.307 0 0 1-1.02 1.51c-.292.35-.609.656-.927.787a.793.793 0 0 1-.58.029zm1.379-1.901c-.166.076-.32.156-.459.238-.328.194-.541.383-.647.547-.094.145-.096.25-.04.361.01.022.02.036.026.044a.266.266 0 0 0 .035-.012c.137-.056.355-.235.635-.572a8.18 8.18 0 0 0 .45-.606zm1.64-1.33a12.71 12.71 0 0 1 1.01-.193 11.744 11.744 0 0 1-.51-.858 20.801 20.801 0 0 1-.5 1.05zm2.446.45c.15.163.296.3.435.41.24.19.407.253.498.256a.107.107 0 0 0 .07-.015.307.307 0 0 0 .094-.125.436.436 0 0 0 .059-.2.095.095 0 0 0-.026-.063c-.052-.062-.2-.152-.518-.209a3.876 3.876 0 0 0-.612-.053zM8.078 7.8a6.7 6.7 0 0 0 .2-.828c.031-.188.043-.343.038-.465a.613.613 0 0 0-.032-.198.517.517 0 0 0-.145.04c-.087.035-.158.106-.196.283-.04.192-.03.469.046.822.024.111.054.227.09.346z"/>
+                                            </svg></a>
+                                        {% endif %}
+
+
+                                   {% endif %}
+                                    {% if colaborador.funcao == 'Gerente' or colaborador.funcao == 'Financeiro' %}
+                                    <td style="color: var(--bs-gray-800);background: var(--bs-white);">
+
+                                    <a class="btn btnMaterial btn-flat btnNoBorders btn-sincroniza-nf" role="button" id="btn-sincronizar-pedido-{{ pedido.numero }}"
+                                       title="Sincronizar NFe Pedido"
+                                        href="/sincroniza_pedido/{{ pedido.numero }}"
+                                        target="_blank">
+
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-repeat" viewBox="0 0 16 16">
+                                              <path d="M11.534 7h3.932a.25.25 0 0 1 .192.41l-1.966 2.36a.25.25 0 0 1-.384 0l-1.966-2.36a.25.25 0 0 1 .192-.41m-11 2h3.932a.25.25 0 0 0 .192-.41L2.692 6.23a.25.25 0 0 0-.384 0L.342 8.59A.25.25 0 0 0 .534 9"/>
+                                              <path fill-rule="evenodd" d="M8 3c-1.552 0-2.94.707-3.857 1.818a.5.5 0 1 1-.771-.636A6.002 6.002 0 0 1 13.917 7H12.9A5 5 0 0 0 8 3M3.1 9a5.002 5.002 0 0 0 8.757 2.182.5.5 0 1 1 .771.636A6.002 6.002 0 0 1 2.083 9z"/>
+                                            </svg>
+                                        </a>
+
+
+
+                                           {% if pedido.flag_nfe == 0 %}
+                                    <a class="btn btnMaterial btn-flat btnNoBorders btn-emitir-nf" role="button" id="btn-emitir-nf-{{ pedido.numero }}" data-inscricao="{{ pedido.cliente_pedido.inscricao_estadual }}" data-frete="{{ pedido.frete_flag }}" data-pedido="{{ pedido.numero }}" title="Emitir NFe">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-box-arrow-up-right" viewBox="0 0 16 16">
+                                              <path fill-rule="evenodd" d="M8.636 3.5a.5.5 0 0 0-.5-.5H1.5A1.5 1.5 0 0 0 0 4.5v10A1.5 1.5 0 0 0 1.5 16h10a1.5 1.5 0 0 0 1.5-1.5V7.864a.5.5 0 0 0-1 0V14.5a.5.5 0 0 1-.5.5h-10a.5.5 0 0 1-.5-.5v-10a.5.5 0 0 1 .5-.5h6.636a.5.5 0 0 0 .5-.5z"/>
+                                              <path fill-rule="evenodd" d="M16 .5a.5.5 0 0 0-.5-.5h-5a.5.5 0 0 0 0 1h3.793L6.146 9.146a.5.5 0 1 0 .708.708L15 1.707V5.5a.5.5 0 0 0 1 0v-5z"/>
+                                            </svg>
+                                        </a>
+                                            {% else %}
+                                        <a class="btn btnMaterial btn-flat btnNoBorders text-danger btn-emitir-nf" role="button" id="btn-emitir-nf-{{ pedido.numero }}" data-inscricao="{{ pedido.cliente_pedido.inscricao_estadual }}" data-frete="{{ pedido.frete_flag }}" data-pedido="{{ pedido.numero }}" title="Emitir NFe">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-box-arrow-up-right text-danger" viewBox="0 0 16 16">
+                                              <path fill-rule="evenodd" d="M8.636 3.5a.5.5 0 0 0-.5-.5H1.5A1.5 1.5 0 0 0 0 4.5v10A1.5 1.5 0 0 0 1.5 16h10a1.5 1.5 0 0 0 1.5-1.5V7.864a.5.5 0 0 0-1 0V14.5a.5.5 0 0 1-.5.5h-10a.5.5 0 0 1-.5-.5v-10a.5.5 0 0 1 .5-.5h6.636a.5.5 0 0 0 .5-.5z"/>
+                                              <path fill-rule="evenodd" d="M16 .5a.5.5 0 0 0-.5-.5h-5a.5.5 0 0 0 0 1h3.793L6.146 9.146a.5.5 0 1 0 .708.708L15 1.707V5.5a.5.5 0 0 0 1 0v-5z"/>
+                                            </svg>
+                                        </a>
+
+                                            {% endif %}
+                                    <a class="btn btnMaterial btn-flat btnNoBorders text-success" role="button" id="btn-emitir-nf-aberta" href="/editaritensnf/{{ pedido.numero}}" data-inscricao="{{ pedido.cliente_pedido.inscricao_estadual }}" data-frete="{{ pedido.frete_flag }}" data-pedido="{{ pedido.numero }}" title="Emitir NFe Aberta">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-box-arrow-up-right text-info" viewBox="0 0 16 16">
+                                              <path fill-rule="evenodd" d="M8.636 3.5a.5.5 0 0 0-.5-.5H1.5A1.5 1.5 0 0 0 0 4.5v10A1.5 1.5 0 0 0 1.5 16h10a1.5 1.5 0 0 0 1.5-1.5V7.864a.5.5 0 0 0-1 0V14.5a.5.5 0 0 1-.5.5h-10a.5.5 0 0 1-.5-.5v-10a.5.5 0 0 1 .5-.5h6.636a.5.5 0 0 0 .5-.5z"/>
+                                              <path fill-rule="evenodd" d="M16 .5a.5.5 0 0 0-.5-.5h-5a.5.5 0 0 0 0 1h3.793L6.146 9.146a.5.5 0 1 0 .708.708L15 1.707V5.5a.5.5 0 0 0 1 0v-5z"/>
+                                            </svg>
+                                        </a>
+
+
+
+
+                                        {% if pedido.frete_fornecedor|default:"" == "" %}
+                                        <a class="btn btnMaterial btn-flat btnNoBorders btn-transporte" role="button" id="btn-cadastrar-frete-{{ pedido.numero }}" data-frete="{{ pedido.frete_flag }}" data-pedido="{{ pedido.numero }}" title="Cadastrar Frete">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-truck" viewBox="0 0 16 16">
+                                              <path d="M0 3.5A1.5 1.5 0 0 1 1.5 2h9A1.5 1.5 0 0 1 12 3.5V5h1.02a1.5 1.5 0 0 1 1.17.563l1.481 1.85a1.5 1.5 0 0 1 .329.938V10.5a1.5 1.5 0 0 1-1.5 1.5H14a2 2 0 1 1-4 0H5a2 2 0 1 1-3.998-.085A1.5 1.5 0 0 1 0 10.5v-7zm1.294 7.456A1.999 1.999 0 0 1 4.732 11h5.536a2.01 2.01 0 0 1 .732-.732V3.5a.5.5 0 0 0-.5-.5h-9a.5.5 0 0 0-.5.5v7a.5.5 0 0 0 .294.456zM12 10a2 2 0 0 1 1.732 1h.768a.5.5 0 0 0 .5-.5V8.35a.5.5 0 0 0-.11-.312l-1.48-1.85A.5.5 0 0 0 13.02 6H12v4zm-9 1a1 1 0 1 0 0 2 1 1 0 0 0 0-2zm9 0a1 1 0 1 0 0 2 1 1 0 0 0 0-2z"/>
+                                            </svg>
+                                        </a>
+                                        {% endif %}
+                                        {% if pedido.caminho_nfe %}
+                                        <a class="btn btnMaterial btn-flat primary semicircle" id="visualizar-nfe-pdf"
+                                           role="button"
+                                           href="{{pedido.caminho_nfe}}" title="Nota Fiscal PDF" target="_blank"
+                                           style="color: var(--bs-table-color);">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-file-earmark-pdf" viewBox="0 0 16 16">
+                                              <path d="M14 14V4.5L9.5 0H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2zM9.5 3A1.5 1.5 0 0 0 11 4.5h2V14a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1h5.5v2z"/>
+                                              <path d="M4.603 14.087a.81.81 0 0 1-.438-.42c-.195-.388-.13-.776.08-1.102.198-.307.526-.568.897-.787a7.68 7.68 0 0 1 1.482-.645 19.697 19.697 0 0 0 1.062-2.227 7.269 7.269 0 0 1-.43-1.295c-.086-.4-.119-.796-.046-1.136.075-.354.274-.672.65-.823.192-.077.4-.12.602-.077a.7.7 0 0 1 .477.365c.088.164.12.356.127.538.007.188-.012.396-.047.614-.084.51-.27 1.134-.52 1.794a10.954 10.954 0 0 0 .98 1.686 5.753 5.753 0 0 1 1.334.05c.364.066.734.195.96.465.12.144.193.32.2.518.007.192-.047.382-.138.563a1.04 1.04 0 0 1-.354.416.856.856 0 0 1-.51.138c-.331-.014-.654-.196-.933-.417a5.712 5.712 0 0 1-.911-.95 11.651 11.651 0 0 0-1.997.406 11.307 11.307 0 0 1-1.02 1.51c-.292.35-.609.656-.927.787a.793.793 0 0 1-.58.029zm1.379-1.901c-.166.076-.32.156-.459.238-.328.194-.541.383-.647.547-.094.145-.096.25-.04.361.01.022.02.036.026.044a.266.266 0 0 0 .035-.012c.137-.056.355-.235.635-.572a8.18 8.18 0 0 0 .45-.606zm1.64-1.33a12.71 12.71 0 0 1 1.01-.193 11.744 11.744 0 0 1-.51-.858 20.801 20.801 0 0 1-.5 1.05zm2.446.45c.15.163.296.3.435.41.24.19.407.253.498.256a.107.107 0 0 0 .07-.015.307.307 0 0 0 .094-.125.436.436 0 0 0 .059-.2.095.095 0 0 0-.026-.063c-.052-.062-.2-.152-.518-.209a3.876 3.876 0 0 0-.612-.053zM8.078 7.8a6.7 6.7 0 0 0 .2-.828c.031-.188.043-.343.038-.465a.613.613 0 0 0-.032-.198.517.517 0 0 0-.145.04c-.087.035-.158.106-.196.283-.04.192-.03.469.046.822.024.111.054.227.09.346z"/>
+                                            </svg></a>
+                                        {% endif %}
+                                        {% if pedido.caminho_xml %}
+                                        <a class="btn btnMaterial btn-flat primary semicircle" id="visualizar-nfe-xml"
+                                           role="button"
+                                           href="{{pedido.caminho_xml}}" target="_blank" title="Nota Fiscal XML"
+                                           style="color: var(--bs-table-color);">
+                                           <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-filetype-xml" viewBox="0 0 16 16">
+                                              <path fill-rule="evenodd" d="M14 4.5V14a2 2 0 0 1-2 2v-1a1 1 0 0 0 1-1V4.5h-2A1.5 1.5 0 0 1 9.5 3V1H4a1 1 0 0 0-1 1v9H2V2a2 2 0 0 1 2-2h5.5L14 4.5ZM3.527 11.85h-.893l-.823 1.439h-.036L.943 11.85H.012l1.227 1.983L0 15.85h.861l.853-1.415h.035l.85 1.415h.908l-1.254-1.992 1.274-2.007Zm.954 3.999v-2.66h.038l.952 2.159h.516l.946-2.16h.038v2.661h.715V11.85h-.8l-1.14 2.596h-.025L4.58 11.85h-.806v3.999h.706Zm4.71-.674h1.696v.674H8.4V11.85h.791v3.325Z"/>
+                                            </svg></a>
+                                        {% endif %}
+                                        {% if pedido.numero_nfe %}
+                                        <a class="btn btnMaterial btn-flat primary semicircle btn-cancelar-nfe" id="btn-cancelar-nfe" data-cancela-pedido="{{ pedido.numero }}"
+                                           role="button"
+                                           title="Cancelar Nota Fiscal {{ pedido.numero_nfe }}" target="_blank"
+                                           style="color: var(--bs-table-color);">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-x-circle-fill" viewBox="0 0 16 16">
+                                              <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zM5.354 4.646a.5.5 0 1 0-.708.708L7.293 8l-2.647 2.646a.5.5 0 0 0 .708.708L8 8.707l2.646 2.647a.5.5 0 0 0 .708-.708L8.707 8l2.647-2.646a.5.5 0 0 0-.708-.708L8 7.293 5.354 4.646z"/>
+                                            </svg></a>
+                                        {% endif %}
+                                   {% endif %}
+
+                                    </td>
+
+
+                                </tr>
+                                {% endfor %}
+                                </tbody>
+                            </table>
+
+                        </div>
+
+                    </div>
+                </div>
+
+            </div>
+
+    </div>
+
+</div>
+
+<footer class="bg-white sticky-footer" style="background: linear-gradient(#1f232d 0%, #1f232d 100%);">
+    <div class="container my-auto">
+        <div class="text-center my-auto copyright text-gray-100" style="font-size: 13.5px;"><span>Copyright © Conectiva Soluções Tecnologicas&nbsp;<span
+                id="year">2022</span></span></div>
+    </div>
+</footer>
+
+</div>
+<script src="{% static 'meus_pedidos/assets/bootstrap/js/bootstrap.min.js' %}"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.31.2/js/jquery.tablesorter.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.31.2/js/widgets/widget-filter.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.31.2/js/widgets/widget-storage.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
+<script src="{% static 'meus_pedidos/assets/js/script.min.js' %}"></script>
+
+
+<script>
+    var btnsUploadLayout = document.querySelectorAll('[id^="btn-upload-layout-"]');
+
+    for (var i = 0; i < btnsUploadLayout.length; i++) {
+        btnsUploadLayout[i].addEventListener('click', function(event) {
+            event.preventDefault();
+            var numeroPedido = this.getAttribute('data-pedido');
+            document.getElementById('numero_pedido').value = numeroPedido;
+            document.getElementById('modal-cadastro-layout').style.display = 'block';
+        });
+    }
+
+    document.getElementById('fechar-modal').addEventListener('click', function(event) {
+        event.preventDefault();
+        document.getElementById('modal-cadastro-layout').style.display = 'none';
+    });
+    document.getElementById('cadastrar-pedido-btn').addEventListener('click', function(event) {
+        event.preventDefault();
+        document.getElementById('modal-form').submit();
+    });
+</script>
+<script>
+var btnsGravarFrete = document.querySelectorAll('.btn-transporte');
+
+// Itera sobre os botões encontrados
+btnsGravarFrete.forEach(function(btns) {
+  btns.addEventListener('click', function() {
+    console.log('entrou clique');
+    // Obtém o número do pedido do atributo de dados 'data-pedido'
+    var numeroPedido = this.getAttribute('data-pedido');
+    var freteFlag = this.getAttribute('data-frete');
+    document.getElementById('numero_pedido_transporte').value = numeroPedido;
+    document.getElementById('modal-transporte').style.display = 'block';
+
+    document.getElementById('modal-transporte-form').addEventListener('submit', function(event) {
+      // Impede o comportamento padrão de submissão do formulário
+      event.preventDefault();
+      var transportadora = document.getElementById('select-transportadora').value;
+      var numeroPedidoNF = document.getElementById('numero_pedido_transporte').value;
+      var valorFrete = document.getElementById('valor-frete').value;
+      var peso = document.getElementById('peso-frete').value;
+      var volumes = document.getElementById('volumes-frete').value;
+      var opcaoContaPagar = document.getElementById('opcao-conta-pagar').value;
+
+      document.getElementById('modal-transporte').style.display = 'none';
+
+
+    // Cria um objeto de dados para enviar na requisição
+    var data = {
+      numero_pedido: numeroPedido,
+      transportadora: transportadora,
+      valor_frete: valorFrete,
+      volumes: volumes,
+      peso: peso,
+      conta_pagar: opcaoContaPagar
+    };
+
+    // Faz a requisição para a view 'emitir_nota' usando fetch
+    fetch('/cadastrar-transportadora/', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-CSRFToken': '{{ csrf_token }}'
+      },
+      body: JSON.stringify(data)
+    })
+    .then(function(response) {
+      if (response.ok) {
+        // Manipule a resposta da requisição conforme necessário
+        alert('Pedido Atualizado Com Sucesso!');
+        window.location.reload();
+        return response.json();
+      } else {
+        alert('Ocorreu um erro: Favor contactar o suporte');
+      }
+    })
+    .then(data => {
+        // Lógica de tratamento da resposta, se necessário
+
+    })
+    .then(function(responseData) {
+       if (responseData.error) {
+        // Realize as ações necessárias para tratar o erro
+        alert('Erro: ' + responseData.error);
+      }else{
+      console.log(responseData); }
+      // Realize as ações necessárias com os dados da resposta
+    })
+    .catch(function(error) {
+      console.error('Erro: ' + error.message);
+    });
+    });
+  });
+});
+document.getElementById('fechar-modal-transporte').addEventListener('click', function() {
+  document.getElementById('modal-transporte').style.display = 'none';
+});
+</script>
+<script>
+    // Obtém referência ao botão e à div
+    const botaoFiltrar = document.getElementById('botao-filtrar');
+    const rowForm = document.getElementById('row-form');
+
+    // Adiciona o manipulador de evento ao botão
+    botaoFiltrar.addEventListener('click', function() {
+        // Verifica o status de exibição atual da div
+        const displayStatus = rowForm.style.display;
+
+        // Altera o status de exibição com base no status atual
+        if (displayStatus === 'none') {
+            rowForm.style.display = 'block';
+        } else {
+            rowForm.style.display = 'none';
+        }
+    });
+
+</script>
+<script>
+var btnsEmitirNF = document.querySelectorAll('.btn-emitir-nf');
+
+// Itera sobre os botões encontrados
+btnsEmitirNF.forEach(function(btn) {
+  btn.addEventListener('click', function() {
+    // Obtém o número do pedido do atributo de dados 'data-pedido'
+    var numeroPedido = this.getAttribute('data-pedido');
+    var inscricao = this.getAttribute('data-inscricao');
+    document.getElementById('numero_pedido_nf').value = numeroPedido;
+    document.getElementById('inscricao').value = inscricao;
+    document.getElementById('modal-informacoes-nfe').style.display = 'block';
+
+    document.getElementById('modal-nfe-form').addEventListener('submit', function(event) {
+      // Impede o comportamento padrão de submissão do formulário
+      event.preventDefault();
+      var informacoesComplementares = document.getElementById('informacoes_complementares').value;
+      var numeroPedidoNF = document.getElementById('numero_pedido_nf').value;
+      var inscricao = document.getElementById('inscricao').value;
+
+
+
+    // Cria um objeto de dados para enviar na requisição
+    var data = {
+      numero_pedido: numeroPedido,
+      inscricao: inscricao,
+      informacoes_complementares: informacoesComplementares
+    };
+
+    // Faz a requisição para a view 'emitir_nota' usando fetch
+    fetch('/emitir-nota/', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-CSRFToken': '{{ csrf_token }}'
+      },
+      body: JSON.stringify(data)
+    })
+    .then(function(response) {
+      if (response.ok) {
+        // Manipule a resposta da requisição conforme necessário
+        return response.json();
+      } else {
+        throw new Error('Erro na requisição: ' + response.statusText);
+      }
+    })
+    .then(data => {
+        // Lógica de tratamento da resposta, se necessário
+        console.log(data);
+
+        // Verifique se existe a propriedade 'bankSlipUrl' no JSON de resposta
+        if (data && data.hasOwnProperty('nfe')) {
+            // Redirecione a página para a URL do PDF do boleto
+            console.log(data.nfe);
+            window.open(data.nfe, '_blank');
+
+        }else if (data && data.hasOwnProperty('error')) {
+            // Exiba a mensagem de erro em um alert
+            alert('Erro: ' + data.error);
+          } else {
+            // Lógica de tratamento da resposta, se necessário
+            console.log(data);
+           }
+    })
+    .then(function(responseData) {
+       if (responseData.error) {
+        // Realize as ações necessárias para tratar o erro
+        alert('Erro: ' + responseData.error);
+      }else{
+      console.log(responseData); }
+      // Realize as ações necessárias com os dados da resposta
+    })
+        // ...
+    .catch(function(error) {
+      console.error('Erro: ' + error.message);
+      if (error) {
+        try {
+          var errorResponse = JSON.parse(error.response);
+          var errorMessage = errorResponse.mensagem;
+          alert('Erro: ' + errorMessage);
+        } catch (e) {
+          alert('Erro na requisição: ' + error.message);
+        }
+      } else {
+        alert('Erro na requisição: ' + error.message);
+      }
+    });
+
+    });
+  });
+});
+document.getElementById('fechar-modal-nfe').addEventListener('click', function() {
+  document.getElementById('modal-informacoes-nfe').style.display = 'none';
+});
+
+
+
+</script>
+<script>
+var btnsCancelarNF = document.querySelectorAll('.btn-cancelar-nfe');
+
+// Itera sobre os botões encontrados
+btnsCancelarNF.forEach(function(btn) {
+  btn.addEventListener('click', function() {
+    // Obtém o número do pedido do atributo de dados 'data-pedido'
+    var confirmDelete = confirm("Tem certeza que deseja prosseguir com a exclusão da Nota Fiscal?");
+    var numeroPedidoNF = this.getAttribute('data-cancela-pedido');
+    console.log(numeroPedidoNF);
+    if (confirmDelete){
+        // Cria um objeto de dados para enviar na requisição
+        var data = {
+          numero_pedido: numeroPedidoNF
+        };
+
+        // Faz a requisição para a view 'emitir_nota' usando fetch
+        fetch('/cancelar-nota/', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': '{{ csrf_token }}'
+          },
+          body: JSON.stringify(data)
+        })
+        .then(function(response) {
+          if (response.ok) {
+            alert("Nota Fiscal Cancelada com Sucesso!!!");
+            window.location.reload();
+
+            return response.json();
+          } else {
+            throw new Error('Erro na requisição: ' + response.statusText);
+          }
+        })
+        .then(data => {
+            // Lógica de tratamento da resposta, se necessário
+            console.log(data);
+
+            // Verifique se existe a propriedade 'bankSlipUrl' no JSON de resposta
+
+        })
+        .then(function(responseData) {
+           if (responseData.error) {
+            // Realize as ações necessárias para tratar o erro
+            alert('Erro: ' + responseData.error);
+          }else{
+            console.log(responseData);
+            alert(responseData);}
+          // Realize as ações necessárias com os dados da resposta
+        })
+        .catch(function(error) {
+          console.error('Erro: ' + error.message);
+        });
+     }
+  });
+});
+
+
+
+
+</script>
+<script>
+// Função para formatar o valor em moeda brasileira (R$)
+function formatarMoeda(valor) {
+  return valor.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+}
+
+// Seleciona todos os elementos da tabela com a classe 'valor-total'
+var elementosValorTotal = document.querySelectorAll('.valor-total');
+
+// Percorre os elementos e formata o valor em moeda brasileira
+elementosValorTotal.forEach(function(elemento) {
+  var valor = parseFloat(elemento.textContent.replace(',', '.'));
+  if (!isNaN(valor)) {
+    elemento.textContent = formatarMoeda(valor);
+  }
+});
+</script>
+
+<script>
+var btnStatus = document.querySelectorAll('.btn-altera-status');
+
+// Itera sobre os botões encontrados
+btnStatus.forEach(function(btn) {
+  btn.addEventListener('click', function() {
+    // Obtém o número do pedido do atributo de dados 'data-pedido-status'
+    var numeroPedido = this.getAttribute('data-pedido-status');
+    var status = this.getAttribute('data-status');
+    var data = this.getAttribute('data-data');
+    document.getElementById('numero_pedido_status').value = numeroPedido;
+    document.getElementById('status-pedido').value = status;
+    document.getElementById('data-entrega-pedido').value = data;
+    document.getElementById('modal-status-pedidos').style.display = 'block';
+
+    document.getElementById('modal-status-form').addEventListener('submit', function(event) {
+      // Impede o comportamento padrão de submissão do formulário
+      event.preventDefault();
+      var status = document.getElementById('status-pedido').value;
+      var data = document.getElementById('data-entrega-pedido').value;
+      var numeroPedidoStatus = document.getElementById('numero_pedido_status').value;
+
+    console.log(status);
+
+
+    // Cria um objeto de dados para enviar na requisição
+    var data = {
+      numero_pedido: numeroPedidoStatus,
+      data: data,
+      status: status
+    };
+
+    // Faz a requisição para a view 'emitir_nota' usando fetch
+    fetch('/atualiza-status/', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-CSRFToken': '{{ csrf_token }}'
+      },
+      body: JSON.stringify(data)
+    })
+    .then(function(response) {
+      if (response.ok) {
+        // Manipule a resposta da requisição conforme necessário
+        alert('Status do Pedido Atualizado!');
+        window.location.reload();
+      } else {
+        alert('Erro na requisição: ' + response.statusText);
+      }
+    })
+    .then(data => {
+        // Lógica de tratamento da resposta, se necessário
+
+    })
+    .then(function(responseData) {
+       if (responseData.error) {
+        // Realize as ações necessárias para tratar o erro
+        alert('Erro: ' + responseData.error);
+      }else{
+      console.log(responseData); }
+      // Realize as ações necessárias com os dados da resposta
+    })
+    .catch(function(error) {
+      console.error('Erro: ' + error.message);
+    });
+    });
+  });
+});
+document.getElementById('fechar-modal-status').addEventListener('click', function() {
+  document.getElementById('modal-status-pedidos').style.display = 'none';
+});
+
+
+
+</script>
+<script>
+var btnReparo = document.querySelectorAll('.btn-solicita-reparo');
+
+// Itera sobre os botões encontrados
+btnReparo.forEach(function(btn) {
+  btn.addEventListener('click', function() {
+    // Obtém o número do pedido do atributo de dados 'data-pedido-status'
+    var numeroPedido = this.getAttribute('data-pedido-status');
+    document.getElementById('numero_pedido_reparo').value = numeroPedido;
+    document.getElementById('modal-reparo').style.display = 'block';
+
+    document.getElementById('modal-reparo-form').addEventListener('submit', function(event) {
+      // Impede o comportamento padrão de submissão do formulário
+      event.preventDefault();
+      var observacaoReparo = document.getElementById('observacao-reparo').value;
+      var numeroPedidoReparo = document.getElementById('numero_pedido_reparo').value.trim();
+
+    console.log(status);
+
+
+    // Cria um objeto de dados para enviar na requisição
+    var data = {
+      numero_pedido: numeroPedidoReparo,
+      observacao: observacaoReparo
+
+    };
+
+    // Faz a requisição para a view 'emitir_nota' usando fetch
+    fetch('/solicita-reparo/', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-CSRFToken': '{{ csrf_token }}'
+      },
+      body: JSON.stringify(data)
+    })
+    .then(function(response) {
+      if (response.ok) {
+        // Manipule a resposta da requisição conforme necessário
+        alert('Status do Pedido Atualizado! - Pedido Com Status de Expedicao Coleta ');
+
+        window.location.href = '/guia_reparo/' + numeroPedidoReparo + '/';
+
+      } else {
+        alert('Erro na requisição: ' + response.statusText);
+
+      }
+    })
+    .then(data => {
+        // Lógica de tratamento da resposta, se necessário
+
+    })
+    .then(function(responseData) {
+       if (responseData.error) {
+        // Realize as ações necessárias para tratar o erro
+        alert('Erro: ' + responseData.error);
+      }else{
+      console.log(responseData); }
+      // Realize as ações necessárias com os dados da resposta
+    })
+    .catch(function(error) {
+      console.error('Erro: ' + error.message);
+    });
+    });
+  });
+});
+document.getElementById('fechar-modal-reparo').addEventListener('click', function() {
+  document.getElementById('modal-reparo').style.display = 'none';
+});
+
+
+
+</script>
+<script>
+var btnpendenteFinanceiro = document.querySelectorAll('.btn-pendente-financeiro');
+
+// Itera sobre os botões encontrados
+btnpendenteFinanceiro.forEach(function(btn) {
+  btn.addEventListener('click', function() {
+    // Obtém o número do pedido do atributo de dados 'data-pedido'
+    var numeroPedido = this.getAttribute('data-pedido');
+    var datapa = this.getAttribute('data-pagamento-antecipado');
+
+
+
+    var valor = this.getAttribute('data-valor-antecipado');
+    document.getElementById('numero_pedido_pf').value = numeroPedido;
+    document.getElementById('data-pa').value = datapa;
+    document.getElementById('valor-pa').value = valor;
+    document.getElementById('modal-pendente-financeiro').style.display = 'block';
+
+    document.getElementById('modal-pf-form').addEventListener('submit', function(event) {
+      // Impede o comportamento padrão de submissão do formulário
+      event.preventDefault();
+      var banco = document.getElementById('banco-pa').value;
+      var empresa = document.getElementById('empresa-pa').value;
+
+
+
+    console.log(status);
+
+
+    // Cria um objeto de dados para enviar na requisição
+    var data = {
+      numero_pedido: numeroPedido,
+      data: datapa,
+      banco: banco,
+      empresa: empresa,
+      valor: valor
+    };
+
+    // Faz a requisição para a view 'emitir_nota' usando fetch
+    fetch('/edita-status/', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-CSRFToken': '{{ csrf_token }}'
+      },
+      body: JSON.stringify(data)
+    })
+    .then(function(response) {
+      if (response.ok) {
+        // Manipule a resposta da requisição conforme necessário
+        alert('Status do Pedido Atualizado!');
+        window.location.reload();
+      } else {
+        alert('Erro na requisição: ' + response.statusText);
+      }
+    })
+    .then(data => {
+        // Lógica de tratamento da resposta, se necessário
+
+    })
+    .then(function(responseData) {
+       if (responseData.error) {
+        // Realize as ações necessárias para tratar o erro
+        alert('Erro: ' + responseData.error);
+      }else{
+      console.log(responseData); }
+      // Realize as ações necessárias com os dados da resposta
+    })
+    .catch(function(error) {
+      console.error('Erro: ' + error.message);
+    });
+    });
+  });
+});
+document.getElementById('fechar-modal-pf').addEventListener('click', function() {
+  document.getElementById('modal-pendente-financeiro').style.display = 'none';
+});
+
+
+
+</script>
+<!--DELETAR PEDIDO -->
+<script>
+
+    var btnDelete = document.querySelectorAll('.btn-delete');
+    btnDelete.forEach(function(btn) {
+        btn.addEventListener('click', function() {
+            var numeroPedido = this.getAttribute('data-pedido');
+            var confirmDelete = confirm("Tem certeza que deseja prosseguir com a exclusão do pedido?");
+
+            if (confirmDelete) {
+                var pedidoNumero = numeroPedido;
+                var url = "/delete_pedido/";
+
+                var xhr = new XMLHttpRequest();
+                xhr.open("POST", url, true);
+                xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+
+                // Obtém o token CSRF do cookie e adiciona na requisição
+                var csrfToken = getCookie('csrftoken');
+                xhr.setRequestHeader("X-CSRFToken", csrfToken);
+
+                xhr.onreadystatechange = function() {
+                    if (xhr.readyState === 4 && xhr.status === 200) {
+                        var response = JSON.parse(xhr.responseText);
+                        alert(response.mensagem);
+                        window.location.reload();
+                    } else if (xhr.readyState === 4 && xhr.status !== 200) {
+                        alert("Falha ao excluir o pedido.");
+                    }
+                };
+                xhr.send("pedido_numero=" + pedidoNumero);
+            } else {
+                // Exclusão do pedido cancelada
+                alert("Exclusão do pedido cancelada.");
+                event.preventDefault(); // Impede o envio do formulário
+            }
+        });
+    });
+    function getCookie(name) {
+    var cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        var cookies = document.cookie.split(';');
+        for (var i = 0; i < cookies.length; i++) {
+            var cookie = cookies[i].trim();
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+}
+
+</script>
+<script>
+
+    var btnConfirma = document.querySelectorAll('.btn-confirma-valores');
+    btnConfirma.forEach(function(btn) {
+        btn.addEventListener('click', function() {
+            var numeroPedido = this.getAttribute('data-pedido');
+            var statusPedido = this.getAttribute('data-status');
+            var confirmPedido = confirm("Você Confirma o Pedido?");
+
+            if (confirmPedido) {
+                var pedidoNumero = numeroPedido;
+                var status = statusPedido
+                var url = "/confirma_pedido/";
+
+                var xhr = new XMLHttpRequest();
+                xhr.open("POST", url, true);
+                xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+
+                // Obtém o token CSRF do cookie e adiciona na requisição
+                var csrfToken = getCookie('csrftoken');
+                xhr.setRequestHeader("X-CSRFToken", csrfToken);
+
+                xhr.onreadystatechange = function() {
+                    if (xhr.readyState === 4 && xhr.status === 200) {
+                        var response = JSON.parse(xhr.responseText);
+                        alert(response.mensagem);
+                        window.location.reload();
+                    } else if (xhr.readyState === 4 && xhr.status !== 200) {
+                        alert("Falha ao atualizar o pedido.");
+                    }
+                };
+                xhr.send("pedido_numero=" + pedidoNumero);
+            } else {
+                // Exclusão do pedido cancelada
+                alert("Atualização do pedido cancelada.");
+                event.preventDefault(); // Impede o envio do formulário
+            }
+        });
+    });
+    function getCookie(name) {
+    var cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        var cookies = document.cookie.split(';');
+        for (var i = 0; i < cookies.length; i++) {
+            var cookie = cookies[i].trim();
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+}
+
+</script>
+<script>
+
+</script>
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+    var valor = document.querySelectorAll(".valorpedido");
+
+
+    valor.forEach(function(input) {
+        input.addEventListener("input", function() {
+            var valor = parseFloat(input.value.replace(/\D/g, ""));
+            if (!isNaN(valor)) {
+                input.value = formatCurrency(valor / 100);
+            }
+        });
+    });
+});
+
+function formatCurrency(value) {
+    var formatter = new Intl.NumberFormat("pt-BR", {
+        style: "currency",
+        currency: "BRL",
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2
+    });
+    return formatter.format(value);
+}
+</script>
+
+<!--modal guia reparo iframe -->
+<script>
+var btnReparo = document.querySelectorAll('.btn-reparo-novo');
+
+// Itera sobre os botões encontrados
+btnReparo.forEach(function(btn) {
+  btn.addEventListener('click', function() {
+    // Obtém o número do pedido do atributo de dados 'data-pedido-status'
+    var pedido = this.getAttribute('data-pedido-numero');
+    var url  = this.getAttribute('data-url');
+    // document.getElementById('numero_orcamento').value = numeroOrcamento;
+    document.getElementById("guia-reparo-iframe").src = url;
+    document.getElementById('modal-guia-reparo').style.display = 'block';
+
+  });
+});
+document.getElementById('fechar-modal-guia-reparo').addEventListener('click', function() {
+  document.getElementById('modal-guia-reparo').style.display = 'none';
+});
+
+
+
+
+</script>
+
+
+</body>
+{% endblock %}

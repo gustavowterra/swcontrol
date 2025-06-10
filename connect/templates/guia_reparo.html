@@ -1,0 +1,449 @@
+
+
+{% load static %}
+
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>RECIBO {{ pedido.numero }}</title>
+    <style>
+    @page {
+        size: A4;
+        margin: 1;
+    }
+
+    body {
+        font-family: Arial, sans-serif;
+        font-size:10px;
+        margin: 20px;
+    }
+
+    h1 {
+        text-align: center;
+        margin-bottom: 20px;
+    }
+
+    .container {
+        display: flex;
+        padding: 10px;
+    }
+
+    .fieldset-group {
+        border: 1px solid black;
+        border-radius: 10px;
+        padding: 10px;
+        margin-bottom: 0px;
+        flex-basis: 80%;
+        margin-right: 0;
+        font-size:10px;
+    }
+
+    .small-fieldset-group {
+        border: 1px solid black;
+        border-radius: 10px;
+        padding: 10px;
+        margin-bottom: 0px;
+        flex-basis: 20%;
+    }
+
+    .fieldset-group legend,
+    .small-fieldset-group legend {
+        font-size: 12px;
+        font-weight: bold;
+        margin-bottom: 10px;
+    }
+
+    .field-row {
+        display: flex;
+        margin-bottom: 10px;
+    }
+
+    .field-row .field {
+        flex: 1;
+        margin-right: 10px;
+        position: relative;
+        font-size:9px;
+    }
+
+    .field-row .field:first-child,
+    .field-row .field:nth-child(2) {
+        flex-basis: 70%;
+    }
+
+    .field-row .field:last-child {
+        flex-basis: 100%;
+    }
+
+    .field {
+        height: 20px;
+        margin-bottom: 0;
+
+    }
+
+    .field input {
+        width: 100%;
+        padding: 6px;
+        border: 1px solid black;
+        height: 100%;
+        font-size: 9px;
+        border-radius: 0;
+
+    }
+
+    .label {
+        position: absolute;
+        font-size: 7px;
+        top: 5px;
+        left: 5px;
+        color: black;
+        font-weight: bold;
+    }
+    .field-row .field:nth-child(3) input[name="uf"] {
+        width: calc(3 * (100% / 3));
+    }
+
+    .third-fieldset {
+        margin-top: 5px;
+        width: 100%;
+        border: 1px solid black;
+        border-radius: 5px;
+        padding: 4px;
+    }
+
+    .third-fieldset legend {
+        font-size: 12px;
+        font-weight: bold;
+        margin-bottom: 10px;
+    }
+
+    .third-fieldset table {
+        width: 100%;
+        border-collapse: collapse;
+
+    }
+
+    .third-fieldset th,
+    .third-fieldset td {
+
+        padding: 4px;
+        text-align: center;
+        border: none;
+        font-size: 9px;
+        font-weight: bold;
+
+
+    }
+
+    .third-fieldset .input-cell {
+        width: 100%;
+        padding: 2px;
+        box-sizing: border-box;
+        border: none;
+        font-size: 9px;
+    }
+
+
+    </style>
+
+
+</head>
+<body>
+ <div class="container">
+
+ <div class="row">
+             <!-- Botão de Impressão -->
+        <button id="imprimirBotao" onclick="imprimir()">Imprimir</button>
+        <!-- Botão de Voltar -->
+        <a id="voltarBotao" href="/painel/">Voltar para Tela Inicial</a>
+ </div>
+
+    {% if pedido.empresa_pedido.nome == 'TEM INDUSTRIA E COMERCIO DE TAPETES LTDA' %}
+    <img src="{% static 'imagens/logo_tem_tapetes.png' %}" alt="Logomarca" style="width: 250px; height: 50px;">
+    {% endif %}
+
+ </div>
+ <div class="row mt-4 text-end">
+     <div class="mt-10 text-end">
+         <h3 style="color:red;" >GUIA REPARO - PEDIDO {{ pedido.numero }}</h3>
+    </div>
+ </div>
+
+<div class="container">
+
+    <fieldset class="fieldset-group" style="flex-basis: 70%;">
+        <legend>Dados do Emissor</legend>
+        <div class="field-row">
+            <input readonly type="text" style="border:none; font-size: 10px; width: 100%;" name="nome_razao_social" value="{{ pedido.empresa_pedido.nome }}">
+        </div>
+        <div class="field-row">
+            <input readonly type="text" style="border:none; font-size: 10px; width: 100%;" name="cnpj" value="{{ pedido.empresa_pedido.cnpj }}">
+        </div>
+        <div class="field-row">
+            <input readonly type="text" style="border:none; font-size: 10px; width: 100%;" name="endereco" value="{{ pedido.empresa_pedido.endereco }}, {{ pedido.empresa_pedido.endereco_numero }} - {{ pedido.empresa_pedido.bairro|upper }}, {{pedido.empresa_pedido.cidade|upper }} - {{ pedido.empresa_pedido.bairro.uf }}">
+        </div>
+        <div class="field-row">
+            <div class="field-row">
+            <input readonly type="text" style="border:none; font-size: 10px; width: 100%;" name="localidade" value=" TELEFONE {{ pedido.empresa_pedido.telefone }}">
+        </div>
+
+        </div>
+    </fieldset>
+    <fieldset class="fieldset-group" style="position: absolute;  right: 40px;">
+        <legend>Informações do Pedido</legend>
+        <div class="row">
+            <p style="font-size: 10px;"><small><strong>VENDEDOR: {{ pedido.Vendedor }} / {{ pedido.Vendedor2 }}</strong></small></p>
+        </div>
+         <div class="row">
+            <p style="font-size: 10px;"><small><strong>COMISSÕES: {{ pedido.vendedor_comissao }} / {{ pedido.vendedor2_comissao }}</strong></small></p>
+        </div>
+        <div class="row">
+        <p style="font-size: 10px;"><small><strong>DATA DO PEDIDO: {{ pedido.datapedido|date:'d/m/Y' }}</strong></small></p>
+        </div>
+        <div class="row">
+        <p style="font-size: 10px;"><small><strong>DATA PREVISTA: {{ pedido.prazo_entrega|date:'d/m/Y' }}</strong></small></p>
+        </div>
+
+        <div class="row">
+        <p style="font-size: 10px;"><small><strong>TIPO FRETE: {{ pedido.tipo_entrega|upper }}</strong></small></p>
+        </div>
+
+
+
+
+        </div>
+    </fieldset>
+
+
+
+    
+</div>
+
+<div class="container mt-4">
+
+    <fieldset class="fieldset-group">
+        <legend>Dados do Destinatário</legend>
+        <div class="field-row">
+            <div class="field">
+                <label class="label">Nome / Razão Social</label>
+                <input readonly type="text" name="nome_razao_social" style="font-size:8px;" value="{{ pedido.cliente_pedido.nome }} ">
+            </div>
+
+        </div>
+        <div class="field-row">
+            <div class="field">
+                <label class="label">CPF / CNPJ</label>
+                <input readonly type="text" name="cpf_cnpj" style="font-size:8px;" value="{{ pedido.cliente_pedido.documento }}">
+            </div>
+            <div class="field">
+                <label class="label">Telefone</label>
+                <input readonly type="text" name="telefone" style="font-size:8px;" value="{{ pedido.cliente_pedido.telefone1 }} ">
+            </div>
+            <div class="field">
+                <label class="label">Telefone2</label>
+                <input readonly type="text" name="telefone" style="font-size:8px;" value="{{ pedido.cliente_pedido.telefone2 }}">
+            </div>
+
+
+
+        </div>
+        <div class="field-row">
+            <div class="field">
+                <label class="label">Município - UF</label>
+                <input readonly type="text" name="municipio"value="{{ pedido.cidade_entrega }} - {{ pedido.uf_entrega }}">
+            </div>
+
+            <div class="field">
+                <label class="label">CEP</label>
+                <input readonly type="text" name="cep" value="{{ pedido.cep_entrega }}">
+            </div>
+            <div class="field">
+                <label class="label">Email</label>
+                <input readonly type="text" name="email" value="{{ pedido.cliente_pedido.email }}">
+            </div>
+
+        </div>
+        <div class="field-row">
+            <div class="field">
+                <label class="label">Endereço</label>
+                <input readonly type="text" name="endereco" value="{{ pedido.endereco_entrega }}, {{ pedido.numero_end_entrega }} {{ pedido.complemento }} - {{ pedido.bairro_entrega}} ">
+            </div>
+        </div>
+        <div class="field-row">
+            <div class="field">
+                <label class="label">Ponto de Referencia</label>
+                <input readonly type="text" name="endereco" value="{{ pedido.ponto_referencia_entrega }}">
+            </div>
+        </div>
+    </fieldset>
+
+    <fieldset class="small-fieldset-group">
+        <legend>Outras Informações</legend>
+        <div class="field-row">
+            <div class="field">
+                <label class="label">Data Emissão</label>
+                <input readonly type="text" name="data_emissao" value="{{ pedido.datapedido|date:'d/m/Y' }}">
+            </div>
+        </div>
+        <div class="field-row">
+            <div class="field">
+                <label class="label">Data Saída / Entrada</label>
+                <input readonly type="date" name="data_emissao" value="{{ data }}">
+            </div>
+        </div>
+        <div class="field-row">
+            <div class="field">
+                <label class="label">Hora da Emissão</label>
+                <input readonly type="text" name="hora_saida" value="{{ hora_atual }}">
+            </div>
+        </div>
+        <div class="field-row">
+            <div class="field">
+                <label class="label">Comprador</label>
+                <input readonly type="text" name="hora_saida" value="{{ pedido.cliente_pedido.nome_contato|default:'' }}">
+            </div>
+        </div>
+    </fieldset>
+</div>
+
+<div class="container">
+
+        <fieldset class="third-fieldset" >
+            <legend>Dados dos Produtos</legend>
+            <table  >
+                <thead>
+                <tr>
+                    <th style="text-align:center; box-sizing:border-box; border:none; font-size:10px; white-space:normal;padding:5px;width:10%;">Quantidade </th>
+                    <th style="text-align:center; box-sizing:border-box; border:none; font-size:10px; white-space:normal;padding:5px;width:40%;">Produtos</th>
+                    <th style="text-align:center; box-sizing:border-box; border:none; font-size:10px; white-space:normal;padding:5px;width:10%;">Unitário</th>
+                    <th style="text-align:center; box-sizing:border-box; border:none; font-size:10px; white-space:normal;padding:5px;width:10%;">Total</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for item in itens %}
+                <tr>
+                    <td><input readonly type="number" name="quantidade" value="{{ item.quantidade }}" style="text-align:center; box-sizing:border-box; border:none; font-size:10px; white-space:normal;padding:5px;width:100%;"></td>
+                    <td><input readonly type="text" name="produtos" value="{{ item.nome }} - {{ item.observacao_item|upper }} {{ item.comprimento }} x {{ item.largura }} {{ item.tipo }}"  style="text-align:center;box-sizing:border-box; border:none; font-size:10px; white-space:normal;padding:5px;width:100%;"></td>
+
+                    <td><input readonly type="text" class="unit" name="unitario" value="{{ item.preco }}" style="text-align:center;box-sizing:border-box; border:none; font-size:10px; white-space:normal;padding:5px;width:100%;"></td>
+                    <td><input readonly type="text" class="total" name="total" value="{{ item.total_item }}" style="text-align:center;box-sizing:border-box; border:none; font-size:10px; white-space:normal;padding:5px;width:100%;"></td>
+                </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </fieldset>
+</div>
+<div class="container">
+
+    <fieldset class="fieldset-group" style="flex-basis: 100%;">
+<legend>Valores</legend>
+        <div class="field-row">
+            <div class="field">
+                <label class="label">Valor do Frete</label>
+                <input readonly type="text" id="valor_frete" name="valor_frete" value="R$ {{ pedido.frete_valor }}">
+            </div>
+            <div class="field valor-total">
+                <label class="label">Valor Total dos Produtos</label>
+                <input readonly type="text" id="total_produtos" class="valor-total" name="total_produtos" value="R$ {{ pedido.valorTotalParcial| floatformat:2 }}">
+            </div>
+            <div class="field valor-total">
+                <label class="label">Valor Total da Nota</label>
+                <input readonly type="text" id="total-notas" class="valor-total text-center" name="total_produtos_nota" value="R$ {{ pedido.valorTotal| floatformat:2 }}">
+            </div>
+        </div>
+    </fieldset>
+
+</div>
+<fieldset class="outro-fieldset" >
+    <legend>Outros Dados do Pedido</legend>
+    <div class="row mt-2">
+        <div style="font-size:11px;">
+
+       <strong>BORDA: {{ pedido.borda|default:'' }}             FUNDO: {{ pedido.fundo|default:'' }}                    LETRA: {{ pedido.letra|default:'' }}                    LOGOMARCA: {{ pedido.logomarca }} </strong>
+        </div>
+    </div>
+
+
+     <div class="row">
+        <div class="col-md-12">
+            <p style="font-size: 12px;"><small><strong>OBSERVAÇÃO: {{ pedido.observacao|default:'' }} {{ pedido.informacoes_adicionais|default:'' }}</strong></small></p>
+        </div>
+    </div>
+</fieldset>
+
+
+ <fieldset class="fieldset" >
+            <legend><strong>Informações de Reparo </strong> </legend>
+    <div class="row">
+        <textarea style="font-size: 20px; color: red;">
+            {{ reparo_observacao }}
+        </textarea>
+
+ </fieldset>
+
+
+
+
+<script>
+var descontoInputs = document.querySelectorAll('.desconto');
+var totalInputs = document.querySelectorAll('.total');
+
+// Obtém todos os elementos de input com a classe "unit"
+var unitInputs = document.querySelectorAll('.unit');
+
+// Formata os valores dos elementos de input da coluna "Total"
+totalInputs.forEach(function(input) {
+  var value = parseFloat(input.value); // Converte o valor para float
+  input.value = 'R$ ' + value.toFixed(2); // Formata o valor com 2 casas decimais e adiciona o prefixo "R$"
+});
+descontoInputs.forEach(function(input) {
+  var value = parseFloat(input.value); // Converte o valor para float
+  input.value = 'R$ ' + value.toFixed(2); // Formata o valor com 2 casas decimais e adiciona o prefixo "R$"
+});
+
+// Formata os valores dos elementos de input da coluna "Unitário"
+unitInputs.forEach(function(input) {
+  var value = parseFloat(input.value); // Converte o valor para float
+ input.value = 'R$ ' + value.toFixed(2).replace('.', ',').replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+ // Formata o valor com 2 casas decimais e adiciona o prefixo "R$"
+});
+
+
+
+</script>
+<script>
+        function imprimir() {
+            // Oculta os botões de impressão e voltar
+            document.getElementById('imprimirBotao').style.display = 'none';
+            document.getElementById('voltarBotao').style.display = 'none';
+
+            // Aciona o diálogo de impressão
+            window.print();
+
+            // Define um tempo limite para exibir os botões novamente após a impressão (opcional)
+            setTimeout(function() {
+                document.getElementById('imprimirBotao').style.display = 'block';
+                document.getElementById('voltarBotao').style.display = 'block';
+            }, 1000); // Aguarda 1 segundo após a impressão para exibir os botões novamente (ajuste conforme necessário)
+        }
+    </script>
+</body>
+<script>
+// Função para formatar o valor em moeda brasileira (R$)
+function formatarMoeda(valor) {
+  return valor.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+}
+
+// Seleciona todos os elementos da tabela com a classe 'valor-total'
+var elementosValorTotal = document.querySelectorAll('.valor-total');
+
+// Percorre os elementos e formata o valor em moeda brasileira
+elementosValorTotal.forEach(function(elemento) {
+  var valor = parseFloat(elemento.textContent.replace(',', '.'));
+  if (!isNaN(valor)) {
+    elemento.textContent = formatarMoeda(valor);
+  }
+});
+</script>
+</html>

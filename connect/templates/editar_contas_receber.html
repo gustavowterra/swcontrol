@@ -1,0 +1,962 @@
+{% extends "./modelo.html" %}
+{% load static %}
+{% block container %}
+<head xmlns="http://www.w3.org/1999/html">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Untitled</title>
+    <link rel="stylesheet" href="{% static 'PEDIDO/fontawesome-all.min.css' %}">
+    <style>
+    /* Estilos personalizados */
+
+    .custom-background1 {
+        background-color: #f2f2f2; /* Cor de fundo cinza claro */
+        padding: 10px; /* Ajuste o valor do preenchimento conforme necessário */
+    }
+
+    .form-control {
+  border: 1px solid black;
+  border-radius: 5px;
+  font-size: 95%;
+}
+    .form-control2 {
+      border: none;
+      border-radius: 0;
+      border-bottom: none;
+      font-size: 95%;
+    }
+
+    .form-control::placeholder {
+      color: #999;
+      font-size: 100%;
+    }
+    .form-control2::placeholder {
+      color: #999;
+      font-size: 100%;
+    }
+
+    .custom-margin-top {
+      margin-top: 25px;
+    }
+
+    .gray-bg {
+      background-color: #f8f9fa;
+    }
+
+    .cliente-container {
+      background-color: #000;
+      color: #fff;
+      padding: 2px;
+    }
+
+    .modal-dialog {
+      max-width: 900px; /* Ajuste o valor conforme necessário */
+    }
+
+    .modal-content {
+      height: 400px; /* Ajuste o valor conforme necessário */
+    }
+    .form-wrapper {
+      border: 1px solid black;
+      padding: 10px;
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    </style>
+</head>
+<body>
+<section class="mt-2">
+    <div class="container">
+        <form method="post" id="editar-conta" action="/editar_conta/{{ pedido.numero }}/">
+            {% csrf_token %}
+            <div class="row">
+                <div class="col-md-6 align-items-center text-center mb-4"
+                     style="margin-left: 200px; margin-right: auto;">
+                    {% if conta.flag_uni != 1 %}
+                    <h4><strong>PEDIDO {{ pedido.numero }} </strong></h4>
+                    {% else %}
+                    <h4><strong>PEDIDO(S) UNIFICADO(S) </strong></h4>
+                    {% for unificado in unificados %}
+                    <div class="row">
+
+                        {{unificado.pedido.numero }} - {{ unificado.pedido.valorTotal }}
+
+                    </div>
+
+
+                    {% endfor%}
+
+
+                    {% endif %}
+                </div>
+                <div class="row ">
+
+
+                    <div class="row mb-3 custom-margin-top gray-bg">
+                        <h5 class="text-center"><strong>Forma de Pagamento</strong></h5>
+
+                        <div class="row mb-3 custom-margin-top gray-bg">
+
+                            <table>
+                                <div class="text-end">
+                                    <button class="btn btn-dark btn-sm float-end mb-3 add-row text-white" type="button"
+                                            id="add-row-button"><strong>adicionar parcela</strong></button>
+                                </div>
+                                <thead>
+                                <tr>
+                                    <th class="col-md-1 text-center"><small>Data de Vencimento</small></th>
+                                    <th class="col-md-2 text-center"><small>Tipo de Pagamento</small></th>
+                                    <th class="col-md-2 text-center"><small>Banco</small></th>
+                                    <th class="col-md-1 text-center"><small>N° da Parcela</small></th>
+                                    <th class="col-md-2 text-center"><small>Valor Parcela</small></th>
+                                    <th class="col-md-2 text-center"><small>Status</small></th>
+                                    <th class="col-md-1 text-center"><small>Data Pagamento</small></th>
+                                    <th class="col-md-3 text-center"><small>Momento Pagamento</small></th>
+                                    <th class="col-md-2 text-center"></th>
+
+                                </tr>
+                                </thead>
+                                <tbody>
+                                {% for parcela in parcelas %}
+                                <tr>
+                                    <td class="col-md-1 text-center">
+                                        <input type="date" name="data_vencimento"
+                                               id="data_vencimento"
+                                               value="{{ parcela.data_vencimento|date:'Y-m-d' }}"
+                                               class="form-control text-center"></td>
+                                    <td class="col-md-2 text-center">
+                                        <input list="tipo-pagamento" type="text" name="tipo_pagamento"
+                                               id="tipo_pagamento" value="{{ parcela.tipo_pgto }}"
+                                               class="form-control text-center">
+                                        <datalist id="tipo-pagamento">
+                                            {% for tipo_pagamento in tipos_pagamento %}
+                                            <option value="{{tipo_pagamento.descricao}}"></option>
+                                            {% endfor %}
+                                        </datalist>
+                                    </td>
+                                    <td class="col-md-2 text-center">
+                                        <input list="bancos" type="text" name="banco"
+                                               id="bancos-pagamento" value="{{ parcela.banco.nome }}"
+                                               class="form-control text-center">
+                                        <datalist id="bancos">
+                                            {% for banco in bancos %}
+                                            <option value="{{banco.nome}}"></option>
+                                            {% endfor %}
+                                        </datalist>
+                                    </td>
+                                    <td class="col-md-1 text-center">
+                                        <input type="text" name="numero_parcela" id="numero_parcela"
+                                               value="{{ parcela.numero_parcela }}"
+                                               class="form-control text-center"></td>
+                                    <td class="col-md-2 text-center">
+                                        <input type="text" name="valor_parcela" onchange="CalcularVTotal()"
+                                               id="valor_parcela"
+                                               value="{{ parcela.valor }}"
+                                               class="form-control valor_parcela text-center">
+                                    </td>
+                                    <td class="col-md-2 text-center">
+                                        <select name="status_conta" id="status_conta" class="form-control text-center">
+                                            {% for status in status_conta %}
+                                            {% if status.0 == parcela.status_conta %}
+                                            <option value="{{ status.0 }}" selected>{{ status.1 }}</option>
+                                            {% else %}
+                                            <option value="{{ status.0 }}">{{ status.1 }}</option>
+                                            {% endif %}
+                                            {% endfor %}
+                                        </select>
+
+                                    </td>
+                                    <td class="col-md-1 text-center">
+                                        <input type="date" name="data_pagamento"
+                                               id="data_pagamento"
+                                               value="{{ parcela.data_pagamento|date:'Y-m-d' }}"
+                                               class="form-control text-center"></td>
+                                    <td class="col-md-3 text-center">
+                                        <select name="momento_pagamento" id="momento_pagamento" class="form-control text-center">
+
+                                            {% if parcela.momento_pagamento == 'ANTECIPADO'%}
+                                            <option value="ANTECIPADO" selected>ANTECIPADO</option>
+                                            <option value="FATURADO">FATURADO</option>
+                                            <option value="ENTREGA">ENTREGA</option>
+                                            {% elif parcela.momento_pagamento == 'ENTREGA'%}
+                                            <option value="ANTECIPADO" >ANTECIPADO</option>
+                                            <option value="FATURADO">FATURADO</option>
+                                            <option value="ENTREGA" selected>ENTREGA</option>
+                                            {% else %}
+                                            <option value="ANTECIPADO" >ANTECIPADO</option>
+                                            <option value="FATURADO" selected>FATURADO</option>
+                                            <option value="ENTREGA" >ENTREGA</option>
+                                            {% endif %}
+
+                                        </select>
+                                    <td class="text-center">
+                                        <a class="del-row" href="javascript:void(0);">
+                                            <button class="btn btn-danger btn-sm" type="button">
+                                                Del
+                                            </button>
+                                        </a></td>
+                                </tr>
+                                {% endfor %}
+                            </table>
+
+                        </div>
+
+                    </div>
+
+                    <div class="row mt-4">
+                        <div class="col">
+
+                            <div class="col">
+                                <p id="pedido-total">Valor Total do Pedido Alterado: R$ 0.00</p>
+
+                                {% if conta.flag_uni != 1 %}
+                                <p id="pedido-total2">Valor Total do Pedido Anterior: R$ {{ pedido.valorTotal }}</p>
+                                {% endif %}
+
+                            </div>
+
+
+                        </div>
+                    </div>
+
+
+                </div>
+
+            </div>
+            <button id="submit-button" type="submit" class="btn btn-dark">Salvar</button>
+        </form>
+    </div>
+</section>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+<script src="{% static 'PEDIDO/bootstrap.min.js' %}"></script>
+<script src="{% static 'PEDIDO/script.min.js' %}"></script>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.mask/1.14.16/jquery.mask.min.js"></script>
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        // Add a submit event listener to the form
+        document.getElementById("editar-conta").addEventListener("submit", function(event) {
+            var dataVencimentoInput = document.getElementById("data_vencimento");
+            var dataVencimentoValue = dataVencimentoInput.value;
+
+            // Check if the entered date is in a valid format (YYYY-MM-DD)
+            if (!isValidDate(dataVencimentoValue)) {
+                alert("Data de vencimento inválida. Favor Verificar.");
+                event.preventDefault(); // Prevent form submission
+                return;
+            }
+
+
+        });
+
+        // Function to check if a date is in a valid format (YYYY-MM-DD)
+        function isValidDate(dateString) {
+            var regex = /^\d{4}-\d{2}-\d{2}$/;
+            return regex.test(dateString);
+        }
+    });
+</script>
+
+
+
+
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        function calcularVTotal() {
+            var inputs = document.querySelectorAll("input[name='valor_parcela']");
+            var total = 0;
+
+            for (var i = 0; i < inputs.length; i++) {
+                var valorParcela = parseFloat(inputs[i].value) || 0;
+                total += valorParcela;
+            }
+
+            var valorTotalElement = document.getElementById("pedido-total");
+            valorTotalElement.textContent = "Valor Total do Pedido: R$ " + total.toFixed(2);
+        }
+
+        // Chama a função inicialmente para exibir o valor total com os valores existentes
+        calcularVTotal();
+
+        // Adiciona um event listener para calcular o valor total sempre que houver alterações nos inputs
+        var valorParcelaInputs = document.querySelectorAll("input[name='valor_parcela']");
+        for (var i = 0; i < valorParcelaInputs.length; i++) {
+            valorParcelaInputs[i].addEventListener("input", calcularVTotal);
+        }
+          $(document).on('click', '.del-row', function() {
+    $(this).closest('tr').remove();
+
+    calcularVTotal(); // Chamando a função para recalcular o valor total
+});
+
+function calcularVTotal() {
+    var total = 0;
+
+    $('input[name="valor_parcela"]').each(function() {
+        var valorParcela = parseFloat($(this).val()) || 0;
+        total += valorParcela;
+    });
+
+    $('#pedido-total').text('Valor Total do Pedido: R$ ' + total.toFixed(2));
+}
+    });
+
+
+
+
+
+</script>
+
+
+<!-- Adiciona linha a tabela -->
+<script>
+    document.getElementById("add-row-button").addEventListener("click", function () {
+        calcularVTotal();
+        // Obtém a tabela e a última linha
+        var table = document.querySelector("table");
+        var lastRow = table.rows[table.rows.length - 1];
+
+        // Clona a última linha
+        var newRow = lastRow.cloneNode(true);
+
+        // Incrementa o valor da coluna "numero_parcela" na nova linha
+        var numeroParcelaInput = newRow.querySelector("input[name='numero_parcela']");
+        var lastNumeroParcela = parseInt(numeroParcelaInput.value);
+        numeroParcelaInput.value = lastNumeroParcela + 1;
+
+        // Limpa os valores dos outros inputs na nova linha
+        var inputs = newRow.querySelectorAll("input:not([name='numero_parcela'])");
+        for (var i = 0; i < inputs.length; i++) {
+            inputs[i].value = "";
+        }
+
+        // Adiciona a nova linha à tabela
+        table.appendChild(newRow);
+        function calcularVTotal() {
+            var inputs = document.querySelectorAll("input[name='valor_parcela']");
+            var total = 0;
+
+            for (var i = 0; i < inputs.length; i++) {
+                var valorParcela = parseFloat(inputs[i].value) || 0;
+                total += valorParcela;
+            }
+
+            var valorTotalElement = document.getElementById("pedido-total");
+            valorTotalElement.textContent = "Valor Total do Pedido: R$ " + total.toFixed(2);
+        }
+    });
+
+
+
+
+
+
+</script>
+<!-- SCRIPT PARA BUSCAR VENDEDOR 1 E SUAS RESPECTIVAS COMISSÕES -->
+<script>
+    $(document).ready(function () {
+      $("#vendedor1").change(function () {
+        var selectedVendedor = $(this).val();
+        $.ajax({
+          type: "GET",
+          url: "/get-comissoes/",
+          data: {
+            vendedor: selectedVendedor
+          },
+          success: function (response) {
+            var options = response.comissoes; // Extrai as opções de comissão do objeto de resposta
+            var uniqueOptions = Array.from(new Set(options)); // Filtra os valores repetidos
+
+            var optionsHtml = ""; // String para armazenar as tags <option>
+
+            // Gera as tags <option> com base nas opções de comissão filtradas
+            for (var i = 0; i < uniqueOptions.length; i++) {
+              var optionValue = uniqueOptions[i] + "%"; // Adiciona o símbolo "%" ao valor da opção
+              optionsHtml += "<option value='" + optionValue + "'>" + optionValue + "</option>";
+            }
+
+            // Atualiza o conteúdo do campo "Comissão 1" com as opções de comissão filtradas
+            $("#comissao1").html(optionsHtml);
+          },
+          error: function (xhr, errmsg, err) {
+            console.log(xhr.status + ": " + xhr.responseText);
+          }
+        });
+      });
+    });
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</script>
+<!-- SCRIPT PARA BUSCAR VENDEDOR 2 E SUAS RESPECTIVAS COMISSÕES -->
+<script>
+    $(document).ready(function () {
+      $("#vendedor2").change(function () {
+        var selectedVendedor = $(this).val();
+        $.ajax({
+          type: "GET",
+          url: "/get-comissoes/",
+          data: {
+            vendedor: selectedVendedor
+          },
+          success: function (response) {
+            var options = response.comissoes; // Extrai as opções de comissão do objeto de resposta
+            var uniqueOptions = Array.from(new Set(options)); // Filtra os valores repetidos
+
+            var optionsHtml = ""; // String para armazenar as tags <option>
+
+            // Gera as tags <option> com base nas opções de comissão filtradas
+            for (var i = 0; i < uniqueOptions.length; i++) {
+              var optionValue = uniqueOptions[i] + "%"; // Adiciona o símbolo "%" ao valor da opção
+              optionsHtml += "<option value='" + optionValue + "'>" + optionValue + "</option>";
+            }
+
+            // Atualiza o conteúdo do campo "Comissão 1" com as opções de comissão filtradas
+            $("#comissao2").html(optionsHtml);
+          },
+          error: function (xhr, errmsg, err) {
+            console.log(xhr.status + ": " + xhr.responseText);
+          }
+        });
+      });
+    });
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</script>
+<!-- SCRIPT PARA BUSCAR CLIENTE PELO CPF / CNPJ -->
+<script>
+$(document).ready(function () {
+  $("#buscar-cliente").click(function () {
+    var documentoCliente = $("#documento-cliente").val();
+
+    $.ajax({
+      type: "GET",
+      url: "/get-cliente/",
+      data: {
+        documento: documentoCliente
+      },
+      success: function (response) {
+        if (response.cliente) {
+          // Cliente encontrado, exiba os dados na mesma tela
+          exibirDadosCliente(response.cliente);
+          document.getElementById('mensagem-cliente-nao-encontrado').style.display = 'none';
+        } else {
+          // Cliente não encontrado, exiba o modal para cadastrar um novo cliente
+          document.getElementById('mensagem-cliente-nao-encontrado').style.display = 'block';
+          exibirFormularioCadastroCliente(documentoCliente);
+          $("#modal-cadastro-cliente").modal("show");
+        }
+      },
+      error: function (xhr, errmsg, err) {
+        console.log(xhr.status + ": " + xhr.responseText);
+      }
+    });
+  });
+
+  $("#modal-cadastro-cliente").on("click", "#salvar-cliente", function (event) {
+    event.preventDefault(); // Impede o envio do formulário tradicional
+
+    var formData = $("#form-cadastro-cliente").serialize(); // Obtém os dados do formulário
+
+    $.ajax({
+      type: "POST",
+      url: "/cadastrar_cliente/",
+      data: formData,
+      success: function (response) {
+        // Processar a resposta, se necessário
+        // Por exemplo, exibir uma mensagem de sucesso
+
+        // Fechar o modal de cadastro do cliente
+        $("#modal-cadastro-cliente").modal("hide");
+
+        // Atualizar os dados na tela de pedido com os dados do cliente cadastrado
+        exibirDadosCliente(response.cliente);
+
+        // Remover a mensagem de erro
+        document.getElementById('mensagem-cliente-nao-encontrado').style.display = 'none';
+
+        // Executar automaticamente o botão de busca
+        buscarCliente();
+      },
+      error: function (xhr, errmsg, err) {
+        console.log(xhr.status + ": " + xhr.responseText);
+      }
+    });
+  });
+
+  $("#fechar-modal").click(function () {
+    $("#modal-cadastro-cliente").modal("hide");
+  });
+});
+
+function exibirDadosCliente(cliente) {
+  // Atualizar os campos na tela de pedido com os dados do cliente
+  $("#nome-cliente").text(cliente.nome);
+  $("#email-cliente").text(cliente.email);
+  $("#documento_cliente").text(cliente.documento);
+  $("#telefone1-cliente").text(cliente.telefone1);
+  $("#telefone2-cliente").text(cliente.telefone2);
+  $("#cep-cliente").text(cliente.CEP);
+  $("#estado-cliente").text(cliente.estado);
+  $("#cidade-cliente").text(cliente.cidade);
+  $("#bairro-cliente").text(cliente.bairro);
+  $("#endereco-cliente").text(cliente.endereco);
+  $("#numero-endereco-cliente").text(cliente.numero_endereco);
+  $("#complemento-cliente").text(cliente.complemento);
+
+  $("#dados-cliente").show();
+}
+
+function exibirFormularioCadastroCliente(documento) {
+  fetch('/cadastrar_cliente/')
+    .then(response => response.text())
+    .then(data => {
+      // Exiba o formulário de cadastro de cliente na tela
+      const formulario = $(data);
+      formulario.find('#documento').val(documento); // Define o valor do campo "documento"
+      $("#modal-cadastro-cliente .modal-body").html(formulario);
+    })
+    .catch(error => {
+      console.error('Erro ao carregar o formulário de cadastro de cliente:', error);
+    });
+}
+function buscarCliente() {
+  var documentoCliente = $("#documento-cliente").val();
+
+  $.ajax({
+    type: "GET",
+    url: "/get-cliente/",
+    data: {
+      documento: documentoCliente
+    },
+    success: function (response) {
+      if (response.cliente) {
+        // Cliente encontrado, exiba os dados na mesma tela
+        exibirDadosCliente(response.cliente);
+        document.getElementById('mensagem-cliente-nao-encontrado').style.display = 'none';
+      } else {
+        // Cliente não encontrado, exiba o modal para cadastrar um novo cliente
+        document.getElementById('mensagem-cliente-nao-encontrado').style.display = 'block';
+        exibirFormularioCadastroCliente(documentoCliente);
+        $("#modal-cadastro-cliente").modal("show");
+      }
+    },
+    error: function (xhr, errmsg, err) {
+      console.log(xhr.status + ": " + xhr.responseText);
+    }
+  });
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</script>
+
+<!-- SCRIPT PARA MOSTAR OS CAMPOS DE CADASTRAR ENDEREÇO QUANDO O CLIENTE SELECIONA OUTRO ENDEREÇO -->
+<script>
+
+    const radio1 = document.getElementById('endereco-cadastro');
+    const radio2 = document.getElementById('endereco-opcional');
+    const enderecoForm = document.getElementById('enderecoForm');
+
+
+    radio1.addEventListener('change', () => {
+        radio2.checked = false;
+        enderecoForm.style.display = 'none';
+    });
+
+    radio2.addEventListener('change', () => {
+        radio1.checked = false;
+         enderecoForm.style.display = 'block';
+    });
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</script>
+
+
+<!-- ATRIBUI ID A CADA LINHA DO ITEM  -->
+<script>
+  var csrfToken = '{{ csrf_token }}';
+  $(document).ready(function() {
+  atribuirNumerosItens();
+
+  $(document).on('click', '#add-row-button', function() {
+    var lastRow = $('#tabela-produtos tbody tr:last');
+    var newRow = lastRow.clone();
+    newRow.find('.item-id').val('');
+    newRow.find('input').val('');
+    $('#tabela-produtos tbody').append(newRow);
+    atribuirNumerosItens();
+  });
+});
+
+
+function atribuirNumerosItens() {
+  var rowCount = $('#tabela-itens tbody tr').length;
+  $('#tabela-itens tbody tr').each(function(index) {
+    $(this).find('.item-id').val(index + 1);
+  });
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</script>
+
+<!-- SCRIPT PARA CALCULAR PREÇO DE A VISTA E PARCELADO  -->
+<script>
+    // Função para calcular a soma dos valores da tabela e atualizar os campos de total
+    function calcularTotal() {
+        var totalAvistaInput = document.getElementById('total-avista');
+        var totalParceladoInput = document.getElementById('total-parcelado');
+        var descontoInput = document.getElementById('desconto');
+
+        var totalAvista = parseFloat(totalAvistaInput.value) || 0;
+        var totalParcelado = parseFloat(totalParceladoInput.value) || 0;
+        var desconto = parseFloat(descontoInput.value) || 0;
+
+        // Percorre cada linha da tabela e calcula a soma dos valores
+        var rows = document.querySelectorAll('#tabela-produtos tbody tr');
+        var totalTabela = 0;
+        rows.forEach(function(row) {
+            var quantidadeInput = row.querySelector('.quantity');
+            var precoInput = row.querySelector('.unit-price');
+
+            var quantidade = parseFloat(quantidadeInput.value) || 0;
+            var preco = parseFloat(precoInput.value) || 0;
+            var valorTotal = quantidade * preco;
+
+            totalTabela += valorTotal;
+        });
+
+        var valorTotalComDesconto = totalTabela - desconto;
+
+        if (valorTotalComDesconto < totalAvista) {
+            totalAvista = valorTotalComDesconto;
+            totalParcelado = 0;
+        } else {
+            totalAvista = totalAvista;
+            totalParcelado = valorTotalComDesconto - totalAvista;
+        }
+
+        // Atualiza os campos de total
+        totalAvistaInput.value = totalAvista.toFixed(2);
+        totalParceladoInput.value = totalParcelado.toFixed(2);
+    }
+
+    // Adiciona eventos input aos campos de valor à vista, valor parcelado e desconto
+    var totalAvistaInput = document.getElementById('total-avista');
+    var totalParceladoInput = document.getElementById('total-parcelado');
+    var descontoInput = document.getElementById('desconto');
+
+    totalAvistaInput.addEventListener('input', calcularTotal);
+    totalParceladoInput.addEventListener('input', calcularTotal);
+    descontoInput.addEventListener('input', calcularTotal);
+
+    // Adiciona evento de escuta de alteração aos campos da tabela
+    var tableInputs = document.querySelectorAll('#tabela-produtos input');
+    tableInputs.forEach(function(input) {
+        input.addEventListener('input', calcularTotal);
+    });
+
+
+
+
+</script>
+
+
+<script>
+   $(document).ready(function() {
+
+   $('#total-avista, #total-parcelado, #desconto').on('change', function() {
+    updateTotalSum();
+  });
+
+  function calculateTotal(row) {
+    var quantity = parseInt(row.find('.quantity').val()) || 0;
+    var unitPrice = parseFloat(row.find('.unit-price').val()) || 0;
+    var total = quantity * unitPrice;
+    row.find('.total').text('R$ ' + total.toFixed(2));
+    return total;
+  }
+
+   function updateTotalSum() {
+      var sum = 0;
+      $('tbody tr').each(function() {
+        var total = calculateTotal($(this));
+        sum += total;
+      });
+
+      var desconto = parseFloat($('#desconto').val()) || 0;
+      var valorTotalPedido = sum - desconto;
+
+      var formattedSum = sum.toFixed(2);
+      var formattedValorTotalPedido = valorTotalPedido.toFixed(2);
+
+      $('#total-sum').text('Valor Total: R$ ' + formattedSum);
+      $('#pedido-desconto').text('Desconto: R$ ' + desconto.toFixed(2));
+      $('#order-total').text('Valor Total do Pedido: R$ ' + formattedValorTotalPedido);
+    }
+
+  $(document).on('input', '.quantity, .unit-price', function() {
+    var row = $(this).closest('tr');
+    calculateTotal(row);
+    updateTotalSum();
+  });
+
+
+
+  // Inicializar o valor total ao carregar a página
+  updateTotalSum();
+});
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</script>
+<!-- SCRIPT PARA EXIBIR OS CAMPOS DE EDITAR FORMA DE PAGAMENTO -->
+<script>
+    $(document).ready(function() {
+        $('input[name="alterar_pagamento"]').change(function() {
+            if ($(this).val() === 'sim') {
+                $('#opcao-alterar-pagamento').show();
+            } else {
+                $('#opcao-alterar-pagamento').hide();
+            }
+        });
+    });
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</script>
+
+</body>
+
+</html>
+{% endblock %}
